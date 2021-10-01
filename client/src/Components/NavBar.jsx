@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import styled from "styled-components";
 import HomeRoundedIcon from "@material-ui/icons/HomeRounded";
 import PeopleIcon from "@material-ui/icons/People";
@@ -11,13 +11,14 @@ import { Link } from "react-router-dom";
 import AddPostModel from "./Models/AddPostModel";
 import SearchModel from "./Models/SearchModel";
 import LogoutModel from "./Models/LogoutModel";
+import { userContext } from "../App";
 
 const NavBar = () => {
   const [showCreateModel, setShowCreateModel] = useState(false);
   const [showSearchModel, setShowSearchModel] = useState(false);
   const [showLogoutModel, setShowLogoutModel] = useState(false);
   const [name, setName] = useState("");
-
+  const { state, dispatch } = useContext(userContext);
 
   return (
     <>
@@ -51,21 +52,21 @@ const NavBar = () => {
             </LeftDiv>
 
             <IconContainer>
-              <Link to="/" exact>
+              <Link to="/">
                 <Home>
                   <HomeRoundedIcon />
                   <h5>Home</h5>
                 </Home>
               </Link>
 
-              <Link to="/connections" exact>
+              <Link to="/connections">
                 <MyNetwork>
                   <PeopleIcon />
                   <h5>My Network</h5>
                 </MyNetwork>
               </Link>
 
-              <Link to="/chat" exact>
+              <Link to="/chat">
                 <Message>
                   <MessageRoundedIcon />
                   <h5>Messages</h5>
@@ -77,7 +78,7 @@ const NavBar = () => {
                 style={{ border: "none", backgroundColor: "white" }}
               >
                 <Me>
-                  <AccountCircleIcon />
+                  <img src={state && state.profile_pic} alt="" />
                   <h5>Me</h5>
                 </Me>
               </button>
@@ -86,14 +87,14 @@ const NavBar = () => {
         </TopNavCont>
 
         <DownNav>
-          <Link to="/" exact>
+          <Link to="/">
             <Home>
               <HomeRoundedIcon />
               <h5>Home</h5>
             </Home>
           </Link>
 
-          <Link to="/connections" exact>
+          <Link to="/connections">
             <MyNetwork>
               <PeopleIcon />
               <h5>My Network</h5>
@@ -102,7 +103,12 @@ const NavBar = () => {
 
           <button
             onClick={() => setShowCreateModel(true)}
-            style={{ border: "none", backgroundColor: "white" }}
+            style={{
+              border: "none",
+              backgroundColor: "white",
+             
+              marginBottom: "auto",
+            }}
           >
             <AddIcon>
               <AddBoxIcon />
@@ -110,7 +116,7 @@ const NavBar = () => {
             </AddIcon>
           </button>
 
-          <Link to="/chat" exact>
+          <Link to="/chat">
             <Message>
               <MessageRoundedIcon />
               <h5>Messages</h5>
@@ -122,7 +128,7 @@ const NavBar = () => {
             style={{ border: "none", backgroundColor: "white" }}
           >
             <Me>
-              <AccountCircleIcon />
+              <img src={state && state.profile_pic} alt="" />
               <h5>Me</h5>
             </Me>
           </button>
@@ -145,7 +151,6 @@ const TopNavCont = styled.nav`
   max-width: 1128px;
   margin: auto;
   border-bottom: 1px solid grey;
- 
 `;
 const TopNav = styled.nav`
   width: 100%;
@@ -153,7 +158,6 @@ const TopNav = styled.nav`
   flex-wrap: nowrap;
   flex-direction: row;
   justify-content: space-between;
- 
 `;
 
 const DownNav = styled.div`
@@ -161,7 +165,6 @@ const DownNav = styled.div`
   width: 100%;
   padding: 5px 0;
   background-color: white;
- 
 
   @media (max-width: 768px) {
     width: 100%;
@@ -213,6 +216,8 @@ const Input = styled.div`
 
 const Home = styled.div`
   color: #535353;
+  margin-top: auto;
+  margin-bottom: auto;
 
   & > h5 {
     font-weight: 500;
@@ -223,6 +228,8 @@ const Home = styled.div`
 `;
 const MyNetwork = styled.div`
   color: #535353;
+  margin-top: auto;
+  margin-bottom: auto;
 
   & > h5 {
     font-weight: 500;
@@ -233,6 +240,8 @@ const MyNetwork = styled.div`
 `;
 const Message = styled.div`
   color: #535353;
+  margin-top: auto;
+  margin-bottom: auto;
 
   & > h5 {
     font-weight: 500;
@@ -242,7 +251,13 @@ const Message = styled.div`
   }
 `;
 const Me = styled.div`
-  color: #535353;
+  & > img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
 
   & > h5 {
     font-weight: 500;

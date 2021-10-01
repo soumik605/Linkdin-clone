@@ -30,6 +30,9 @@ const ChatModel = (props) => {
     });
   };
 
+
+
+
   useEffect(() => {
     const interval = setInterval(() => {
       fetch(`/room/${props.data._id}`, {

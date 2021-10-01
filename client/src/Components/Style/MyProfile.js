@@ -51,8 +51,7 @@ export const Cover = styled.div`
   border-radius: 10px 10px 0 0;
 
   & > img {
-    background-size: cover;
-    background-repeat: no-repeat;
+
     width: 100%;
     height: 200px;
     border-radius: 10px 10px 0 0;
@@ -76,12 +75,13 @@ export const Profile = styled.div`
   top: -75px;
   left: 40px;
   z-index: 2;
+  box-shadow: 2px 2px 10px 1px gray;
 
   & > img {
     background-size: cover;
     background-repeat: no-repeat;
-    width: 140px;
-    height: 140px;
+    width: 142px;
+    height: 142px;
     border-radius: 50%;
     margin: auto;
   }
@@ -93,8 +93,8 @@ export const Profile = styled.div`
     left: 30px;
 
     & > img {
-      width: 110px;
-      height: 110px;
+      width: 112px;
+      height: 112px;
     }
   }
 `;

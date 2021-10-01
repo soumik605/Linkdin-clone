@@ -8,11 +8,9 @@ const Room = mongoose.model("Room");
 const requireLogin = require("../middleware/requireLogin");
 
 router.post("/createroom", requireLogin, (req, res) => {
-  const { user1, user2 } = req.body;
-
-  if (user1 && user2) {
+  if (req.body.fid) {
     const room = new Room({
-      members: [user1, user2],
+      members: [req.user._id, req.body.fid],
     });
     room.populate("members", "_id name profile_pic");
     room
@@ -20,6 +18,19 @@ router.post("/createroom", requireLogin, (req, res) => {
       .then((result) => res.json({ result }))
       .catch((err) => console.log(err));
   }
+});
+
+router.put("/deleteroom", requireLogin, (req, res) => {
+   Room.findOne({ members: { $in: [req.body.fid.toString(), req.user._id.toString()] } })
+    .populate("members", "_id name profile_pic")
+    .populate("messages.posted_By", "_id name profile_pic")
+    .then((room) => {
+      room
+        .remove()
+        .then((delRoom) => console.log(delRoom))
+        .catch((err) => console.log(err));
+    })
+    .catch((err) => console.log(err));
 });
 
 router.get("/myrooms", requireLogin, (req, res) => {
@@ -30,7 +41,7 @@ router.get("/myrooms", requireLogin, (req, res) => {
 });
 
 router.get("/room/:friendId", requireLogin, (req, res) => {
-  Room.findOne({ members: { $in: req.user._id && req.params.friendId } })
+  Room.findOne({ members: { $in: [req.params.friendId.toString(), req.user._id.toString()] } })
     .populate("members", "_id name profile_pic")
     .populate("messages.posted_By", "_id name profile_pic")
     .then((room) => res.json({ room }))
@@ -44,7 +55,7 @@ router.post("/addmessage/:roomid", requireLogin, (req, res) => {
     message,
   };
 
-  console.log(messages)
+  console.log(messages);
   Room.findByIdAndUpdate(
     req.params.roomid,
     {

@@ -3,15 +3,17 @@ import ChatModel from "./Models/ChatModel";
 import NavBar from "./NavBar";
 import { ChatBox, ChatList, Container, UserBox } from "./Style/ChatPage";
 import { userContext } from "../App";
+import { useHistory } from "react-router-dom";
 
 const ChatPage = () => {
   const [showChat, setShowChat] = useState(false);
   const [myRooms, setMyRooms] = useState([]);
   const [friend, setFriend] = useState("");
   const { state } = useContext(userContext);
+  const history =  useHistory()
 
   useEffect(() => {
-    fetch(`/myrooms`, {
+ fetch(`/myrooms`, {
       headers: {
         Authorization: "Bearer " + localStorage.getItem("jwt"),
       },

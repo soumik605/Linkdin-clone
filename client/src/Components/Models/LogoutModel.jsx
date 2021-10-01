@@ -20,7 +20,6 @@ const LogoutModel = (props) => {
           <h3>{state && state.name}</h3>
           <Link
             to="/profile"
-            exact
             style={{
               margin: "10px",
               border: "2px solid blue",

@@ -21,11 +21,11 @@ const userSchema = new mongoose.Schema({
   },
   profile_pic: {
     type: String,
-    default: "",
+    default: "https://www.personality-insights.com/wp-content/uploads/2017/12/default-profile-pic-e1513291410505.jpg",
   },
   cover_pic: {
     type: String,
-    default: "",
+    default: "https://images.ctfassets.net/7thvzrs93dvf/wpImage18643/2f45c72db7876d2f40623a8b09a88b17/linkedin-default-background-cover-photo-1.png?w=790&h=196&q=90&fm=png",
   },
   connections: [{ type: ObjectId, ref: "User" }],
   conrequests: [{ type: ObjectId, ref: "User" }],

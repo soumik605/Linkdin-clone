@@ -27,37 +27,42 @@ const UserProfile = () => {
   const history = useHistory();
   const [allUser, setAllUser] = useState([]);
   const [showConnBtn, setShowConnBtn] = useState(true);
+  const [showAcceptConnBtn, setShowAcceptConnBtn] = useState(true);
 
   useEffect(() => {
     state && userid === state._id && history.push("/profile");
 
-    fetch(`/alluser`, {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          let list = data.users;
-          list = list.sort(() => Math.random() - 0.5);
-          setAllUser(list);
-        }
-      });
+    const interval = setInterval(() => {
+      fetch(`/alluser`, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("jwt"),
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            alert.error(data.error);
+          } else {
+            setAllUser(data.users);
+          }
+        });
+    }, 4000);
+    return () => clearInterval(interval);
   }, [state]);
 
   useEffect(() => {
-    fetch(`/user/${userid}`, {
-      headers: {
-        authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        setData(res);
-      });
+    const interval = setInterval(() => {
+      fetch(`/user/${userid}`, {
+        headers: {
+          authorization: "Bearer " + localStorage.getItem("jwt"),
+        },
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          setData(res.user);
+        });
+    }, 2000);
+    return () => clearInterval(interval);
   }, [state]);
 
   const RequestConnection = async (userid) => {
@@ -80,6 +85,26 @@ const UserProfile = () => {
       });
   };
 
+  const deleteRoom = () => {
+    fetch(`/deleteroom`, {
+      method: "put",
+      headers: {
+        "content-type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("jwt"),
+      },
+      body: JSON.stringify({
+       fid: userid,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          alert.error(data.error);
+        } else {
+        }
+      });
+  };
+
   const RemoveConnection = async () => {
     await fetch(`/removeconnect/${userid}`, {
       method: "put",
@@ -95,12 +120,57 @@ const UserProfile = () => {
         } else {
           localStorage.setItem("user", JSON.stringify(data.result1));
           dispatch({ type: "USER", payload: data.result1 });
+          deleteRoom();
+        }
+      });
+  };
+
+  const createRoom = () => {
+    fetch(`/createroom`, {
+      method: "post",
+      headers: {
+        "content-type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("jwt"),
+      },
+      body: JSON.stringify({
+        fid: userid,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          alert.error(data.error);
+        } else {
+          setShowAcceptConnBtn(true);
+        }
+      });
+  };
+
+  const acceptConnection = () => {
+    setShowAcceptConnBtn(false);
+    fetch(`/acceptconnect/${userid}`, {
+      method: "put",
+      headers: {
+        "content-type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("jwt"),
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          alert.error(data.error);
+        } else {
+          localStorage.setItem("user", JSON.stringify(data.result1));
+          dispatch({ type: "USER", payload: data.result1 });
+          createRoom();
         }
       });
   };
 
   return (
+   
     <>
+ 
       <NavBar />
       <Container>
         <Main>
@@ -120,9 +190,8 @@ const UserProfile = () => {
               {data ? `${data.connections.length} connections` : "loading.."}{" "}
             </h4>
             <div style={{ display: "flex" }}>
-              {data && data.connections.includes(state._id) ? (
+              {data && data.connections.includes(state._id) && (
                 <>
-                  {" "}
                   <Button
                     onClick={() => {
                       history.push("/chat");
@@ -134,24 +203,42 @@ const UserProfile = () => {
                     Remove Connection
                   </Button>
                 </>
-              ) : state && state.conrequests.includes(userid) ? (
-                <Button>Accept connection</Button>
-              ) : data && data.conrequests.includes(state._id) ? (
-                <Button>Request sent..</Button>
-              ) : data && showConnBtn ? (
-                <Button
-                  onClick={() => {
-                    setShowConnBtn(false);
-                    RequestConnection(data._id);
-                  }}
-                >
-                  Connect
-                </Button>
-              ) : (
-                <Button style={{ backgroundColor: "grey", color: "white" }}>
-                  Connect
-                </Button>
               )}
+
+              {data &&
+                data.myrequests.includes(state._id) &&
+                (showAcceptConnBtn ? (
+                  <Button
+                    onClick={() => {
+                      acceptConnection();
+                    }}
+                  >
+                    Accept connection
+                  </Button>
+                ) : (
+                  <Button style={{ cursor: "not-allowed" }}>
+                    Accept connection
+                  </Button>
+                ))}
+
+              {data && data.conrequests.includes(state._id) && (
+                <Button>Request sent..</Button>
+              )}
+
+              {data &&
+                !data.connections.includes(state._id) &&
+                !data.myrequests.includes(state._id) &&
+                !data.conrequests.includes(state._id) &&
+                showConnBtn && (
+                  <Button
+                    onClick={() => {
+                      setShowConnBtn(false);
+                      RequestConnection(data._id);
+                    }}
+                  >
+                    Connect
+                  </Button>
+                )}
             </div>
           </Details>
 
@@ -171,7 +258,31 @@ const UserProfile = () => {
               ))}
           </Education>
           <Skills>
-            <h2>Skills</h2>
+            <div
+              style={{ borderBottom: "1px solid grey", paddingBottom: "5px" }}
+            >
+              <h2>Skills</h2>
+            </div>
+            <div
+              style={{
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}
+            >
+              {data &&
+                data.skills.map((skill) => (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      flexWrap: "nowrap",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <h3 style={{ marginRight: "auto" }}>{skill}</h3>
+                  </div>
+                ))}
+            </div>
           </Skills>
         </Main>
         <Adv>
@@ -185,6 +296,7 @@ const UserProfile = () => {
                   s_user.conrequests.includes(state._id) ||
                   s_user.myrequests.includes(state._id)
                 ) {
+                  return null;
                 } else {
                   return s_user;
                 }
@@ -209,9 +321,7 @@ const UserProfile = () => {
                       Connect
                     </ConnectBtn>
                   ) : (
-                    <ConnectBtn
-                      style={{ backgroundColor: "grey", color: "white" }}
-                    >
+                    <ConnectBtn style={{ cursor: "not-allowed" }}>
                       Connect
                     </ConnectBtn>
                   )}

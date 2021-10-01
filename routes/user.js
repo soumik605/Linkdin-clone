@@ -182,7 +182,21 @@ router.get("/user/:userid", requireLogin, (req, res) => {
   User.findOne({ _id: req.params.userid })
     .select("-password")
     .then((user) => {
-      res.send(user);
+      res.json({user});
+    })
+    .catch((err) => {
+      return res.status(404).json({ error: err });
+    });
+});
+
+router.get("/mydetails", requireLogin, (req, res) => {
+  User.findOne({ _id: req.user._id })
+    .select("-password")
+    .populate("connections", "_id name about profile_pic cover_pic")
+    .populate("conrequests", "_id name about profile_pic cover_pic")
+    .populate("myrequests", "_id name about profile_pic cover_pic")
+    .then((user) => {
+      res.json({user});
     })
     .catch((err) => {
       return res.status(404).json({ error: err });

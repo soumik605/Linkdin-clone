@@ -26,7 +26,7 @@ import { useAlert } from "react-alert";
 import AddIcon from "@mui/icons-material/Add";
 import EducationModel from "./Models/EducationModel";
 import DeleteIcon from "@mui/icons-material/Delete";
-
+import { useHistory } from "react-router-dom";
 
 const MyProfile = () => {
   const [editModel, setEditModel] = useState(false);
@@ -40,23 +40,25 @@ const MyProfile = () => {
   const [showConnBtn, setShowConnBtn] = useState(true);
   const [showAddSkill, setShowAddSkill] = useState(false);
   const [newSkill, setNewSkill] = useState("");
+  const history = useHistory();
 
   useEffect(() => {
-    fetch(`/alluser`, {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          let list = data.users;
-          list = list.sort(() => Math.random() - 0.5);
-          setAllUser(list);
-        }
-      });
+    const interval = setInterval(() => {
+      fetch(`/alluser`, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("jwt"),
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            alert.error(data.error);
+          } else {
+            setAllUser(data.users);
+          }
+        });
+    }, 2000);
+    return () => clearInterval(interval);
   }, [state]);
 
   const RequestConnection = async (userid) => {
@@ -104,7 +106,6 @@ const MyProfile = () => {
       });
   };
 
-
   const DeleteSkill = async (skill) => {
     await fetch(`/deleteskill`, {
       method: "put",
@@ -113,7 +114,7 @@ const MyProfile = () => {
         Authorization: "Bearer " + localStorage.getItem("jwt"),
       },
       body: JSON.stringify({
-        skill
+        skill,
       }),
     })
       .then((res) => res.json())
@@ -125,7 +126,7 @@ const MyProfile = () => {
           dispatch({ type: "USER", payload: data.user });
         }
       });
-  }
+  };
 
   return (
     <>
@@ -204,7 +205,7 @@ const MyProfile = () => {
             {showAddSkill && (
               <div>
                 <input
-                autoFocus="true"
+                  autoFocus="true"
                   value={newSkill}
                   onChange={(e) => setNewSkill(e.target.value)}
                 />
@@ -228,7 +229,10 @@ const MyProfile = () => {
                     }}
                   >
                     <h3 style={{ marginRight: "auto" }}>{skill}</h3>
-                    <DeleteIcon style={{fontSize:"20px"}} onClick={()=>DeleteSkill(skill)} />
+                    <DeleteIcon
+                      style={{ fontSize: "20px" }}
+                      onClick={() => DeleteSkill(skill)}
+                    />
                   </div>
                 ))}
             </div>
@@ -245,6 +249,7 @@ const MyProfile = () => {
                   s_user.conrequests.includes(state._id) ||
                   s_user.myrequests.includes(state._id)
                 ) {
+                  return null;
                 } else {
                   return s_user;
                 }

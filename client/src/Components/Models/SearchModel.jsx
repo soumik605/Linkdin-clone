@@ -55,20 +55,13 @@ const SearchModel = (props) => {
               .map((user) => {
                 return (
                   <UserBox
-                    onClick={() => {
-                      props.showName("");
-                      props.model(false);
-                      {
-                        user._id === state._id
-                          ? history.push(`/profile`)
-                          : history.push(`/profile/${user._id}`);
-                      }
-                    }}
                     key={user._id}
                   >
                     <img src={user.profile_pic} alt="" />
                     <div>
-                      <h3>{user.name}</h3>
+                      <h3>
+                        <a href={`/profile/${user._id}`}>{user.name}</a>
+                      </h3>
                       <h5>{user.about}</h5>
                     </div>
                   </UserBox>

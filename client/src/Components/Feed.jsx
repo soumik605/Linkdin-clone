@@ -26,9 +26,8 @@ import CommentIcon from "@mui/icons-material/Comment";
 import { useAlert } from "react-alert";
 import CommentsModel from "./Models/CommentsModel";
 import NavBar from "./NavBar";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import LikesModel from "./Models/LikesModel";
-
 
 const Feed = () => {
   const [allUser, setAllUser] = useState([]);
@@ -42,35 +41,27 @@ const Feed = () => {
   const alert = useAlert();
   const [postComments, setPostComments] = useState([]);
   const [postLikes, setPostLikes] = useState([]);
-  const [timeGap, setTimeGap] = useState("");
+  const history = useHistory();
 
   useEffect(() => {
-    allPost.map((post) => {
-      const abc = post.likes.filter((like) => {
-        if (like._id === state._id) {
-          return state._id;
-        } else {
-          return null;
-        }
-      });
-
-    });
-
-    fetch(`/alluser`, {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          let list = data.users;
-          list = list.sort(() => Math.random() - 0.5);
-          setAllUser(list);
-        }
-      });
+    const interval = setInterval(() => {
+      if (state) {
+        fetch(`/alluser`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("jwt"),
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) {
+              alert.error(data.error);
+            } else {
+              setAllUser(data.users);
+            }
+          });
+      }
+    }, 2000);
+    return () => clearInterval(interval);
   }, [state]);
 
   const RequestConnection = async (userid) => {
@@ -92,116 +83,129 @@ const Feed = () => {
       });
   };
 
-  useEffect(async () => {
-    await fetch("/allsubpost", {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.err) {
-          alert.error(data.err);
-        } else {
-          setAllPost(data.result);
-        }
-      });
+  useEffect( () => {
+    const interval = setInterval(() => {
+      if (state) {
+        fetch("/allsubpost", {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("jwt"),
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.err) {
+              alert.error(data.err);
+            } else {
+              setAllPost(data.result);
+            }
+          });
+      }
+    }, 2000);
+    return () => clearInterval(interval);
   }, [state]);
 
   const likePost = (postId) => {
-    setShowLike(false);
-    fetch("/like", {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-      body: JSON.stringify({
-        postId,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          const newdata = allPost.map((item) => {
-            if (item._id === data.result._id) {
-              return data.result;
-            } else {
-              return item;
-            }
-          });
-          setAllPost(newdata);
-          setShowLike(true);
-        }
-      });
+    if (state) {
+      setShowLike(false);
+      fetch("/like", {
+        method: "put",
+        headers: {
+          "content-type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("jwt"),
+        },
+        body: JSON.stringify({
+          postId,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            alert.error(data.error);
+          } else {
+            const newdata = allPost.map((item) => {
+              if (item._id === data.result._id) {
+                return data.result;
+              } else {
+                return item;
+              }
+            });
+            setAllPost(newdata);
+            setShowLike(true);
+          }
+        });
+    }
   };
 
   const unlikePost = (postId) => {
-    fetch("/unlike", {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-      body: JSON.stringify({
-        postId,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          const newdata = allPost.map((item) => {
-            if (item._id === data.result._id) {
-              return data.result;
-            } else {
-              return item;
-            }
-          });
-          setAllPost(newdata);
-        }
-      });
+    if (state) {
+      fetch("/unlike", {
+        method: "put",
+        headers: {
+          "content-type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("jwt"),
+        },
+        body: JSON.stringify({
+          postId,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            alert.error(data.error);
+          } else {
+            const newdata = allPost.map((item) => {
+              if (item._id === data.result._id) {
+                return data.result;
+              } else {
+                return item;
+              }
+            });
+            setAllPost(newdata);
+          }
+        });
+    }
   };
 
   const AddComment = (postId, text) => {
-    fetch("/comment", {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-      body: JSON.stringify({
-        postId,
-        text,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          const newdata = allPost.map((item) => {
-            if (item._id === data.result._id) {
-              return data.result;
-            } else {
-              return item;
-            }
-          });
-          setAllPost(newdata);
-        }
-      });
+    if (state) {
+      fetch("/comment", {
+        method: "put",
+        headers: {
+          "content-type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("jwt"),
+        },
+        body: JSON.stringify({
+          postId,
+          text,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            alert.error(data.error);
+          } else {
+            const newdata = allPost.map((item) => {
+              if (item._id === data.result._id) {
+                return data.result;
+              } else {
+                return item;
+              }
+            });
+            setAllPost(newdata);
+          }
+        });
+    }
   };
 
   return (
     <>
-      {showCreateModel && <AddPostModel model={setShowCreateModel} />}
-      {showComments && (
+      {state && showCreateModel && <AddPostModel model={setShowCreateModel} />}
+      {state && showComments && (
         <CommentsModel model={setShowComments} comments={postComments} />
       )}
-      {showLikes && <LikesModel model={setShowLikes} likes={postLikes} />}
+      {state && showLikes && (
+        <LikesModel model={setShowLikes} likes={postLikes} />
+      )}
       <NavBar />
       <Container>
         <LeftCont>
@@ -332,7 +336,7 @@ const Feed = () => {
                 }
               })
               .map((user) => (
-                <User>
+                <User key={user._id}>
                   <RightProfile src={user.profile_pic} alt="" />
                   <RightDetails>
                     <h2>

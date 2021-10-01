@@ -27,6 +27,7 @@ import NavBar from "./NavBar";
 const MyConnections = () => {
   const { state, dispatch } = useContext(userContext);
   const [allUser, setAllUser] = useState([]);
+  const [mydetails, setMydetails] = useState(null);
   const [showAcceptConnBtn, setShowAcceptConnBtn] = useState(true);
   const [showAddConnBtn, setShowAddConnBtn] = useState(true);
   const history = useHistory();
@@ -40,8 +41,7 @@ const MyConnections = () => {
         Authorization: "Bearer " + localStorage.getItem("jwt"),
       },
       body: JSON.stringify({
-        user1: state._id,
-        user2: userId,
+        fid: userId,
       }),
     })
       .then((res) => res.json())
@@ -49,6 +49,7 @@ const MyConnections = () => {
         if (data.error) {
           alert.error(data.error);
         } else {
+          setShowAcceptConnBtn(true);
         }
       });
   };
@@ -69,7 +70,6 @@ const MyConnections = () => {
           localStorage.setItem("user", JSON.stringify(data.result1));
           dispatch({ type: "USER", payload: data.result1 });
           createRoom(user._id);
-          setShowAcceptConnBtn(true);
         }
       });
   };
@@ -94,21 +94,45 @@ const MyConnections = () => {
   };
 
   useEffect(() => {
-    fetch(`/alluser`, {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          let list = data.users;
-          list = list.sort(() => Math.random() - 0.5);
-          setAllUser(list);
-        }
-      });
+    const interval = setInterval(() => {
+      if (state) {
+        fetch(`/alluser`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("jwt"),
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) {
+              alert.error(data.error);
+            } else {
+              setAllUser(data.users);
+            }
+          });
+      }
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [state]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (state) {
+        fetch(`/mydetails`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("jwt"),
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) {
+              alert.error(data.error);
+            } else {
+              setMydetails(data.user);
+            }
+          });
+      }
+    }, 2000);
+    return () => clearInterval(interval);
   }, [state]);
 
   const RequestConnection = async (userid) => {
@@ -137,8 +161,8 @@ const MyConnections = () => {
       <Container>
         <LeftDiv>
           <h3>My Connections</h3>
-          {state &&
-            state.connections.map((user) => (
+          {mydetails &&
+            mydetails.connections.map((user) => (
               <LeftUserBox key={user._id}>
                 <LeftProfile src={user.profile_pic} alt="" />
                 <div>
@@ -155,17 +179,17 @@ const MyConnections = () => {
         <RightDiv>
           <ReqCont>
             <h3>Invitations</h3>
-            {state &&
-              state.conrequests.map((user) => (
-                <RequestBox>
+            {mydetails &&
+              mydetails.conrequests.map((user) => (
+                <RequestBox key={user._id}>
                   <ReqPic>
                     <img src={user.profile_pic} />
                   </ReqPic>
                   <ReqUser>
-                    <h2>
+                    <h3>
                       <a href={`/profile/${user._id}`}>{user.name}</a>
-                    </h2>
-                    <h4>{user.about}</h4>
+                    </h3>
+                    <h5>{user.about}</h5>
                   </ReqUser>
                   <CheckBox>
                     <ChBtn onClick={() => rejectConnection(user)}>Ignore</ChBtn>
@@ -204,7 +228,7 @@ const MyConnections = () => {
                   }
                 })
                 .map((user) => (
-                  <UserBox>
+                  <UserBox key={user._id}>
                     <Cover>
                       <img src={user.cover_pic} alt="" />
                     </Cover>

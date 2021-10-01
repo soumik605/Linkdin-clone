@@ -22,7 +22,7 @@ export const LeftDiv = styled.div`
   width: 100%;
   grid-area: left;
   height: fit-content;
- min-height: 100px;
+  min-height: 100px;
   border: 1px solid black;
   border-radius: 10px;
   display: flex;
@@ -54,32 +54,34 @@ export const ReqCont = styled.div`
 `;
 export const RequestBox = styled.div`
   width: 100%;
-  height: 100px;
   display: flex;
   flex-direction: row;
   box-sizing: border-box;
   border-top: 1px solid black;
-  padding: 5px 10px;
-
-  @media (max-width: 768px) {
-    height: 80px;
-  }
+  padding: 10px;
 `;
 export const ReqPic = styled.div`
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
+  margin-top: auto;
+  margin-bottom: auto;
 
   & > img {
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     background-repeat: no-repeat;
     background-size: cover;
   }
 
   @media (max-width: 768px) {
-    width: 80px;
-    height: 80px;
+    width: 50px;
+    height: 50px;
+
+    & > img {
+      width: 50px;
+      height: 50px;
+    }
   }
 `;
 export const ReqUser = styled.div`
@@ -89,9 +91,11 @@ export const ReqUser = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  margin-top: auto;
+  margin-bottom: auto;
 
-  & > h2,
-  & > h4 {
+  & > h3,
+  & > h5 {
     text-align: left;
   }
 
@@ -122,16 +126,22 @@ export const SuggestionBox = styled.div`
   border-radius: 20px;
   background-color: white;
 
-  &>h3{
+  & > h3 {
     margin: 5px auto 10px 15px;
   }
 `;
 export const UserBox = styled.div`
-  width: 202px;
-  height: 300px;
-  border: 1px solid black;
+  width: 200px;
   margin: 5px auto;
   border-radius: 10px;
+  padding-bottom: 5px;
+  box-shadow: 2px 2px 2px 1px gray;
+  box-sizing: border-box;
+  border: 1px solid grey;
+
+  @media (max-width: 768px) {
+    width: 150px;
+  }
 `;
 
 export const ChBtn = styled.button`
@@ -162,37 +172,70 @@ export const ChBtn = styled.button`
 export const Cover = styled.div`
   width: 200px;
   height: 80px;
+  border-radius: 10px;
 
   & > img {
     width: 200px;
     height: 80px;
     background-repeat: no-repeat;
     background-size: cover;
+    border-radius: 10px;
+  }
+
+  @media (max-width: 768px) {
+    width: 150px;
+    height: 60px;
+
+    & > img {
+      width: 150px;
+      height: 60px;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
   }
 `;
 export const Profile = styled.div`
-  width: 100px;
-  height: 100px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   position: relative;
-  top: -50px;
+  top: -35px;
   margin: auto;
   border: 1px solid white;
   box-sizing: border-box;
 
   & > img {
-    width: 98px;
-    height: 98px;
+    width: 68px;
+    height: 68px;
     background-repeat: no-repeat;
     background-size: cover;
     border-radius: 50%;
+  }
+
+  @media (max-width: 768px) {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    position: relative;
+    top: -30px;
+    margin: auto;
+    border: 1px solid white;
+    box-sizing: border-box;
+
+    & > img {
+      width: 60px;
+      height: 60px;
+      background-repeat: no-repeat;
+      background-size: cover;
+      border-radius: 50%;
+    }
   }
 `;
 export const Details = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
-  top: -40px;
+  top: -30px;
 
   & > h2,
   & > h4 {
@@ -210,6 +253,10 @@ export const ConnectBtn = styled.button`
   &:hover {
     background-color: lightblue;
   }
+
+  @media (max-width: 768px) {
+    top: -20px;
+  }
 `;
 export const LeftUserBox = styled.div`
   width: 100%;
@@ -219,18 +266,18 @@ export const LeftUserBox = styled.div`
   padding: 5px;
   justify-content: center;
 
-  & > div{
+  & > div {
     margin: auto;
   }
 `;
 
 export const LeftProfile = styled.img`
-  height: 50px ;
-  width: 50px ;
+  height: 50px;
+  width: 50px;
   background-repeat: no-repeat;
   background-size: cover;
   border-radius: 50%;
-`
+`;
 
 export const Message = styled.button`
   background-color: white;
@@ -239,9 +286,9 @@ export const Message = styled.button`
   border-radius: 15px;
   padding: 2px 5px;
   height: 30px;
-margin: auto;
+  margin: auto;
 
-  &:hover{
+  &:hover {
     background-color: lightblue;
   }
-`
+`;
