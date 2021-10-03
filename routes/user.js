@@ -12,7 +12,7 @@ router.put("/editdetails", requireLogin, (req, res) => {
     return res.status(422).json({ error: "Email and Name are Required" });
   } else {
     User.findOne({ email: email }).then((savedUser) => {
-      if (savedUser & (savedUser._id !== req.user._id)) {
+      if (savedUser && savedUser._id !== req.user._id) {
         return res
           .status(422)
           .json({ error: "User already exits in this email" });
