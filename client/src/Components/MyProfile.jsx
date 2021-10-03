@@ -72,6 +72,8 @@ const MyProfile = () => {
   const [postComments, setPostComments] = useState([]);
   const [postLikes, setPostLikes] = useState([]);
 
+
+
   useEffect(() => {
     const interval = setInterval(() => {
       fetch(`/alluser`, {
@@ -424,6 +426,7 @@ const MyProfile = () => {
                       flexWrap: "nowrap",
                       justifyContent: "space-between",
                     }}
+                    key={skill}
                   >
                     <h3 style={{ marginRight: "auto" }}>{skill}</h3>
                     <DeleteIcon

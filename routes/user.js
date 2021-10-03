@@ -8,11 +8,72 @@ const requireLogin = require("../middleware/requireLogin");
 router.put("/editdetails", requireLogin, (req, res) => {
   const { name, email, about, address, profile_pic, cover_pic } = req.body;
 
+  if (email === req.user.email) {
+    var EmailChanged = false;
+  } else {
+    var EmailChanged = true;
+  }
+
+  if (!EmailChanged) {
+    User.findByIdAndUpdate(
+      req.user._id,
+      {
+        name,
+        email,
+        about,
+        address,
+        profile_pic,
+        cover_pic,
+      },
+      {
+        new: true,
+      }
+    )
+      .then((user) => {
+        res.status(200).json({ user });
+      })
+      .catch((err) => {
+        return res.status(422).json({ error: err });
+      });
+  } else {
+    User.findOne({ email }).then((savedUser) => {
+      if (savedUser) {
+        return res
+          .status(422)
+          .json({ error: "User already exits in this email" });
+      } else {
+        User.findByIdAndUpdate(
+          req.user._id,
+          {
+            name,
+            email,
+            about,
+            address,
+            profile_pic,
+            cover_pic,
+          },
+          {
+            new: true,
+          }
+        )
+          .then((user) => {
+            res.status(200).json({ user });
+          })
+          .catch((err) => {
+            return res.status(422).json({ error: err });
+          });
+      }
+    })
+    .catch((err) => {
+      return res.status(422).json({ error: err });
+    });
+  }
+
   if (!email || !name) {
     return res.status(422).json({ error: "Email and Name are Required" });
   } else {
     User.findOne({ email: email }).then((savedUser) => {
-      if (savedUser && savedUser._id !== req.user._id) {
+      if (savedUser & (savedUser._id !== req.user._id)) {
         return res
           .status(422)
           .json({ error: "User already exits in this email" });
@@ -182,7 +243,7 @@ router.get("/user/:userid", requireLogin, (req, res) => {
   User.findOne({ _id: req.params.userid })
     .select("-password")
     .then((user) => {
-      res.json({user});
+      res.json({ user });
     })
     .catch((err) => {
       return res.status(404).json({ error: err });
@@ -196,7 +257,7 @@ router.get("/mydetails", requireLogin, (req, res) => {
     .populate("conrequests", "_id name about profile_pic cover_pic")
     .populate("myrequests", "_id name about profile_pic cover_pic")
     .then((user) => {
-      res.json({user});
+      res.json({ user });
     })
     .catch((err) => {
       return res.status(404).json({ error: err });

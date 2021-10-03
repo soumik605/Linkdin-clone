@@ -44,7 +44,6 @@ const Feed = () => {
   const history = useHistory();
 
   useEffect(() => {
-    document.title = "Feed | Linkdin";
 
     const interval = setInterval(() => {
       if (state) {

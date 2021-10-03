@@ -24,9 +24,6 @@ const UserDetails = () => {
     address: "",
   });
 
-  useEffect(() => {
-    document.title = "Signup | Linkdin"
-    }, [])
 
   const handleChange = (e) => {
     setDetails2({ ...details2, [e.target.name]: e.target.value });

@@ -14,6 +14,9 @@ const ChatPage = () => {
   const [mydetails, setMydetails] = useState(null);
 
 
+
+
+
   
   useEffect(() => {
     const interval = setInterval(() => {

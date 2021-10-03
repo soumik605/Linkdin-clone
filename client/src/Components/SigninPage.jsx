@@ -54,9 +54,6 @@ const SigninPage = () => {
     setDetails({ ...details, [e.target.name]: e.target.value });
   };
 
-  useEffect(() => {
-  document.title = "Signin | Linkdin"
-  }, [])
 
   return (
     <MainContainer>

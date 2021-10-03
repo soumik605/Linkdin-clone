@@ -25,9 +25,6 @@ const SignupPage = () => {
     setDetails1({ ...details1, [e.target.name]: e.target.value });
   };
 
-  useEffect(() => {
-    document.title = "Signup | Linkdin"
-    }, [])
 
   return (
     <Container>
