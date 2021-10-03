@@ -58,7 +58,7 @@ export const PopupBox = styled.div`
 
 
   @media (max-width: 768px) {
-   top: calc(100vh - 60px - 40vh);
+   top: calc(100vh - 60px - 43vh);
   
   }
 `;

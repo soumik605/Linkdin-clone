@@ -128,6 +128,7 @@ export const SuggestionBox = styled.div`
 
   & > h3 {
     margin: 5px auto 10px 15px;
+    width: 100%;
   }
 `;
 export const UserBox = styled.div`
@@ -172,14 +173,14 @@ export const ChBtn = styled.button`
 export const Cover = styled.div`
   width: 200px;
   height: 80px;
-  border-radius: 10px;
+  border-radius: 10px 10px 0 0 ;
 
   & > img {
     width: 200px;
     height: 80px;
     background-repeat: no-repeat;
     background-size: cover;
-    border-radius: 10px;
+  border-radius: 10px 10px 0 0 ;
   }
 
   @media (max-width: 768px) {

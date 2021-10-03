@@ -5,7 +5,7 @@ import {
   Close,
   Save,
   InputBox,
-} from "../Style/UserEditModel";
+} from "../Style/AddPhotoModel";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { userContext } from "../../App";
 

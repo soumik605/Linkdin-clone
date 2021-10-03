@@ -28,11 +28,11 @@ const LikesModel = (props) => {
                   <div>
                     <h4>
                       {state && state._id === like._id ? (
-                        <Link to="/profile" exact>
+                        <Link to="/profile">
                           {like.name}
                         </Link>
                       ) : (
-                        <Link to={`/profile/${like._id}`} exact>
+                        <Link to={`/profile/${like._id}`}>
                           {like.name}
                         </Link>
                       )}

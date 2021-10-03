@@ -192,6 +192,10 @@ export const RightDetails = styled.div`
   width: calc(100% - 70px);
   display: flex;
   flex-direction: column;
+  &>h2, &>h4{
+    text-align: left;
+    padding-left: 20px;
+  }
 `;
 export const User = styled.div`
   display: flex;
@@ -213,3 +217,31 @@ export const EduBox = styled.div`
     text-align: left;
   }
 `;
+
+
+export const PostBox = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 2px 2px 2px 1px gray;
+  border: 1px solid grey;
+  margin: 10px auto;
+  padding: 10px;
+`
+
+export const EditPostIconContainer = styled.div`
+    background-color: white;
+    border: 1px solid black;
+    position: relative;
+    top: 5px;
+    margin-left: auto;
+    margin-right: 10px;
+    display: flex;
+    flex-direction: column;
+    z-index: 2;
+
+`

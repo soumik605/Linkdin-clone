@@ -127,7 +127,6 @@ export const PostCard = styled.div`
 `;
 export const CardTop = styled.div`
   width: 100%;
-  height: 50px;
   display: flex;
   flex-direction: row;
   padding: 10px;

@@ -18,6 +18,7 @@ const LogoutModel = (props) => {
         <PopupBox>
           <img src={state && state.profile_pic} alt="" />
           <h3>{state && state.name}</h3>
+          <h5>{state && state.about}</h5>
           <Link
             to="/profile"
             style={{

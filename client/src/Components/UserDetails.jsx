@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   Container,
   Form,
@@ -23,6 +23,10 @@ const UserDetails = () => {
     name: "",
     address: "",
   });
+
+  useEffect(() => {
+    document.title = "Signup | Linkdin"
+    }, [])
 
   const handleChange = (e) => {
     setDetails2({ ...details2, [e.target.name]: e.target.value });
@@ -75,7 +79,8 @@ const UserDetails = () => {
               value={details2.name}
               name="name"
               onChange={(e) => handleChange(e)}
-              autoFocus
+              autoFocus={true}
+              style={{ textTransform: "capitalize" }}
             />
           </Input>
           <Input>
@@ -87,7 +92,19 @@ const UserDetails = () => {
             />
           </Input>
 
-          <Join onClick={() => addUser()}>Join</Join>
+          {details2.name === "" ? (
+            <Join
+              style={{
+                backgroundColor: "#b6ebf1",
+                color: "#0066ff",
+                cursor: "not-allowed",
+              }}
+            >
+              Join
+            </Join>
+          ) : (
+            <Join onClick={() => addUser()}>Join</Join>
+          )}
 
           <SigninLink>
             Already on Linkedin?{" "}

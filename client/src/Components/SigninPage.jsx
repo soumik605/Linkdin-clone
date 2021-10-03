@@ -1,9 +1,18 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
 import styled from "styled-components";
 import { userContext } from "../App";
 import { useHistory, Link } from "react-router-dom";
 import { useAlert } from "react-alert";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+
+import IconButton from "@mui/material/IconButton";
+import FilledInput from "@mui/material/FilledInput";
+import InputLabel from "@mui/material/InputLabel";
+import InputAdornment from "@mui/material/InputAdornment";
+import FormControl from "@mui/material/FormControl";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const SigninPage = () => {
   const { dispatch } = useContext(userContext);
@@ -45,6 +54,10 @@ const SigninPage = () => {
     setDetails({ ...details, [e.target.name]: e.target.value });
   };
 
+  useEffect(() => {
+  document.title = "Signin | Linkdin"
+  }, [])
+
   return (
     <MainContainer>
       <Navbar>
@@ -68,12 +81,12 @@ const SigninPage = () => {
               onChange={(e) => handleChange(e)}
               name="email"
               value={details.email}
-              autoFocus
+              autoFocus={true}
             />
           </EmailField>
 
           <PasswordField>
-            <TextField
+            {/* <TextField
               id="filled-basic"
               label="Password"
               variant="filled"
@@ -81,12 +94,50 @@ const SigninPage = () => {
               onChange={(e) => handleChange(e)}
               name="password"
               value={details.password}
-            />
+              end
+           />  */}
+            <FormControl sx={{ width: "100%" }} variant="filled">
+              <InputLabel htmlFor="filled-adornment-password">
+                Password
+              </InputLabel>
+              <FilledInput
+                id="filled-adornment-password"
+                type={showPwd ? "text" : "password"}
+                value={details.password}
+                name="password"
+                onChange={(e) => handleChange(e)}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setShowPwd(!showPwd)}
+                      edge="end"
+                    >
+                      {showPwd ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
           </PasswordField>
           <Forgot>
             <a href="#forgotpassword">Forgot password ?</a>
           </Forgot>
-          <Signin onClick={() => addUserDetails()}>Signin</Signin>
+          {details.email !== "" && details.password !== "" && (
+            <Signin onClick={() => addUserDetails()}>Signin</Signin>
+          )}
+          {(details.email == "" || details.password == "") && (
+            <Signin
+              style={{
+                backgroundColor: "#fff",
+                color: "#0066ff",
+                cursor: "not-allowed",
+                border: "1px solid #0066ff",
+              }}
+            >
+              Signin
+            </Signin>
+          )}
         </Section>
       </Container>
       <Join>

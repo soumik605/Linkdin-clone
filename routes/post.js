@@ -31,7 +31,6 @@ router.get("/allsubpost", requireLogin, (req, res) => {
   Post.find({ posted_By: { $in: req.user.connections } })
     .populate("posted_By", "_id name about profile_pic")
     .populate("comments.commented_By", "_id name profile_pic")
-    .populate("likes", "_id name profile_pic")
     .sort("-createdAt")
     .then((result) => {
       res.json({ result });
@@ -42,9 +41,11 @@ router.get("/allsubpost", requireLogin, (req, res) => {
 });
 
 router.get("/mypost", requireLogin, (req, res) => {
-  Post.find({ postedBy: req.user._id })
-    .then((result) => {
-      res.json({ result });
+  Post.find({ posted_By: req.user._id })
+    .populate("posted_By", "_id name about profile_pic")
+    .sort("-createdAt")
+    .then((posts) => {
+      res.json({ posts });
     })
     .catch((error) => {
       console.log(err);
@@ -55,7 +56,7 @@ router.put("/like", requireLogin, (req, res) => {
   Post.findOne({ _id: req.body.postId })
     .then((post) => {
       if (post.likes.includes(req.user._id)) {
-        return res.status(422).json({ error });
+        return res.status(422).json({ error: "Something went wromg" });
       } else {
         Post.findByIdAndUpdate(
           req.body.postId,
@@ -135,9 +136,11 @@ router.put("/comment", requireLogin, (req, res) => {
   }
 });
 
-router.delete("/delete/:postId", requireLogin, (req, res) => {
+router.delete("/deletepost/:postId", requireLogin, (req, res) => {
   Post.findOne({ _id: req.params.postId })
-    .populate("posted_By", "_id")
+  .populate("comments.commented_By", "_id name profile_pic")
+  .populate("likes", "_id name profile_pic")
+  .populate("posted_By", "_id name profile_pic")
     .exec((err, post) => {
       if (err || !post) {
         return res.status(422).json({ error: err });
@@ -145,8 +148,31 @@ router.delete("/delete/:postId", requireLogin, (req, res) => {
       if (req.user._id.toString() === post.posted_By._id.toString()) {
         post
           .remove()
-          .then((resp) => res.json({ resp }))
+          .then((post) => res.json({ post }))
           .catch((err) => console.log(err));
+      }
+    });
+});
+
+router.put("/editpost/:postId", requireLogin, (req, res) => {
+  Post.findByIdAndUpdate(
+    req.params.postId,
+    {
+      title: req.body.title,
+      photo: req.body.photo,
+    },
+    {
+      new: true,
+    }
+  )
+    .populate("comments.commented_By", "_id name profile_pic")
+    .populate("likes", "_id name profile_pic")
+    .populate("posted_By", "_id name profile_pic")
+    .exec((err, post) => {
+      if (err) {
+        return res.status(422).json({ error: err });
+      } else {
+        res.json({ post });
       }
     });
 });
@@ -191,6 +217,16 @@ router.put("/deletecomment/:postId/:commentId", requireLogin, (req, res) => {
         });
       }
     });
+});
+
+router.get("/post/:postid", requireLogin, (req, res) => {
+  console.log(req.params.postid);
+  Post.findById(req.params.postid)
+    .populate("posted_By", "_id name about profile_pic")
+    .populate("comments.commented_By", "_id name profile_pic")
+    .populate("likes", "_id name profile_pic")
+    .then((post) => res.json({ post }))
+    .catch((err) => console.log(err));
 });
 
 module.exports = router;

@@ -19,6 +19,7 @@ export const ChatList = styled.div`
   border: 1px solid black;
   border-radius: 10px;
   background-color: white;
+  z-index: 10;
 
   &>h2{
       text-align: left;
@@ -29,6 +30,7 @@ export const ChatList = styled.div`
 
   @media (max-width: 768px) {
     width: 100%;
+  z-index: 1;
   }
 `;
 

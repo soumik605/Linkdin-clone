@@ -44,6 +44,8 @@ const Feed = () => {
   const history = useHistory();
 
   useEffect(() => {
+    document.title = "Feed | Linkdin";
+
     const interval = setInterval(() => {
       if (state) {
         fetch(`/alluser`, {
@@ -83,7 +85,7 @@ const Feed = () => {
       });
   };
 
-  useEffect( () => {
+  useEffect(() => {
     const interval = setInterval(() => {
       if (state) {
         fetch("/allsubpost", {
@@ -197,9 +199,25 @@ const Feed = () => {
     }
   };
 
+  const fetchPost = (postid) => {
+    fetch(`/post/${postid}`, {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("jwt"),
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        setPostComments(res.post.comments);
+        setPostLikes(res.post.likes);
+      })
+      .catch((err) => console.log(err));
+  };
+
   return (
     <>
-      {state && showCreateModel && <AddPostModel model={setShowCreateModel} />}
+      {state && showCreateModel && (
+        <AddPostModel model={setShowCreateModel} post={null} />
+      )}
       {state && showComments && (
         <CommentsModel model={setShowComments} comments={postComments} />
       )}
@@ -236,20 +254,22 @@ const Feed = () => {
                 <img src={post.posted_By.profile_pic} alt="" />
                 <div>
                   <h3>
-                    <Link to={`/profile/${post.posted_By._id}`} exact>
+                    <Link to={`/profile/${post.posted_By._id}`}>
                       {post.posted_By.name}
                     </Link>
                   </h3>
                 </div>
               </CardTop>
-              <CardTitle>
-                <h3>{post.title}</h3>
-              </CardTitle>
+              {post.title && (
+                <CardTitle>
+                  <h3>{post.title}</h3>
+                </CardTitle>
+              )}
               {post.photo && <CardPhoto src={post.photo} alt="" />}
               <CardLikes>
                 <h4
                   onClick={() => {
-                    setPostLikes(post.likes);
+                    fetchPost(post._id);
                     setShowLikes(true);
                   }}
                 >
@@ -259,7 +279,7 @@ const Feed = () => {
                   <button
                     style={{ backgroundColor: "white", border: "none" }}
                     onClick={() => {
-                      setPostComments(post.comments);
+                      fetchPost(post._id);
                       setShowComments(true);
                     }}
                   >
@@ -268,15 +288,8 @@ const Feed = () => {
                 </h4>
               </CardLikes>
               <CardActions>
-                {showLike ? (
-                  post.likes.length !== 0 &&
-                  post.likes.filter((like) => {
-                    if (like._id === state._id) {
-                      return state._id;
-                    } else {
-                      return null;
-                    }
-                  })[0]._id === state._id ? (
+                {state && showLike ? (
+                  post.likes.includes(state._id) ? (
                     <ThumbUpIcon
                       style={{ color: "blue" }}
                       onClick={() => unlikePost(post._id)}

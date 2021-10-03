@@ -28,9 +28,7 @@ export const PopupBox = styled.div`
   flex-direction: column;
 
   @media (max-width: 768px) {
-    height: 70vh;
     width: 100%;
-    top: 15vh;
   }
 `;
 
@@ -61,27 +59,25 @@ export const Save = styled.button`
   border-radius: 15px;
   border: none;
   width: fit-content;
-  margin: auto;
+  margin-right: 50px;
+  margin-left: auto;
 `;
 
 export const InputBox = styled.div`
   padding: 10px 25px;
 
-  & > h4 {
-    float: left;
-    font-weight: 400;
-  }
+
 
   & > input {
     width: 100%;
     height: 30px;
-    padding: 2px 10px;
+    padding: 2px 20px;
     box-sizing: border-box;
     margin: 2px auto;
   }
 
   & > img {
-    margin: auto;
+    margin: 20px auto;
     width: 300px;
     height: auto;
     background-repeat: no-repeat;

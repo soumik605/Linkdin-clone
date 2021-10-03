@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
 import {
   ChatBox,
   Container,
@@ -12,9 +13,6 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SendIcon from "@mui/icons-material/Send";
 import { userContext } from "../../App";
-
-
-
 
 const ChatModel = (props) => {
   const [room, setRoom] = useState(null);
@@ -30,9 +28,6 @@ const ChatModel = (props) => {
     });
   };
 
-
-
-
   useEffect(() => {
     const interval = setInterval(() => {
       fetch(`/room/${props.data._id}`, {
@@ -45,8 +40,10 @@ const ChatModel = (props) => {
           if (data.error) {
             alert.error(data.error);
           } else {
+            //console.log(data.room)
+
             setRoom(data.room);
-            setAllMessages(data.room.messages)
+            setAllMessages(data.room.messages);
           }
         });
     }, 2000);
@@ -83,45 +80,55 @@ const ChatModel = (props) => {
 
   return (
     <Container>
-      <PopupBox>
-        <MainBox>
-          <TopBox>
-            <ArrowBackIcon onClick={() => props.model(false)} />
-            <img src={props.data.profile_pic} alt="" />
-            <h3>
-              <a href={`/profile/${props.data._id}`}>{props.data.name}</a>
-            </h3>
-          </TopBox>
-          <ChatBox>
-            {room &&
-              room.messages.map((item) => {
-                return item.posted_By._id === state._id ? (
-                  <MyBox>
-                    <h2>You</h2>
-                    <h3>{item.message}</h3>
-                  </MyBox>
-                ) : (
-                  <FriendBox>
-                    <h2>{item.posted_By.name}</h2>
-                    <h3>{item.message}</h3>
-                  </FriendBox>
-                );
-              })}
-            <div ref={bottomRef}></div>
-          </ChatBox>
-          <InputBox>
-            <input
-              placeholder="Type a message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-            <SendIcon
-              style={{ fontSize: "50px" }}
-              onClick={() => SendMessage()}
-            />
-          </InputBox>
-        </MainBox>
-      </PopupBox>
+     
+        <PopupBox>
+        <ClickAwayListener onClickAway={() => props.model(false)}>
+          <MainBox>
+            <TopBox>
+              <ArrowBackIcon onClick={() => props.model(false)} />
+              <img src={props.data.profile_pic} alt="" />
+              <h3>
+                <a href={`/profile/${props.data._id}`}>{props.data.name}</a>
+              </h3>
+            </TopBox>
+            <ChatBox>
+              {room && room.messages.length === 0 && <h2>No Messages. Start chat ?</h2>}
+            
+              {room &&
+                room.messages.map((item) => {
+                  return item.posted_By._id === state._id ? (
+                    <MyBox key={item._id}>
+                      <h2>You</h2>
+                      <h3>{item.message}</h3>
+                    </MyBox>
+                  ) : (
+                    <FriendBox>
+                      <h2>{item.posted_By.name}</h2>
+                      <h3>{item.message}</h3>
+                    </FriendBox>
+                  );
+                })}
+              <div ref={bottomRef}></div>
+            </ChatBox>
+            <InputBox>
+              <input
+                placeholder="Type a message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              />
+              {message === "" ? (
+                <SendIcon style={{ fontSize: "50px" }} />
+              ) : (
+                <SendIcon
+                  style={{ fontSize: "50px" }}
+                  onClick={() => SendMessage()}
+                />
+              )}
+            </InputBox>
+          </MainBox>
+          </ClickAwayListener>
+        </PopupBox>
+     
     </Container>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Form,
@@ -25,6 +25,10 @@ const SignupPage = () => {
     setDetails1({ ...details1, [e.target.name]: e.target.value });
   };
 
+  useEffect(() => {
+    document.title = "Signup | Linkdin"
+    }, [])
+
   return (
     <Container>
       <Form>
@@ -46,7 +50,8 @@ const SignupPage = () => {
               value={details1.email}
               name="email"
               onChange={(e) => handleChange(e)}
-              autoFocus
+              autoFocus={true}
+              style={{ textTransform: "lowercase" }}
             />
           </Input>
           <Input>
@@ -67,13 +72,28 @@ const SignupPage = () => {
               .
             </p>
           </Agree>
-          <Join
-            onClick={(e) =>
-              history.push({ pathname: "/signup2", state: details1 })
-            }
-          >
-            Agree & Next
-          </Join>
+          {details1.email !== "" && details1.password !== "" && (
+            <Join
+              onClick={(e) =>
+                history.push({ pathname: "/signup2", state: details1 })
+              }
+            >
+              Agree & Next
+            </Join>
+          )}
+
+          {(details1.email == "" || details1.password == "") && (
+            <Join
+              style={{
+                backgroundColor: "#b6ebf1",
+                color: "#0066ff",
+                cursor: "not-allowed",
+              }}
+            >
+              Agree & Next
+            </Join>
+          )}
+
           <GoogleJoin>Join with Google</GoogleJoin>
           <SigninLink>
             Already on Linkedin?{" "}

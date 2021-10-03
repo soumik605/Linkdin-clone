@@ -6,7 +6,7 @@ export const Container = styled.div`
   background: #00000050;
   top: 0px;
   left: 0px;
-  z-index: 99;
+  z-index: 20;
   position: fixed;
   box-sizing: border-box;
   overflow: hidden;
@@ -32,7 +32,7 @@ export const PopupBox = styled.div`
     height: 60vh;
     width: 100%;
     top: 20vh;
-    margin: auto;
+   
   }
 `;
 

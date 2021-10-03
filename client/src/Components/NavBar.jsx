@@ -22,7 +22,7 @@ const NavBar = () => {
 
   return (
     <>
-      {showCreateModel && <AddPostModel model={setShowCreateModel} />}
+      {showCreateModel && <AddPostModel model={setShowCreateModel} post={null} />}
       {showLogoutModel && <LogoutModel model={setShowLogoutModel} />}
       {showSearchModel && (
         <SearchModel
@@ -252,8 +252,8 @@ const Message = styled.div`
 `;
 const Me = styled.div`
   & > img {
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
     margin-top: auto;
     margin-bottom: auto;
