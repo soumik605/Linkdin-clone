@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import {
   Container,
@@ -10,9 +10,11 @@ import {
 } from "../Style/CommentsModel";
 import { userContext } from "../../App";
 import { Link } from "react-router-dom";
+import Loader1 from "../Loader1";
 
 const CommentsModel = (props) => {
   const { state, dispatch } = useContext(userContext);
+
   return (
     <Container>
       <ClickAwayListener onClickAway={() => props.model(false)}>

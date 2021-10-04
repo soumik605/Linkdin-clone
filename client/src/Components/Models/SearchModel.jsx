@@ -3,6 +3,7 @@ import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { Close, Container, PopupBox, UserBox } from "../Style/SearchModel";
 import { Link, useHistory } from "react-router-dom";
 import { userContext } from "../../App";
+import Loader1 from "../Loader1";
 
 const SearchModel = (props) => {
   const [alluser, setAlluser] = useState([]);
@@ -38,9 +39,7 @@ const SearchModel = (props) => {
           >
             X
           </Close>
-          <h3>Showing results of "{props.name}"</h3>
-
-          <hr />
+          <h3>Showing results of "{props.name}"</h3> <hr />
           <div style={{ overflowY: "scroll", overflowX: "hidden" }}>
             {alluser
               .filter((fuser) => {
@@ -54,9 +53,7 @@ const SearchModel = (props) => {
               })
               .map((user) => {
                 return (
-                  <UserBox
-                    key={user._id}
-                  >
+                  <UserBox key={user._id}>
                     <img src={user.profile_pic} alt="" />
                     <div>
                       <h3>

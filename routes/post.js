@@ -62,7 +62,6 @@ router.put("/like", requireLogin, (req, res) => {
           req.body.postId,
           {
             $push: { likes: req.user._id },
-            console,
           },
           {
             new: true,

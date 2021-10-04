@@ -13,6 +13,7 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SendIcon from "@mui/icons-material/Send";
 import { userContext } from "../../App";
+import Loader1 from "../Loader1";
 
 const ChatModel = (props) => {
   const [room, setRoom] = useState(null);
@@ -20,6 +21,7 @@ const ChatModel = (props) => {
   const [message, setMessage] = useState("");
   const { state, dispatch } = useContext(userContext);
   const bottomRef = useRef();
+  const [showChatLoader, setShowChatLoader] = useState(true)
 
   const scrollToBottom = () => {
     bottomRef.current.scrollIntoView({
@@ -40,10 +42,9 @@ const ChatModel = (props) => {
           if (data.error) {
             alert.error(data.error);
           } else {
-            //console.log(data.room)
-
             setRoom(data.room);
             setAllMessages(data.room.messages);
+            setShowChatLoader(false)
           }
         });
     }, 2000);
@@ -92,6 +93,7 @@ const ChatModel = (props) => {
               </h3>
             </TopBox>
             <ChatBox>
+              {showChatLoader && <Loader1 />}
               {room && room.messages.length === 0 && <h2>No Messages. Start chat ?</h2>}
             
               {room &&

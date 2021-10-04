@@ -23,6 +23,7 @@ import { userContext } from "../App";
 import { useHistory } from "react-router-dom";
 import { useAlert } from "react-alert";
 import NavBar from "./NavBar";
+import Loader1 from "./Loader1";
 
 const MyConnections = () => {
   const { state, dispatch } = useContext(userContext);
@@ -32,8 +33,9 @@ const MyConnections = () => {
   const [showAddConnBtn, setShowAddConnBtn] = useState(true);
   const history = useHistory();
   const alert = useAlert();
-
-  
+  const [showMyConnLoader, setShowMyConnLoader] = useState(true);
+  const [showConnReqLoader, setShowConnReqLoader] = useState(true);
+  const [showSuggestionLoader, setShowSuggestionLoader] = useState(true);
 
   const createRoom = (userId) => {
     fetch(`/createroom`, {
@@ -109,6 +111,7 @@ const MyConnections = () => {
               alert.error(data.error);
             } else {
               setAllUser(data.users);
+              setShowSuggestionLoader(false);
             }
           });
       }
@@ -130,6 +133,8 @@ const MyConnections = () => {
               alert.error(data.error);
             } else {
               setMydetails(data.user);
+              setShowMyConnLoader(false);
+              setShowConnReqLoader(false);
             }
           });
       }
@@ -163,6 +168,7 @@ const MyConnections = () => {
       <Container>
         <LeftDiv>
           <h3>My Connections</h3>
+          {showMyConnLoader && <Loader1 />}
           {mydetails &&
             mydetails.connections.map((user) => (
               <LeftUserBox key={user._id}>
@@ -181,6 +187,7 @@ const MyConnections = () => {
         <RightDiv>
           <ReqCont>
             <h3>Invitations</h3>
+            {showConnReqLoader && <Loader1 />}
             {mydetails &&
               mydetails.conrequests.map((user) => (
                 <RequestBox key={user._id}>
@@ -205,11 +212,7 @@ const MyConnections = () => {
                         Accept
                       </ChBtn>
                     ) : (
-                      <ChBtn
-                        style={{ backgroundColor: "grey", color: "white" }}
-                      >
-                        Accept
-                      </ChBtn>
+                      <ChBtn style={{ cursor: "not-allowed" }}>Accept</ChBtn>
                     )}
                   </CheckBox>
                 </RequestBox>
@@ -217,6 +220,7 @@ const MyConnections = () => {
           </ReqCont>
           <SuggestionBox>
             <h3>Suggested For You</h3>
+            {showSuggestionLoader && <Loader1 />}
             {allUser &&
               allUser
                 .filter((s_user) => {
@@ -257,9 +261,7 @@ const MyConnections = () => {
                         Connect
                       </ConnectBtn>
                     ) : (
-                      <ConnectBtn
-                        style={{ backgroundColor: "grey", color: "white" }}
-                      >
+                      <ConnectBtn style={{ cursor: "not-allowed" }}>
                         Connect
                       </ConnectBtn>
                     )}

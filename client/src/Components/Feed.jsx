@@ -28,6 +28,7 @@ import CommentsModel from "./Models/CommentsModel";
 import NavBar from "./NavBar";
 import { Link, useHistory } from "react-router-dom";
 import LikesModel from "./Models/LikesModel";
+import Loader1 from "./Loader1";
 
 const Feed = () => {
   const [allUser, setAllUser] = useState([]);
@@ -42,9 +43,11 @@ const Feed = () => {
   const [postComments, setPostComments] = useState([]);
   const [postLikes, setPostLikes] = useState([]);
   const history = useHistory();
+  const [showFeedLoader, setShowFeedLoader] = useState(true);
+  const [showSuggestionLoader, setShowSuggestionLoader] = useState(true);
+  const [showReqConnBtn, setShowReqConnBtn] = useState(true);
 
   useEffect(() => {
-
     const interval = setInterval(() => {
       if (state) {
         fetch(`/alluser`, {
@@ -58,6 +61,7 @@ const Feed = () => {
               alert.error(data.error);
             } else {
               setAllUser(data.users);
+              setShowSuggestionLoader(false);
             }
           });
       }
@@ -66,6 +70,7 @@ const Feed = () => {
   }, [state]);
 
   const RequestConnection = async (userid) => {
+    setShowReqConnBtn(false);
     await fetch(`/reqconnect/${userid}`, {
       method: "put",
       headers: {
@@ -80,6 +85,7 @@ const Feed = () => {
         } else {
           localStorage.setItem("user", JSON.stringify(data.result2));
           dispatch({ type: "USER", payload: data.result2 });
+          setShowReqConnBtn(true);
         }
       });
   };
@@ -98,6 +104,7 @@ const Feed = () => {
               alert.error(data.err);
             } else {
               setAllPost(data.result);
+              setShowFeedLoader(false);
             }
           });
       }
@@ -247,6 +254,7 @@ const Feed = () => {
               Start a post
             </button>
           </InputBox>
+          {showFeedLoader && <Loader1 />}
           {allPost.map((post) => (
             <PostCard key={post._id}>
               <CardTop>
@@ -333,6 +341,7 @@ const Feed = () => {
         </MainCont>
         <RightCont>
           <h2>Suggested For You</h2>
+          {showSuggestionLoader && <Loader1 />}
           {allUser &&
             allUser
               .filter((s_user) => {
@@ -357,9 +366,15 @@ const Feed = () => {
                     </h2>
                     <h4>{user.about}</h4>
                   </RightDetails>
-                  <ConnectBtn onClick={() => RequestConnection(user._id)}>
-                    Connect
-                  </ConnectBtn>
+                  {showReqConnBtn ? (
+                    <ConnectBtn onClick={() => RequestConnection(user._id)}>
+                      Connect
+                    </ConnectBtn>
+                  ) : (
+                    <ConnectBtn style={{ cursor: "not-allowed" }}>
+                      Connect
+                    </ConnectBtn>
+                  )}
                 </User>
               ))}
         </RightCont>

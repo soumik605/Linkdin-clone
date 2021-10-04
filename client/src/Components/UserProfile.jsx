@@ -19,6 +19,7 @@ import { useParams, useHistory } from "react-router-dom";
 import { userContext } from "../App";
 import { ConnectBtn } from "./Style/MyConn";
 import NavBar from "./NavBar";
+import Loader1 from "./Loader1";
 
 const UserProfile = () => {
   const { userid } = useParams();
@@ -28,6 +29,9 @@ const UserProfile = () => {
   const [allUser, setAllUser] = useState([]);
   const [showConnBtn, setShowConnBtn] = useState(true);
   const [showAcceptConnBtn, setShowAcceptConnBtn] = useState(true);
+  const [showSuggestionLoader, setShowSuggestionLoader] = useState(true);
+  const [showEduLoader, setShowEduLoader] = useState(true);
+  const [showSkillLoader, setShowSkillLoader] = useState(true);
 
   useEffect(() => {
     state && userid === state._id && history.push("/profile");
@@ -44,6 +48,7 @@ const UserProfile = () => {
             alert.error(data.error);
           } else {
             setAllUser(data.users);
+            setShowSuggestionLoader(false);
           }
         });
     }, 4000);
@@ -60,6 +65,8 @@ const UserProfile = () => {
         .then((res) => res.json())
         .then((res) => {
           setData(res.user);
+          setShowSkillLoader(false);
+          setShowEduLoader(false);
         });
     }, 2000);
     return () => clearInterval(interval);
@@ -93,7 +100,7 @@ const UserProfile = () => {
         Authorization: "Bearer " + localStorage.getItem("jwt"),
       },
       body: JSON.stringify({
-       fid: userid,
+        fid: userid,
       }),
     })
       .then((res) => res.json())
@@ -168,9 +175,7 @@ const UserProfile = () => {
   };
 
   return (
-   
     <>
- 
       <NavBar />
       <Container>
         <Main>
@@ -246,6 +251,7 @@ const UserProfile = () => {
             <div>
               <h2>Education</h2>
             </div>
+            {showEduLoader && <Loader1 />}
             {data &&
               data.education.map((edu) => (
                 <EduBox key={edu._id}>
@@ -269,6 +275,7 @@ const UserProfile = () => {
                 justifyContent: "space-between",
               }}
             >
+              {showSkillLoader && <Loader1 />}
               {data &&
                 data.skills.map((skill) => (
                   <div
@@ -287,6 +294,7 @@ const UserProfile = () => {
         </Main>
         <Adv>
           <h2>Suggested For You</h2>
+          {showSuggestionLoader && <Loader1 />}
           {allUser &&
             allUser
               .filter((s_user) => {

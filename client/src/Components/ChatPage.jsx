@@ -4,20 +4,17 @@ import NavBar from "./NavBar";
 import { ChatBox, ChatList, Container, UserBox } from "./Style/ChatPage";
 import { userContext } from "../App";
 import { useHistory } from "react-router-dom";
+import Loader1 from "./Loader1";
 
 const ChatPage = () => {
   const [showChat, setShowChat] = useState(false);
   const [myRooms, setMyRooms] = useState([]);
   const [friend, setFriend] = useState("");
   const { state } = useContext(userContext);
-  const history =  useHistory()
+  const history = useHistory();
   const [mydetails, setMydetails] = useState(null);
+  const [showLoader, setShowLoader] = useState(true)
 
-
-
-
-
-  
   useEffect(() => {
     const interval = setInterval(() => {
       if (state) {
@@ -32,6 +29,7 @@ const ChatPage = () => {
               alert.error(data.error);
             } else {
               setMydetails(data.user);
+              setShowLoader(false)
             }
           });
       }
@@ -40,7 +38,7 @@ const ChatPage = () => {
   }, [state]);
 
   useEffect(() => {
- fetch(`/myrooms`, {
+    fetch(`/myrooms`, {
       headers: {
         Authorization: "Bearer " + localStorage.getItem("jwt"),
       },
@@ -51,6 +49,7 @@ const ChatPage = () => {
           alert.error(data.error);
         } else {
           setMyRooms(data.rooms);
+          
         }
       });
   }, []);
@@ -62,6 +61,9 @@ const ChatPage = () => {
       <Container>
         <ChatList>
           <h2>Messaging</h2>
+          {
+            showLoader && <Loader1 />
+          }
           {mydetails &&
             mydetails.connections.map((user) => (
               <UserBox
@@ -75,6 +77,7 @@ const ChatPage = () => {
                 <h3>{user.name}</h3>
               </UserBox>
             ))}
+         
         </ChatList>
         <ChatBox></ChatBox>
       </Container>

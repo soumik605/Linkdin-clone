@@ -47,6 +47,7 @@ import { Button } from "@material-ui/core";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import AddPostModel from "./Models/AddPostModel";
+import Loader1 from "./Loader1";
 
 const MyProfile = () => {
   const [editModel, setEditModel] = useState(false);
@@ -64,15 +65,14 @@ const MyProfile = () => {
   const [myposts, setMyPosts] = useState([]);
   const [showEditBox, setShowEditBox] = useState(false);
   const [showEditPostModel, setShowEditPostModel] = useState(false);
-
+  const [showMyPostLoader, setShowMyPostLoader] = useState(true);
+  const [showSuggestionLoader, setShowSuggestionLoader] = useState(true);
   const [showLike, setShowLike] = useState(true);
   const [showComments, setShowComments] = useState(false);
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [showLikes, setShowLikes] = useState(false);
   const [postComments, setPostComments] = useState([]);
   const [postLikes, setPostLikes] = useState([]);
-
-
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -87,6 +87,7 @@ const MyProfile = () => {
             alert.error(data.error);
           } else {
             setAllUser(data.users);
+            setShowSuggestionLoader(false);
           }
         });
     }, 2000);
@@ -106,6 +107,7 @@ const MyProfile = () => {
             alert.error(data.error);
           } else {
             setMyPosts(data.posts);
+            setShowMyPostLoader(false);
           }
         });
     }, 2000);
@@ -362,6 +364,7 @@ const MyProfile = () => {
               <h2>Education</h2>
               <AddIcon onClick={() => setShowEduModel(true)} />
             </div>
+
             {state &&
               state.education.map((edu) => (
                 <EduBox key={edu._id}>
@@ -439,6 +442,7 @@ const MyProfile = () => {
           </Skills>
           <PostBox>
             <h2>My Posts</h2>
+            {showMyPostLoader && <Loader1 />}
             {myposts.map((post) => (
               <PostCard key={post._id}>
                 <CardTop>
@@ -450,38 +454,44 @@ const MyProfile = () => {
                       </Link>
                     </h3>
                   </div>
-                  <div style={{marginLeft:"auto", display:"flex", flexWrap:"nowrap"}}>
-                  {showEditBox && (
-                    <EditPostIconContainer>
-                      <Button
-                        variant="outlined"
-                        startIcon={<EditIcon />}
-                        onClick={() => {
-                          setShowEditBox(false);
-                          setSendPost(post);
-                          setShowEditPostModel(true);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        startIcon={<DeleteIcon />}
-                        onClick={() => {
-                          setShowEditBox(false);
-                          deletePost(post._id);
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </EditPostIconContainer>
-                  )}
-                  <MoreVertIcon
-                    style={{ marginLeft: "auto", width:"20px" }}
-                    onClick={() => {
-                      setShowEditBox(!showEditBox);
+                  <div
+                    style={{
+                      marginLeft: "auto",
+                      display: "flex",
+                      flexWrap: "nowrap",
                     }}
-                  />
+                  >
+                    {showEditBox && (
+                      <EditPostIconContainer>
+                        <Button
+                          variant="outlined"
+                          startIcon={<EditIcon />}
+                          onClick={() => {
+                            setShowEditBox(false);
+                            setSendPost(post);
+                            setShowEditPostModel(true);
+                          }}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          startIcon={<DeleteIcon />}
+                          onClick={() => {
+                            setShowEditBox(false);
+                            deletePost(post._id);
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      </EditPostIconContainer>
+                    )}
+                    <MoreVertIcon
+                      style={{ marginLeft: "auto", width: "20px" }}
+                      onClick={() => {
+                        setShowEditBox(!showEditBox);
+                      }}
+                    />
                   </div>
                 </CardTop>
                 {post.title && (
@@ -559,6 +569,7 @@ const MyProfile = () => {
         </Main>
         <Adv>
           <h2>Suggested For You</h2>
+          {showSuggestionLoader && <Loader1 />}
           {allUser &&
             allUser
               .filter((s_user) => {
@@ -592,9 +603,7 @@ const MyProfile = () => {
                       Connect
                     </ConnectBtn>
                   ) : (
-                    <ConnectBtn
-                      style={{ backgroundColor: "grey", color: "white" }}
-                    >
+                    <ConnectBtn style={{ cursor: "not-allowed" }}>
                       Connect
                     </ConnectBtn>
                   )}

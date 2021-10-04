@@ -29,7 +29,7 @@ router.put("/deleteroom", requireLogin, (req, res) => {
     .then((room) => {
       room
         .remove()
-        .then((delRoom) => console.log(delRoom))
+        .then((delRoom) => console.log("Room Deleted"))
         .catch((err) => console.log(err));
     })
     .catch((err) => console.log(err));
@@ -49,9 +49,7 @@ router.get("/room/:friendId", requireLogin, (req, res) => {
     .then((rooms) => {
     rooms.map((room) => {
        room.members.map(member => {
-         //console.log(member)
          if(member._id.toString() === req.params.friendId.toString()){
-           //console.log(room)
            res.json({room})
          }
        })

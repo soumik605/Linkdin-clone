@@ -320,8 +320,6 @@ router.put("/updateeducation", requireLogin, (req, res) => {
     }
   });
 
-  console.log(newEducation);
-
   User.findByIdAndUpdate(
     req.user._id,
     {
