@@ -1,21 +1,21 @@
 import React, { useContext, useState, useEffect } from "react";
-import {
-  Container,
-  PopupBox,
-  Close,
-  Save,
-  InputBox,
-} from "../Style/AddPhotoModel";
+import { Container, PopupBox, Close } from "../Style/AddPhotoModel";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { userContext } from "../../App";
 import { useAlert } from "react-alert";
+import FullScreenLoader from "./FullScreenLoader";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
 
 const UserProfileModel = (props) => {
-  const [profile, setProfile] = useState("");
+  const { state, dispatch } = useContext(userContext);
+  const [profile, setProfile] = useState(state.profile_pic);
   const [addProfile, setAddProfile] = useState("");
   const [profileUrl, setProfileUrl] = useState("");
-  const { state, dispatch } = useContext(userContext);
   const alert = useAlert();
+  const [showSubmitLoader, setShowSubmitLoader] = useState(false);
+  const [showSubmitBtn, setShowSubmitBtn] = useState(false);
 
   useEffect(() => {
     if (profileUrl) {
@@ -38,6 +38,7 @@ const UserProfileModel = (props) => {
         .then((data) => {
           if (data.error) {
             alert.error(data.error);
+            setShowSubmitLoader(false);
           } else {
             dispatch({
               type: "UPDATE_PHOTO",
@@ -47,6 +48,7 @@ const UserProfileModel = (props) => {
               },
             });
             localStorage.setItem("user", JSON.stringify(data.user));
+            setShowSubmitLoader(false);
             props.model(false);
           }
         });
@@ -54,6 +56,7 @@ const UserProfileModel = (props) => {
   }, [profileUrl]);
 
   const addProfilePic = async () => {
+    setShowSubmitLoader(true);
     const data2 = new FormData();
     data2.append("file", addProfile);
     data2.append("upload_preset", "linkdin-clone");
@@ -72,9 +75,11 @@ const UserProfileModel = (props) => {
   const handleProfileChange = (e) => {
     setProfile(URL.createObjectURL(e.target.files[0]));
     setAddProfile(e.target.files[0]);
+    setShowSubmitBtn(true);
   };
 
   const removeProfilePic = () => {
+    setShowSubmitLoader(true);
     fetch("/editdetails", {
       method: "put",
       headers: {
@@ -111,29 +116,45 @@ const UserProfileModel = (props) => {
 
   return (
     <Container>
+      {showSubmitLoader && <FullScreenLoader />}
       <ClickAwayListener onClickAway={() => props.model(false)}>
         <PopupBox>
-          <Close onClick={() => props.model(false)}>x</Close>
-          <h2 style={{ float: "right" }}>Edit Profile Picture</h2>
+          <div>
+            <h3 style={{ float: "right" }}>Profile Photo</h3>
+            <Close onClick={() => props.model(false)}>x</Close>
+          </div>
+          <img src={profile} alt="" />
 
-          <InputBox>
-            <input type="file" onChange={(e) => handleProfileChange(e)} />
-            <img src={profile} />
-          </InputBox>
+          <div>
+            <button>
+              <label for="file-input">
+                <CameraAltIcon />
+                <h3>Add Photo</h3>
+              </label>
+              <input
+                id="file-input"
+                type="file"
+                onChange={(e) => handleProfileChange(e)}
+                style={{ display: "none" }}
+              />
+            </button>
 
-          {profile ? (
-            <Save style={{marginTop: "10px"}}  onClick={() => addProfilePic()}>Save</Save>
-          ) : (
-            <Save
-            style={{marginTop: "10px"}} 
-              onClick={() =>
-                alert.error("Please select a profile picture first")
-              }
-            >
-              Save
-            </Save>
-          )}
-          <Save style={{marginTop: "10px"}}  onClick={() => removeProfilePic()}>Remove Profile Picture</Save>
+            <div style={{ display: "flex", flexDirection: "row" }}>
+              <button onClick={() => removeProfilePic()}>
+                <DeleteIcon />
+                <h3>Delete</h3>
+              </button>
+              {showSubmitBtn && (
+                <button
+                  style={{ marginLeft: "15px" }}
+                  onClick={() => addProfilePic()}
+                >
+                  <SaveIcon />
+                  <h3>Submit</h3>
+                </button>
+              )}
+            </div>
+          </div>
         </PopupBox>
       </ClickAwayListener>
     </Container>

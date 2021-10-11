@@ -33,64 +33,47 @@ export const LeftCont = styled.div`
   flex-direction: column;
   height: fit-content;
   background-color: white;
-  box-shadow: 2px 2px 2px 1px gray;
+  border: 1px solid lightgray;
 `;
 
 export const MainCont = styled.div`
   width: 100%;
-  border: 1px solid black;
   grid-area: "main";
-  border-radius: 10px;
-  background-color: white;
-  box-shadow: 2px 2px 2px 1px gray;
 `;
 
 export const RightCont = styled.div`
   width: 100%;
-  border: 1px solid black;
+  border: 1px solid lightgray;
   grid-area: "connect";
   border-radius: 10px;
   background-color: white;
   height: fit-content;
   padding: 20px 5px;
-  box-shadow: 2px 2px 2px 1px gray;
+  border: 1px solid lightgray;
 
+  & > h3 {
+    text-align: left;
+    margin-bottom: 10px;
+  }
 
   @media (max-width: 768px) {
     display: none;
   }
 `;
 
-export const Profile = styled.img`
-  height: 100px;
-  width: 100px;
-  border-radius: 50%;
-  margin: -50px auto 50px;
-  box-sizing: border-box;
-`;
-export const Cover = styled.img`
-  height: 100px;
-  width: 100%;
-  box-sizing: border-box;
-`;
-export const Desc = styled.div`
-  display: flex;
-  flex-direction: column;
-  border-bottom: 1px solid black;
-  padding-bottom: 10px;
-  position: relative;
-  top: -50px;
-`;
+
 
 export const InputBox = styled.div`
-  width: 90%;
+  width: 100%;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   margin: auto;
-  margin-top: 20px;
-  border-radius: 35px;
-  padding: 5px;
+  padding: 15px;
+  background-color: white;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  margin-bottom: 10px;
 
   & > img {
     height: 70px;
@@ -108,7 +91,7 @@ export const InputBox = styled.div`
     padding-left: 15px;
     font-size: 16px;
     margin: auto;
-    border: 1px solid black;
+    border: 1px solid gray;
     background-color: white;
 
     &:hover {
@@ -121,9 +104,11 @@ export const PostCard = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin: 10px 0;
-  border: 1px solid black;
+  margin-bottom: 10px;
+  border: 1px solid lightgray;
   border-radius: 10px;
+  background-color: white;
+  border: 1px solid lightgray;
 `;
 export const CardTop = styled.div`
   width: 100%;
@@ -137,11 +122,17 @@ export const CardTop = styled.div`
     border-radius: 50%;
     margin-right: 15px;
   }
+
+  & > div > h3,
+  & > div > h5 {
+    text-align: left;
+  }
 `;
 export const CardTitle = styled.div`
   width: 100%;
   padding: 10px 20px;
-  &>h3{
+
+  & > h3 {
     text-align: left;
   }
 `;
@@ -153,13 +144,15 @@ export const CardLikes = styled.div`
   height: 30px;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content:flex-start;
   align-items: center;
   padding: 0px 10px;
-  border-bottom: 1px solid grey;
+  border-top: 1px solid lightgray;
+  border-bottom: 1px solid lightgray;
 
-  &>h4{
+  & > h4 {
     cursor: pointer;
+    padding-right: 15px;
   }
 `;
 export const CardActions = styled.div`
@@ -169,6 +162,21 @@ export const CardActions = styled.div`
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
+
+  & > button {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    background-color: white;
+    border: none;
+    align-items: center;
+    padding: 5px;
+    border-radius: 5px;
+
+    &:hover {
+      background-color: lightgray;
+    }
+  }
 `;
 
 export const CommentContainer = styled.div`
@@ -179,32 +187,41 @@ export const CommentContainer = styled.div`
   flex-wrap: nowrap;
   justify-content: space-between;
 
-  &>form>input{
+  & > form > input {
     width: calc(100% - 70px);
     height: 40px;
     border-radius: 20px;
-    border : 1px solid black;
+    border: 1px solid lightgray;
     padding: 5px 15px;
     outline: none;
-   
   }
 
-  &>form{
+  & > form {
     width: 100%;
   }
 
-  &>form>button{
+  & > form > button {
     width: 60px;
     height: 40px;
     border-radius: 20px;
-    border : 1px solid black;
+    border: 1px solid lightgray;
     padding: 5px 15px;
-   
   }
-`
+`;
 
 export const Comments = styled.div`
-width: 100%;
+  width: 100%;
   height: 100px;
-  border: 1px solid black;
-`
+  border: 1px solid lightgray;
+`;
+export const EditPostIconContainer = styled.div`
+  background-color: white;
+  border: 1px solid lightgray;
+  position: relative;
+  top: 5px;
+  margin-left: auto;
+  margin-right: 10px;
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+`;

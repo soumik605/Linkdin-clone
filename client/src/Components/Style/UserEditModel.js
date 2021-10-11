@@ -15,9 +15,9 @@ export const Container = styled.div`
 export const PopupBox = styled.div`
   position: relative;
   width: 90%;
-  max-width: 1000px;
+  max-width: 800px;
   margin: auto;
-  height: 70vh;
+  max-height: 70vh;
   top: 15vh;
   background: #fff;
   overflow-y: auto;
@@ -26,11 +26,11 @@ export const PopupBox = styled.div`
   border-radius: 15px;
   display: flex;
   flex-direction: column;
+  padding: 10px 15px;
+
 
   @media (max-width: 768px) {
-    height: 70vh;
     width: 100%;
-    top: 15vh;
   }
 `;
 
@@ -54,14 +54,18 @@ export const Close = styled.div`
 `;
 
 export const Save = styled.button`
-  background-color: blue;
+  background-color: #0a66c2;
   color: white;
-  padding: 10px 15px;
+  padding: 10px 20px;
   box-sizing: border-box;
-  border-radius: 15px;
+  border-radius: 25px;
   border: none;
   width: fit-content;
-  margin: auto;
+  margin: 10px 25px 10px auto;
+
+  &:hover{
+    background-color: blue;
+  }
 `;
 
 export const InputBox = styled.div`
@@ -77,7 +81,9 @@ export const InputBox = styled.div`
     height: 30px;
     padding: 2px 10px;
     box-sizing: border-box;
-    margin: 2px auto;
+    margin: 5px auto;
+    border-radius: 5px;
+    border: 1px solid grey;
   }
 
   & > img {

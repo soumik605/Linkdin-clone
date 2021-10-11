@@ -9,13 +9,19 @@ import {
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { userContext } from "../../App";
 import { useAlert } from "react-alert";
+import FullScreenLoader from "./FullScreenLoader";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
 
 const UserCoverModel = (props) => {
-  const [cover, setCover] = useState("");
+  const { state, dispatch } = useContext(userContext);
+  const [cover, setCover] = useState(state.cover_pic);
   const [addCover, setAddCover] = useState("");
   const [coverUrl, setCoverUrl] = useState("");
-  const { state, dispatch } = useContext(userContext);
   const alert = useAlert();
+  const [showSubmitLoader, setShowSubmitLoader] = useState(false);
+  const [showSubmitBtn, setShowSubmitBtn] = useState(false);
 
   useEffect(() => {
     if (coverUrl) {
@@ -38,6 +44,7 @@ const UserCoverModel = (props) => {
         .then((data) => {
           if (data.error) {
             alert.error(data.error);
+            setShowSubmitLoader(false);
           } else {
             dispatch({
               type: "UPDATE_PHOTO",
@@ -47,6 +54,7 @@ const UserCoverModel = (props) => {
               },
             });
             localStorage.setItem("user", JSON.stringify(data.user));
+            setShowSubmitLoader(false);
             props.model(false);
           }
         });
@@ -54,6 +62,7 @@ const UserCoverModel = (props) => {
   }, [coverUrl]);
 
   const addCoverPic = async () => {
+    setShowSubmitLoader(true);
     const data2 = new FormData();
     data2.append("file", addCover);
     data2.append("upload_preset", "linkdin-clone");
@@ -75,6 +84,7 @@ const UserCoverModel = (props) => {
   };
 
   const removeCoverPic = () => {
+    setShowSubmitLoader(true);
     fetch("/editdetails", {
       method: "put",
       headers: {
@@ -111,11 +121,51 @@ const UserCoverModel = (props) => {
 
   return (
     <Container>
+      {showSubmitLoader && <FullScreenLoader />}
       <ClickAwayListener onClickAway={() => props.model(false)}>
         <PopupBox>
-          <Close onClick={() => props.model(false)}>x</Close>
-          <h2 style={{ float: "right" }}>Edit Cover Picture</h2>
+          <div>
+            <h3 style={{ float: "right" }}>Cover Photo</h3>
+            <Close onClick={() => props.model(false)}>x</Close>
+          </div>
+          <img
+            src={cover}
+            alt=""
+            style={{ width: "750px", height: "150px", borderRadius: "0px" }}
+          />
 
+          <div>
+            <button>
+              <label for="file-input">
+                <CameraAltIcon />
+                <h3>Add Photo</h3>
+              </label>
+              <input
+                id="file-input"
+                type="file"
+                onChange={(e) => handleCoverChange(e)}
+                style={{ display: "none" }}
+              />
+            </button>
+
+            <div style={{ display: "flex", flexDirection: "row" }}>
+              <button onClick={() => removeCoverPic()}>
+                <DeleteIcon />
+                <h3>Delete</h3>
+              </button>
+              {showSubmitBtn && (
+                <button
+                  style={{ marginLeft: "15px" }}
+                  onClick={() => addCoverPic()}
+                >
+                  <SaveIcon />
+                  <h3>Submit</h3>
+                </button>
+              )}
+            </div>
+          </div>
+        </PopupBox>
+        {/*
           <InputBox>
             <input type="file" onChange={(e) => handleCoverChange(e)} />
             <img src={cover} />
@@ -135,8 +185,7 @@ const UserCoverModel = (props) => {
           )}
           <Save style={{ marginTop: "10px" }} onClick={() => removeCoverPic()}>
             Remove Cover Picture
-          </Save>
-        </PopupBox>
+          </Save>*/}
       </ClickAwayListener>
     </Container>
   );

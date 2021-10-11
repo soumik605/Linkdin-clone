@@ -1,5 +1,6 @@
 import styled from "styled-components";
 
+
 export const Container = styled.div`
   width: 100%;
   max-width: 1128px;
@@ -23,11 +24,15 @@ export const LeftDiv = styled.div`
   grid-area: left;
   height: fit-content;
   min-height: 100px;
-  border: 1px solid black;
+  border: 1px solid lightgray;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   background-color: white;
+
+  &>h3{
+    margin: 5px;
+  }
 `;
 
 export const RightDiv = styled.div`
@@ -36,19 +41,23 @@ export const RightDiv = styled.div`
   border-radius: 10px;
   display: flex;
   flex-direction: column;
+
+  @media (max-width:768px){
+    margin-top: 20px;
+  }
 `;
 
 export const ReqCont = styled.div`
   width: 100%;
-  padding: 20px 0px;
+  padding-top: 20px ;
   box-sizing: border-box;
-  border: 1px solid black;
+  border: 1px solid lightgray;;
   border-radius: 20px;
   margin-bottom: 20px;
   background-color: white;
 
   & > h3 {
-    margin: 0 auto 5px 10px;
+    margin: 0 auto 20px 10px;
     text-align: left;
   }
 `;
@@ -57,18 +66,18 @@ export const RequestBox = styled.div`
   display: flex;
   flex-direction: row;
   box-sizing: border-box;
-  border-top: 1px solid black;
+  border-top: 1px solid lightgrey;
   padding: 10px;
 `;
 export const ReqPic = styled.div`
-  width: 80px;
-  height: 80px;
+  width: 65px;
+  height: 65px;
   margin-top: auto;
   margin-bottom: auto;
 
   & > img {
-    width: 80px;
-    height: 80px;
+    width: 65px;
+    height: 65px;
     border-radius: 50%;
     background-repeat: no-repeat;
     background-size: cover;
@@ -86,7 +95,6 @@ export const ReqPic = styled.div`
 `;
 export const ReqUser = styled.div`
   width: calc(100% - 100px - 200px);
-  height: 100px;
   padding-left: 20px;
   display: flex;
   flex-direction: column;
@@ -101,24 +109,21 @@ export const ReqUser = styled.div`
 
   @media (max-width: 768px) {
     width: calc(100% - 80px - 150px);
-    height: 80px;
   }
 `;
 export const CheckBox = styled.div`
   width: 200px;
-  height: 100px;
   display: flex;
   flex-direction: row;
   @media (max-width: 768px) {
     width: 150px;
-    height: 80px;
     flex-direction: column;
   }
 `;
 export const SuggestionBox = styled.div`
   width: 100%;
   box-sizing: border-box;
-  border: 1px solid black;
+  border: 1px solid lightgray;;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -132,13 +137,17 @@ export const SuggestionBox = styled.div`
   }
 `;
 export const UserBox = styled.div`
-  width: 200px;
+  width: 180px;
   margin: 5px auto;
   border-radius: 10px;
   padding-bottom: 5px;
-  box-shadow: 2px 2px 2px 1px gray;
   box-sizing: border-box;
-  border: 1px solid grey;
+  border: 1px solid lightgray;
+
+  &:hover {
+    box-shadow: 2px 2px 2px 1px gray;
+  border: 1px solid gray;
+  }
 
   @media (max-width: 768px) {
     width: 150px;
@@ -164,23 +173,23 @@ export const ChBtn = styled.button`
     color: grey;
 
     &:hover {
-      background-color: grey;
+      background-color: lightgray;
       color: black;
     }
   }
 `;
 
 export const Cover = styled.div`
-  width: 200px;
+  width: 180px;
   height: 80px;
-  border-radius: 10px 10px 0 0 ;
+  border-radius: 10px 10px 0 0;
 
   & > img {
-    width: 200px;
+    width: 180px;
     height: 80px;
     background-repeat: no-repeat;
     background-size: cover;
-  border-radius: 10px 10px 0 0 ;
+    border-radius: 10px 10px 0 0;
   }
 
   @media (max-width: 768px) {
@@ -196,18 +205,18 @@ export const Cover = styled.div`
   }
 `;
 export const Profile = styled.div`
-  width: 70px;
-  height: 70px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
   position: relative;
-  top: -35px;
+  top: -50px;
   margin: auto;
-  border: 1px solid white;
+  border: 1px solid lightgray;;
   box-sizing: border-box;
 
   & > img {
-    width: 68px;
-    height: 68px;
+    width: 88px;
+    height: 88px;
     background-repeat: no-repeat;
     background-size: cover;
     border-radius: 50%;
@@ -218,14 +227,14 @@ export const Profile = styled.div`
     height: 60px;
     border-radius: 50%;
     position: relative;
-    top: -30px;
+    top: -35px;
     margin: auto;
-    border: 1px solid white;
+    border: 1px solid lightgray;;
     box-sizing: border-box;
 
     & > img {
-      width: 60px;
-      height: 60px;
+      width: 58px;
+      height: 58px;
       background-repeat: no-repeat;
       background-size: cover;
       border-radius: 50%;
@@ -236,10 +245,10 @@ export const Details = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
-  top: -30px;
+  top: -40px;
 
-  & > h2,
-  & > h4 {
+  & > h3,
+  & > h5 {
     font-weight: 400;
   }
 `;
@@ -261,14 +270,15 @@ export const ConnectBtn = styled.button`
 `;
 export const LeftUserBox = styled.div`
   width: 100%;
-  border-top: 1px solid black;
+  border-top: 1px solid lightgray;
   display: flex;
   flex-wrap: nowrap;
   padding: 5px;
   justify-content: center;
 
   & > div {
-    margin: auto;
+    text-align: left;
+  padding-left: 10px;
   }
 `;
 
@@ -287,7 +297,7 @@ export const Message = styled.button`
   border-radius: 15px;
   padding: 2px 5px;
   height: 30px;
-  margin: auto;
+  margin-left: auto;
 
   &:hover {
     background-color: lightblue;

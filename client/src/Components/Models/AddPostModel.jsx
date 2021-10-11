@@ -11,6 +11,7 @@ import {
 } from "../Style/CreatePostModel";
 import { userContext } from "../../App";
 import { useAlert } from "react-alert";
+import FullScreenLoader from "./FullScreenLoader";
 
 const AddPostModel = (props) => {
   const { state, dispatch } = useContext(userContext);
@@ -21,6 +22,7 @@ const AddPostModel = (props) => {
   const [title, setTitle] = useState("");
   const alert = useAlert();
   const [showAddBtn, setShowAddBtn] = useState(true);
+  const [showAddPostLoader, setShowAddPostLoader] = useState(false);
 
   useEffect(() => {
     if (props.post) {
@@ -45,9 +47,11 @@ const AddPostModel = (props) => {
       .then((data) => {
         if (data.error) {
           alert.error(data.error);
+          setShowAddPostLoader(false)
         } else {
           props.model(false);
           setShowAddBtn(true);
+          setShowAddPostLoader(false)
         }
       });
   };
@@ -68,9 +72,11 @@ const AddPostModel = (props) => {
       .then((data) => {
         if (data.error) {
           alert.error(data.error);
+          setShowAddPostLoader(false)
         } else {
           props.model(false);
           setShowAddBtn(true);
+          setShowAddPostLoader(false)
         }
       });
   };
@@ -92,6 +98,7 @@ const AddPostModel = (props) => {
 
   const AddPost = async () => {
     setShowAddBtn(false);
+    setShowAddPostLoader(true)
     if (editPhotoChanged) {
       const data1 = new FormData();
       data1.append("file", addPhoto);
@@ -117,6 +124,7 @@ const AddPostModel = (props) => {
 
   return (
     <Container>
+     {showAddPostLoader &&  <FullScreenLoader />}
       <ClickAwayListener onClickAway={() => props.model(false)}>
         <PopupBox>
           <Close onClick={() => props.model(false)}>x</Close>

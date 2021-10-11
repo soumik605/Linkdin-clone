@@ -8,12 +8,11 @@ import Loader1 from "./Loader1";
 
 const ChatPage = () => {
   const [showChat, setShowChat] = useState(false);
-  const [myRooms, setMyRooms] = useState([]);
   const [friend, setFriend] = useState("");
   const { state } = useContext(userContext);
   const history = useHistory();
   const [mydetails, setMydetails] = useState(null);
-  const [showLoader, setShowLoader] = useState(true)
+  const [showLoader, setShowLoader] = useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -29,30 +28,13 @@ const ChatPage = () => {
               alert.error(data.error);
             } else {
               setMydetails(data.user);
-              setShowLoader(false)
+              setShowLoader(false);
             }
           });
       }
-    }, 2000);
+    }, 1000);
     return () => clearInterval(interval);
-  }, [state]);
-
-  useEffect(() => {
-    fetch(`/myrooms`, {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          setMyRooms(data.rooms);
-          
-        }
-      });
-  }, []);
+  }, [ state]);
 
   return (
     <>
@@ -61,9 +43,7 @@ const ChatPage = () => {
       <Container>
         <ChatList>
           <h2>Messaging</h2>
-          {
-            showLoader && <Loader1 />
-          }
+          {showLoader && <Loader1 />}
           {mydetails &&
             mydetails.connections.map((user) => (
               <UserBox
@@ -77,7 +57,6 @@ const ChatPage = () => {
                 <h3>{user.name}</h3>
               </UserBox>
             ))}
-         
         </ChatList>
         <ChatBox></ChatBox>
       </Container>

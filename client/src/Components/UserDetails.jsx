@@ -12,11 +12,13 @@ import {
 } from "./Style/Signup";
 import { useHistory, useLocation, Link } from "react-router-dom";
 import { useAlert } from "react-alert";
+import FullScreenLoader from "./Models/FullScreenLoader";
 
 const UserDetails = () => {
   const alert = useAlert();
   const location = useLocation();
   const history = useHistory();
+  const [showLoader, setShowLoader] = useState(false)
   const [details2, setDetails2] = useState({
     email: location.state.email,
     password: location.state.password,
@@ -30,6 +32,7 @@ const UserDetails = () => {
   };
 
   const addUser = () => {
+    setShowLoader(true)
     fetch("/signup", {
       method: "post",
       headers: {
@@ -47,9 +50,11 @@ const UserDetails = () => {
       .then((data) => {
         if (data.error) {
           alert.error(data.error);
+          setShowLoader(false)
           history.push("/signup1");
         } else {
           alert.success(data.message);
+          setShowLoader(false)
           history.push("/signin");
         }
       });
@@ -57,6 +62,7 @@ const UserDetails = () => {
 
   return (
     <Container>
+      {showLoader && <FullScreenLoader />}
       <Form>
         <Header>
           <Logo>

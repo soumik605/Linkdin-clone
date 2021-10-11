@@ -3,21 +3,27 @@ import styled from "styled-components";
 export const Container = styled.div`
   width: 100%;
   max-width: 1128px;
-  height: calc(100vh - 60px);
+  height: calc(100vh - 102px);
   margin: auto;
-  margin-top: 60px;
+  margin-top: 100px;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   border-radius: 10px;
+
+  @media (max-width:768px){
+    height: calc(100vh - 62px);
+  margin: auto;
+  margin-top: 60px;
+  }
 `;
 
 export const ChatList = styled.div`
   width: 384px;
   display: flex;
   flex-direction: column;
-  border: 1px solid black;
-  border-radius: 10px;
+  border: 1px solid lightgray;
+  border-radius: 10px 0 0 10px;
   background-color: white;
   z-index: 10;
 
@@ -36,8 +42,8 @@ export const ChatList = styled.div`
 
 export const ChatBox = styled.div`
   width: calc(100% - 384px);
-  border: 1px solid black;
-  border-radius: 10px;
+  border: 1px solid lightgray;
+  border-radius: 0 10px 10px 0;
   background-color: white;
 
   @media (max-width: 768px) {
@@ -46,15 +52,17 @@ export const ChatBox = styled.div`
   }
 `;
 
-export const UserBox = styled.div`
+export const UserBox = styled.button`
   width: 100%;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   padding: 5px;
-  border-top: 1px solid black;
+  border: none;
+  border-top: 1px solid lightgray;
   justify-content: flex-start;
   cursor: pointer;
+  background-color: white;
 
   &:hover{
       background-color: lightgray;

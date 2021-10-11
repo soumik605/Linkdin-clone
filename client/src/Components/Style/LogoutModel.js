@@ -26,7 +26,7 @@ export const PopupBox = styled.div`
   display: flex;
   flex-direction: column;
   border-radius: 10px;
-  border: 1px solid black;
+  border: 1px solid lightgray;
   box-shadow: 2px 2px 2px 1px gray;
 
   &>img{
@@ -39,7 +39,7 @@ export const PopupBox = styled.div`
   }
 
   &>button{
-      border: 1px solid black;
+      border: 1px solid lightgray;
       background-color: white;
       margin: auto;
       font-size: 16px;

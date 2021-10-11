@@ -3,41 +3,38 @@ import {
   Container,
   Main,
   Adv,
-  ImageContainer,
+  ImageContainer, 
   Cover,
   Profile,
   Details,
   Education,
   Skills,
-  Button,
-  User,
-  RightProfile,
-  RightDetails,
   EduBox,
+  Activity,
+  Headline,
 } from "./Style/MyProfile";
 import { useParams, useHistory } from "react-router-dom";
 import { userContext } from "../App";
-import { ConnectBtn } from "./Style/MyConn";
 import NavBar from "./NavBar";
 import Loader1 from "./Loader1";
+import RightSugg from "./RightSugg";
+import Skeleton from "@mui/material/Skeleton";
 
 const UserProfile = () => {
   const { userid } = useParams();
   const [data, setData] = useState(null);
   const { state, dispatch } = useContext(userContext);
   const history = useHistory();
-  const [allUser, setAllUser] = useState([]);
   const [showConnBtn, setShowConnBtn] = useState(true);
   const [showAcceptConnBtn, setShowAcceptConnBtn] = useState(true);
-  const [showSuggestionLoader, setShowSuggestionLoader] = useState(true);
   const [showEduLoader, setShowEduLoader] = useState(true);
   const [showSkillLoader, setShowSkillLoader] = useState(true);
+  const [showActivityLoader, setShowActivityLoader] = useState(true);
+  const [userposts, setUserPosts] = useState([]);
 
   useEffect(() => {
-    state && userid === state._id && history.push("/profile");
-
     const interval = setInterval(() => {
-      fetch(`/alluser`, {
+      fetch(`/mypost/${userid}`, {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("jwt"),
         },
@@ -47,11 +44,12 @@ const UserProfile = () => {
           if (data.error) {
             alert.error(data.error);
           } else {
-            setAllUser(data.users);
-            setShowSuggestionLoader(false);
+            const newUserPost = data.posts.slice(0, 4);
+            setUserPosts(newUserPost);
+            setShowActivityLoader(false);
           }
         });
-    }, 4000);
+    }, 1000);
     return () => clearInterval(interval);
   }, [state]);
 
@@ -68,7 +66,7 @@ const UserProfile = () => {
           setShowSkillLoader(false);
           setShowEduLoader(false);
         });
-    }, 2000);
+    }, 500);
     return () => clearInterval(interval);
   }, [state]);
 
@@ -174,6 +172,25 @@ const UserProfile = () => {
       });
   };
 
+  const rejectConnection = () => {
+    fetch(`/rejectconnect/${userid}`, {
+      method: "put",
+      headers: {
+        "content-type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("jwt"),
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          alert.error(data.error);
+        } else {
+          localStorage.setItem("user", JSON.stringify(data.result1));
+          dispatch({ type: "USER", payload: data.result1 });
+        }
+      });
+  };
+
   return (
     <>
       <NavBar />
@@ -181,53 +198,131 @@ const UserProfile = () => {
         <Main>
           <ImageContainer>
             <Cover>
-              <img src={data && data.cover_pic} alt="" />
+              {data ? (
+                <img src={data && data.cover_pic} alt="" />
+              ) : (
+                <Skeleton
+                  className="cover"
+                  variant="rectangular"
+                  animation="wave"
+                />
+              )}
             </Cover>
             <Profile>
-              <img src={data && data.profile_pic} alt="" />
+              {data ? (
+                <img src={data && data.profile_pic} alt="" />
+              ) : (
+                <Skeleton
+                  className="profile"
+                  variant="circular"
+                  animation="wave"
+                />
+              )}
             </Profile>
           </ImageContainer>
           <Details>
-            <h1>{data ? data.name : "loading.."}</h1>
-            <h3>{data ? data.about : "loading.."}</h3>
-            <h4>{data ? data.address : "loading.."}</h4>
-            <h4>
-              {data ? `${data.connections.length} connections` : "loading.."}{" "}
-            </h4>
-            <div style={{ display: "flex" }}>
+            {data ? (
+              <h2>{data.name}</h2>
+            ) : (
+              <Skeleton
+                variant="text"
+                animation="wave"
+                width={180}
+                height={40}
+              />
+            )}
+
+            {data ? (
+              <h4 style={{ fontWeight: "440" }}>{data.headline}</h4>
+            ) : (
+              <Skeleton
+                variant="text"
+                animation="wave"
+                width={250}
+                height={30}
+              />
+            )}
+
+            {data ? (
+              <h4 style={{ fontWeight: "350" }}>{data.address}</h4>
+            ) : (
+              <Skeleton
+                variant="text"
+                animation="wave"
+                width={210}
+                height={30}
+              />
+            )}
+
+            {data ? (
+              <h4 style={{ margin: "10px 0px" }}>
+                {data.connections.length} connections
+              </h4>
+            ) : (
+              <Skeleton
+                variant="text"
+                animation="wave"
+                width={150}
+                height={30}
+                style={{ margin: "7px 0px" }}
+              />
+            )}
+
+            <div>
+              {!data && (
+                <Skeleton
+                  variant="button"
+                  animation="wave"
+                  width={80}
+                  height={26}
+                  style={{ borderRadius: "13px" }}
+                />
+              )}
               {data && data.connections.includes(state._id) && (
                 <>
-                  <Button
+                  <button
                     onClick={() => {
                       history.push("/chat");
                     }}
                   >
                     Message
-                  </Button>
-                  <Button onClick={() => RemoveConnection()}>
+                  </button>
+                  <button onClick={() => RemoveConnection()}>
                     Remove Connection
-                  </Button>
+                  </button>
                 </>
               )}
 
               {data &&
                 data.myrequests.includes(state._id) &&
                 (showAcceptConnBtn ? (
-                  <Button
-                    onClick={() => {
-                      acceptConnection();
-                    }}
-                  >
-                    Accept connection
-                  </Button>
+                  <>
+                    <button
+                      onClick={() => {
+                        acceptConnection();
+                      }}
+                    >
+                      Accept
+                    </button>
+                    <button
+                      onClick={() => {
+                        rejectConnection();
+                      }}
+                    >
+                      Ignore
+                    </button>
+                  </>
                 ) : (
-                  <Button style={{ cursor: "not-allowed" }}>
-                    Accept connection
-                  </Button>
+                  <>
+                    <button style={{ cursor: "not-allowed" }}>Accept</button>{" "}
+                    <button>Ignore</button>
+                  </>
                 ))}
 
               {data && data.conrequests.includes(state._id) && (
-                <Button>Request sent..</Button>
+                <button style={{ cursor: "not-allowed" }}>
+                  Request sent..
+                </button>
               )}
 
               {data &&
@@ -235,17 +330,73 @@ const UserProfile = () => {
                 !data.myrequests.includes(state._id) &&
                 !data.conrequests.includes(state._id) &&
                 showConnBtn && (
-                  <Button
+                  <button
                     onClick={() => {
                       setShowConnBtn(false);
                       RequestConnection(data._id);
                     }}
                   >
                     Connect
-                  </Button>
+                  </button>
                 )}
             </div>
           </Details>
+
+          <Headline>
+            <div style={{ justifyContent: "flexStart" }}>
+              <h3>About</h3>
+            </div>
+            <div>{data && data.about && <h5>{data.about}</h5>}</div>
+          </Headline>
+
+          <Activity>
+            <h3>Activity</h3>
+            <h5>{data && data.connections.length} connections</h5>
+            {showActivityLoader && (
+              <div>
+                <div style={{ margin: "0px auto", justifyContent: "center" }}>
+                  <Loader1 />
+                </div>
+              </div>
+            )}
+
+            <div>
+              {userposts &&
+                userposts.map((post) => (
+                  <div key={post._id}>
+                    {post.photo && <img src={post.photo} alt="" />}
+                    <div>
+                      {post.title && (
+                        <h3 style={{ marginBottom: "5px" }}>{post.title}</h3>
+                      )}
+                      {post.posted_By && (
+                        <h5 style={{ fontWeight: "450" }}>
+                          {post.posted_By.name} shared this
+                        </h5>
+                      )}
+                      <div style={{ display: "flex", flexDirection: "row" }}>
+                        {post.likes.length !== 0 && (
+                          <>
+                            <h5>{post.likes.length} Reactions </h5>
+                            <pre> </pre>
+                          </>
+                        )}
+                        {post.comments.length !== 0 && (
+                          <h5> {post.comments.length} Comments </h5>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+            <button
+              onClick={() => {
+                history.push({ pathname: "/myposts", userid: userid });
+              }}
+            >
+              See all activity
+            </button>
+          </Activity>
 
           <Education>
             <div>
@@ -256,17 +407,18 @@ const UserProfile = () => {
               data.education.map((edu) => (
                 <EduBox key={edu._id}>
                   <div>
-                    <h3>{edu.institute}</h3>
-                    <h4>{edu.course}</h4>
-                    <h5>{edu.passyear}</h5>
+                    <img src="/Images/Education.png" alt="" />
+                    <div>
+                      <h3>{edu.institute}</h3>
+                      <h4>{edu.course}</h4>
+                      <h5>{edu.passyear}</h5>
+                    </div>
                   </div>
                 </EduBox>
               ))}
           </Education>
           <Skills>
-            <div
-              style={{ borderBottom: "1px solid grey", paddingBottom: "5px" }}
-            >
+            <div style={{ paddingBottom: "5px" }}>
               <h2>Skills</h2>
             </div>
             <div
@@ -284,7 +436,10 @@ const UserProfile = () => {
                       flexDirection: "row",
                       flexWrap: "nowrap",
                       justifyContent: "space-between",
+                      borderBottom: "1px solid lightgrey",
+                      padding: "10px 0",
                     }}
+                    key={skill}
                   >
                     <h3 style={{ marginRight: "auto" }}>{skill}</h3>
                   </div>
@@ -293,48 +448,7 @@ const UserProfile = () => {
           </Skills>
         </Main>
         <Adv>
-          <h2>Suggested For You</h2>
-          {showSuggestionLoader && <Loader1 />}
-          {allUser &&
-            allUser
-              .filter((s_user) => {
-                if (
-                  s_user._id === state._id ||
-                  s_user.connections.includes(state._id) ||
-                  s_user.conrequests.includes(state._id) ||
-                  s_user.myrequests.includes(state._id)
-                ) {
-                  return null;
-                } else {
-                  return s_user;
-                }
-              })
-              .map((user) => (
-                <User key={user._id}>
-                  <RightProfile src={user.profile_pic} alt="" />
-                  <RightDetails>
-                    <h2>
-                      {" "}
-                      <a href={`/profile/${user._id}`}>{user.name}</a>
-                    </h2>
-                    <h4>{user.about}</h4>
-                  </RightDetails>
-                  {showConnBtn ? (
-                    <ConnectBtn
-                      onClick={() => {
-                        setShowConnBtn(false);
-                        RequestConnection(user._id);
-                      }}
-                    >
-                      Connect
-                    </ConnectBtn>
-                  ) : (
-                    <ConnectBtn style={{ cursor: "not-allowed" }}>
-                      Connect
-                    </ConnectBtn>
-                  )}
-                </User>
-              ))}
+          <RightSugg />
         </Adv>
       </Container>
     </>

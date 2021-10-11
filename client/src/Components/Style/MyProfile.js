@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const Container = styled.div`
   max-width: 1128px;
-  margin: 60px auto 50px;
+  margin: 100px auto 50px;
   display: grid;
   box-sizing: border-box;
   grid-template-columns: 3fr 1fr;
@@ -11,12 +11,12 @@ export const Container = styled.div`
   grid-gap: 2rem;
 
   @media (max-width: 768px) {
+  margin: 60px auto 50px;
     grid-template-columns: 1fr;
     grid-template-rows: auto auto;
     grid-template-areas: "main " "adv";
   }
 `;
-
 export const Main = styled.div`
   grid-area: "main";
   display: flex;
@@ -30,101 +30,151 @@ export const Adv = styled.div`
   display: flex;
   flex-direction: column;
   border-radius: 10px;
-  border: 1px solid grey;
+  border: 1px solid lightgray;
   background-color: white;
   height: fit-content;
   padding: 20px 5px;
-  box-shadow: 2px 2px 2px 1px gray;
-`;
 
+  & > h3 {
+    margin-bottom: 10px;
+    text-align: left;
+  }
+`;
 export const ImageContainer = styled.div`
   width: 100%;
   background-color: white;
-  border: 1px solid grey;
-  box-shadow: 2px 2px 2px 1px gray;
   border-radius: 10px 10px 0 0;
+  border: 1px solid lightgray;
 `;
-
 export const Cover = styled.div`
   width: 100%;
   height: 200px;
   border-radius: 10px 10px 0 0;
 
   & > img {
-
+    width: 100%;
+    height: 200px;
+    border-radius: 10px 10px 0 0;
+  }
+  & > .cover {
     width: 100%;
     height: 200px;
     border-radius: 10px 10px 0 0;
   }
 
   @media (max-width: 768px) {
-    height: 150px;
+    height: 120px;
 
     & > img {
-      height: 150px;
+      height: 120px;
+    }
+    & > .cover {
+      height: 120px;
     }
   }
 `;
-
 export const Profile = styled.div`
-  width: 150px;
-  height: 150px;
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
   border: 4px solid white;
   position: relative;
-  top: -75px;
-  left: 40px;
+  top: -120px;
+  left: 20px;
   z-index: 2;
-  box-shadow: 2px 2px 10px 1px gray;
 
   & > img {
     background-size: cover;
     background-repeat: no-repeat;
-    width: 142px;
-    height: 142px;
+    width: 152px;
+    height: 152px;
+    border-radius: 50%;
+    margin: auto;
+  }
+  & > .profile {
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 152px;
+    height: 152px;
     border-radius: 50%;
     margin: auto;
   }
 
   @media (max-width: 768px) {
-    width: 120px;
-    height: 120px;
-    top: -60px;
+    width: 130px;
+    height: 130px;
+    top: -80px;
     left: 30px;
 
     & > img {
-      width: 112px;
-      height: 112px;
+      width: 122px;
+      height: 122px;
+    }
+    & > .profile {
+      width: 122px;
+      height: 122px;
     }
   }
 `;
-
 export const Details = styled.div`
-  margin-top: -40px;
+  margin-top: -100px;
   width: 100%;
-  padding-left: 10px;
+  padding-left: 30px;
   padding-bottom: 15px;
   background-color: white;
-  border: 1px solid grey;
+  border: 1px solid lightgray;
   border-top: none;
   border-radius: 0px 0px 10px 10px;
-  box-shadow: 2px 2px 2px 1px gray;
+
+  @media (max-width: 768px) {
+    margin-top: -60px;
+  }
   & > * {
     text-align: left;
   }
-`;
 
+  & > div > button {
+    background-color: white;
+    color: grey;
+    padding: 5px 15px;
+    margin-right: 10px;
+    border: 1px solid grey;
+    border-radius: 15px;
+
+    &:first-child {
+      background-color: #0a66c2;
+      border: #0a66c2;
+      color: white;
+
+      &:hover {
+        background-color: blue;
+        color: white;
+      }
+    }
+
+    &:hover {
+      background-color: lightgray;
+      color: black;
+    }
+  }
+
+  & > h4 > a {
+    color: blue;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`;
 export const Education = styled.div`
   width: 100%;
-  padding: 10px;
+  padding: 25px 30px;
   box-sizing: border-box;
   background-color: white;
   margin: 10px auto;
   border-radius: 10px;
-  border: 1px solid grey;
+  border: 1px solid lightgray;
   display: flex;
   flex-direction: column;
-  box-shadow: 2px 2px 2px 1px gray;
 
   & > div {
     display: flex;
@@ -134,41 +184,35 @@ export const Education = styled.div`
 `;
 export const Skills = styled.div`
   width: 100%;
-  padding: 10px;
+  padding: 10px 30px;
   box-sizing: border-box;
   background-color: white;
   border-radius: 10px;
-  box-shadow: 2px 2px 2px 1px gray;
-  border: 1px solid grey;
+  border: 1px solid lightgray;
   display: flex;
   flex-direction: column;
 
   & > div {
     display: flex;
-    flex-direction: row;
     flex-wrap: nowrap;
-    justify-content: space-between;
     margin: 5px;
 
-    & > input {
-      width: 80%;
-      padding: 5px;
-    }
 
-    & > button {
+    & > div > button {
       padding: 5px 10px;
-      border: 1px solid grey;
+      border: none;
       background-color: white;
       border-radius: 15px;
+      color: grey;
+      margin-right: 15px;
 
       &:hover {
-        background-color: grey;
-        color: white;
+        background-color: lightgray;
+        color: black;
       }
     }
   }
 `;
-
 export const Button = styled.button`
   float: left;
   color: white;
@@ -180,45 +224,30 @@ export const Button = styled.button`
   margin: 10px;
   font-size: 12px;
 `;
-
-export const RightProfile = styled.img`
-  height: 70px;
-  width: 70px;
-  background-repeat: no-repeat;
-  background-size: cover;
-  border-radius: 50%;
-`;
-export const RightDetails = styled.div`
-  width: calc(100% - 70px);
-  display: flex;
-  flex-direction: column;
-  &>h2, &>h4{
-    text-align: left;
-    padding-left: 20px;
-  }
-`;
-export const User = styled.div`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  width: 100%;
-  padding: 5px auto 10px;
-  margin: 10px auto;
-  border-bottom: 1px solid black;
-`;
-
 export const EduBox = styled.div`
   width: 100%;
-  padding: 15px;
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-start;
 
-  & > div > h3,
-  & > div > h4,
-  & > div > h5 {
-    text-align: left;
+  & > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    & > div > h3,
+    & > div > h4,
+    & > div > h5 {
+      text-align: left;
+    }
+  }
+
+  & > div > img {
+    width: 70px;
+    height: 70px;
+    margin-right: 20px;
   }
 `;
-
-
 export const PostBox = styled.div`
   width: 100%;
   display: flex;
@@ -228,20 +257,99 @@ export const PostBox = styled.div`
   background-color: white;
   border-radius: 10px;
   box-shadow: 2px 2px 2px 1px gray;
-  border: 1px solid grey;
+  border: 1px solid lightgray;
   margin: 10px auto;
   padding: 10px;
-`
+`;
 
-export const EditPostIconContainer = styled.div`
+export const ConnectBtn = styled.button`
+  width: fit-content;
+  padding: 5px 10px;
+  margin: 5px 20px;
+  background-color: white;
+  color: grey;
+  border: 1px solid gray;
+  border-radius: 15px;
+
+  &:hover {
+    background-color: lightgray;
+    color: black;
+  }
+`;
+
+export const Activity = styled.div`
+  width: 100%;
+  background-color: white;
+  border: 1px solid lightgray;
+  border-radius: 10px;
+  margin-top: 10px;
+  padding-top: 10px;
+  & > h3,
+  & > h5 {
+    text-align: left;
+    margin-left: 30px;
+  }
+
+  & > button {
+    width: 100%;
     background-color: white;
-    border: 1px solid black;
-    position: relative;
-    top: 5px;
-    margin-left: auto;
-    margin-right: 10px;
-    display: flex;
-    flex-direction: column;
-    z-index: 2;
+    border: none;
+    border-top: 1px solid lightgray;
+    padding: 10px;
+    border-radius: 0 0 10px 10px;
+    &:hover {
+      background-color: lightgray;
+    }
+  }
 
+  & > div {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    padding: 10px 30px;
+
+    & > div {
+      width: 50%;
+      display: flex;
+      flex-direction: row;
+      height: 80px;
+      margin: 5px 0px;
+
+      @media (max-width: 768px) {
+        width: 100%;
+      }
+
+      & > img {
+        height: 80px;
+        margin-right: 10px;
+      }
+
+      & > div {
+        margin: auto 0;
+        & > * {
+          text-align: left;
+        }
+      }
+    }
+  }
+`;
+
+export const Headline = styled.div`
+  width: 100%;
+  padding: 10px;
+  background-color: white;
+  border: 1px solid lightgray;
+  border-radius: 10px;
+  margin-top: 10px;
+
+  &>div{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    padding: 5px;
+    padding-left: 20px;
+  }
 `

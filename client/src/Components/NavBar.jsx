@@ -5,7 +5,6 @@ import PeopleIcon from "@material-ui/icons/People";
 import MessageRoundedIcon from "@material-ui/icons/MessageRounded";
 import SearchIcon from "@material-ui/icons/Search";
 import InputBase from "@material-ui/core/InputBase";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import AddBoxIcon from "@material-ui/icons/AddBox";
 import { Link } from "react-router-dom";
 import AddPostModel from "./Models/AddPostModel";
@@ -150,7 +149,7 @@ const TopNavCont = styled.nav`
   width: 100%;
   max-width: 1128px;
   margin: auto;
-  border-bottom: 1px solid grey;
+  border-bottom: 1px solid lightgray;
 `;
 const TopNav = styled.nav`
   width: 100%;

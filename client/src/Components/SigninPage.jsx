@@ -13,11 +13,13 @@ import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import FullScreenLoader from "./Models/FullScreenLoader";
 
 const SigninPage = () => {
   const { dispatch } = useContext(userContext);
   const [showPwd, setShowPwd] = useState(false);
   const alert = useAlert();
+  const [showLoader, setShowLoader] = useState(false);
   const [details, setDetails] = useState({
     email: "",
     password: "",
@@ -25,6 +27,7 @@ const SigninPage = () => {
   const history = useHistory();
 
   const addUserDetails = () => {
+    setShowLoader(true);
     fetch("/signin", {
       method: "post",
       headers: {
@@ -39,10 +42,12 @@ const SigninPage = () => {
       .then((data) => {
         if (data.error) {
           alert.error(data.error);
+          setShowLoader(false);
         } else {
           localStorage.setItem("jwt", data.token);
           localStorage.setItem("user", JSON.stringify(data.user));
           dispatch({ type: "USER", payload: data.user });
+          setShowLoader(false);
 
           alert.success("Login Successful");
           history.push("/");
@@ -54,9 +59,9 @@ const SigninPage = () => {
     setDetails({ ...details, [e.target.name]: e.target.value });
   };
 
-
   return (
     <MainContainer>
+      {showLoader && <FullScreenLoader />}
       <Navbar>
         <Logo>
           <Link to="/home" exact>
@@ -83,16 +88,6 @@ const SigninPage = () => {
           </EmailField>
 
           <PasswordField>
-            {/* <TextField
-              id="filled-basic"
-              label="Password"
-              variant="filled"
-              type={showPwd ? "text" : "password"}
-              onChange={(e) => handleChange(e)}
-              name="password"
-              value={details.password}
-              end
-           />  */}
             <FormControl sx={{ width: "100%" }} variant="filled">
               <InputLabel htmlFor="filled-adornment-password">
                 Password

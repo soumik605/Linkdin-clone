@@ -17,7 +17,7 @@ export const PopupBox = styled.div`
   width: 90%;
   max-width: 700px;
   margin: auto;
-  height: 70vh;
+  max-height: 70vh;
   top: 15vh;
   background: #fff;
   overflow-y: auto;
@@ -26,6 +26,7 @@ export const PopupBox = styled.div`
   display: flex;
   flex-direction: column;
   border-radius: 10px;
+  padding: 15px;
 
  
 
@@ -58,7 +59,7 @@ export const Close = styled.div`
 `;
 
 export const InputBox = styled.div`
-  padding: 10px 25px;
+padding-top: 15px;
 
   & > h4 {
     float: left;
@@ -68,20 +69,45 @@ export const InputBox = styled.div`
   & > input {
     width: 100%;
     height: 30px;
-    padding: 2px 10px;
+    padding: 5px 10px;
     box-sizing: border-box;
     margin: 2px auto;
+    border-radius: 5px;
+    border: 1px solid grey;
   }
 `;
 
 
 export const Save = styled.button`
-  background-color: blue;
+  background-color:  #0a66c2;
   color: white;
-  padding: 10px 15px;
+  padding: 10px 0;
   box-sizing: border-box;
-  border-radius: 15px;
+  border-radius: 25px;
   border: none;
-  width: fit-content;
-  margin: auto;
+  margin: 15px 0;
+  font-size: 14px;
+  width: 80px;
+  margin-left: auto;
+
+  &:hover{
+    background-color: blue;
+  }
+`;
+
+
+export const Delete = styled.button`
+  background-color: white;
+  color: grey;
+  padding: 10px 20px;
+  box-sizing: border-box;
+  border-radius: 25px;
+  border: 1px solid grey;
+  margin: 15px 0;
+  font-size: 14px;
+
+  &:hover{
+    background-color: lightgray;
+    color: black;
+  }
 `;

@@ -21,7 +21,7 @@ const ChatModel = (props) => {
   const [message, setMessage] = useState("");
   const { state, dispatch } = useContext(userContext);
   const bottomRef = useRef();
-  const [showChatLoader, setShowChatLoader] = useState(true)
+  const [showChatLoader, setShowChatLoader] = useState(true);
 
   const scrollToBottom = () => {
     bottomRef.current.scrollIntoView({
@@ -31,7 +31,7 @@ const ChatModel = (props) => {
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    if (props.data) {
       fetch(`/room/${props.data._id}`, {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("jwt"),
@@ -42,14 +42,13 @@ const ChatModel = (props) => {
           if (data.error) {
             alert.error(data.error);
           } else {
-            setRoom(data.room);
             setAllMessages(data.room.messages);
-            setShowChatLoader(false)
+            setShowChatLoader(false);
+            setRoom(data.room);
           }
         });
-    }, 2000);
-    return () => clearInterval(interval);
-  }, [room]);
+    }
+  }, [room, props]);
 
   useEffect(() => {
     if (room) {
@@ -81,8 +80,7 @@ const ChatModel = (props) => {
 
   return (
     <Container>
-     
-        <PopupBox>
+      <PopupBox>
         <ClickAwayListener onClickAway={() => props.model(false)}>
           <MainBox>
             <TopBox>
@@ -94,8 +92,10 @@ const ChatModel = (props) => {
             </TopBox>
             <ChatBox>
               {showChatLoader && <Loader1 />}
-              {room && room.messages.length === 0 && <h2>No Messages. Start chat ?</h2>}
-            
+              {room && room.messages.length === 0 && (
+                <h2>No Messages. Start chat ?</h2>
+              )}
+
               {room &&
                 room.messages.map((item) => {
                   return item.posted_By._id === state._id ? (
@@ -128,9 +128,8 @@ const ChatModel = (props) => {
               )}
             </InputBox>
           </MainBox>
-          </ClickAwayListener>
-        </PopupBox>
-     
+        </ClickAwayListener>
+      </PopupBox>
     </Container>
   );
 };

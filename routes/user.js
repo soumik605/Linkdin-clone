@@ -6,7 +6,12 @@ const User = mongoose.model("User");
 const requireLogin = require("../middleware/requireLogin");
 
 router.put("/editdetails", requireLogin, (req, res) => {
-  const { name, email, about, address, profile_pic, cover_pic } = req.body;
+  const { name, email, about, headline, address, profile_pic, cover_pic } =
+    req.body;
+
+  if (!email || !name) {
+    return res.status(422).json({ error: "Email and Name are Required" });
+  }
 
   if (email === req.user.email) {
     var EmailChanged = false;
@@ -21,6 +26,7 @@ router.put("/editdetails", requireLogin, (req, res) => {
         name,
         email,
         about,
+        headline,
         address,
         profile_pic,
         cover_pic,
@@ -29,6 +35,9 @@ router.put("/editdetails", requireLogin, (req, res) => {
         new: true,
       }
     )
+      .populate("connections", "_id name about profile_pic")
+      .populate("conrequests", "_id name about profile_pic")
+      .populate("myrequests", "_id name about profile_pic")
       .then((user) => {
         res.status(200).json({ user });
       })
@@ -36,70 +45,42 @@ router.put("/editdetails", requireLogin, (req, res) => {
         return res.status(422).json({ error: err });
       });
   } else {
-    User.findOne({ email }).then((savedUser) => {
-      if (savedUser) {
-        return res
-          .status(422)
-          .json({ error: "User already exits in this email" });
-      } else {
-        User.findByIdAndUpdate(
-          req.user._id,
-          {
-            name,
-            email,
-            about,
-            address,
-            profile_pic,
-            cover_pic,
-          },
-          {
-            new: true,
-          }
-        )
-          .then((user) => {
-            res.status(200).json({ user });
-          })
-          .catch((err) => {
-            return res.status(422).json({ error: err });
-          });
-      }
-    })
-    .catch((err) => {
-      return res.status(422).json({ error: err });
-    });
-  }
-
-  if (!email || !name) {
-    return res.status(422).json({ error: "Email and Name are Required" });
-  } else {
-    User.findOne({ email: email }).then((savedUser) => {
-      if (savedUser & (savedUser._id !== req.user._id)) {
-        return res
-          .status(422)
-          .json({ error: "User already exits in this email" });
-      } else {
-        User.findByIdAndUpdate(
-          req.user._id,
-          {
-            name,
-            email,
-            about,
-            address,
-            profile_pic,
-            cover_pic,
-          },
-          {
-            new: true,
-          }
-        )
-          .then((user) => {
-            res.status(200).json({ user });
-          })
-          .catch((err) => {
-            return res.status(422).json({ error: err });
-          });
-      }
-    });
+    User.findOne({ email })
+      .then((savedUser) => {
+        if (savedUser) {
+          return res
+            .status(422)
+            .json({ error: "User already exits in this email" });
+        } else {
+          User.findByIdAndUpdate(
+            req.user._id,
+            {
+              name,
+              email,
+              about,
+              headline,
+              address,
+              profile_pic,
+              cover_pic,
+            },
+            {
+              new: true,
+            }
+          )
+            .populate("connections", "_id name about profile_pic")
+            .populate("conrequests", "_id name about profile_pic")
+            .populate("myrequests", "_id name about profile_pic")
+            .then((user) => {
+              res.status(200).json({ user });
+            })
+            .catch((err) => {
+              return res.status(422).json({ error: err });
+            });
+        }
+      })
+      .catch((err) => {
+        return res.status(422).json({ error: err });
+      });
   }
 });
 
@@ -123,9 +104,9 @@ router.put("/reqconnect/:userid", requireLogin, (req, res) => {
           new: true,
         }
       )
-        .populate("connections", "_id name about profile_pic cover_pic")
-        .populate("conrequests", "_id name about profile_pic cover_pic")
-        .populate("myrequests", "_id name about profile_pic cover_pic")
+        .populate("connections", "_id name headline profile_pic cover_pic")
+        .populate("conrequests", "_id name headline profile_pic cover_pic")
+        .populate("myrequests", "_id name headline profile_pic cover_pic")
         .then((result2) => res.json({ result1, result2 }))
         .catch((err) => {
           return res.status(422).json({ error: err });
@@ -147,9 +128,9 @@ router.put("/acceptconnect/:userid", requireLogin, (req, res) => {
       new: true,
     }
   )
-    .populate("connections", "_id name about profile_pic cover_pic")
-    .populate("conrequests", "_id name about profile_pic cover_pic")
-    .populate("myrequests", "_id name about profile_pic cover_pic")
+    .populate("connections", "_id name headline profile_pic cover_pic")
+    .populate("conrequests", "_id name headline profile_pic cover_pic")
+    .populate("myrequests", "_id name headline profile_pic cover_pic")
     .then((result1) =>
       User.findByIdAndUpdate(
         req.params.userid,
@@ -253,9 +234,9 @@ router.get("/user/:userid", requireLogin, (req, res) => {
 router.get("/mydetails", requireLogin, (req, res) => {
   User.findOne({ _id: req.user._id })
     .select("-password")
-    .populate("connections", "_id name about profile_pic cover_pic")
-    .populate("conrequests", "_id name about profile_pic cover_pic")
-    .populate("myrequests", "_id name about profile_pic cover_pic")
+    .populate("connections", "_id name headline profile_pic cover_pic")
+    .populate("conrequests", "_id name headline profile_pic cover_pic")
+    .populate("myrequests", "_id name headline profile_pic cover_pic")
     .then((user) => {
       res.json({ user });
     })
@@ -366,7 +347,7 @@ router.put("/deleteskill", requireLogin, (req, res) => {
     User.findByIdAndUpdate(
       req.user._id,
       {
-        $pull: { skills: req.body.skill },
+        skills: req.body.newSkills,
       },
       {
         new: true,

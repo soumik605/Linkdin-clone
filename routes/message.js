@@ -21,18 +21,20 @@ router.post("/createroom", requireLogin, (req, res) => {
 });
 
 router.put("/deleteroom", requireLogin, (req, res) => {
-  Room.findOne({
-    members: { $in: [req.body.fid.toString(), req.user._id.toString()] },
-  })
-    .populate("members", "_id name profile_pic")
-    .populate("messages.posted_By", "_id name profile_pic")
-    .then((room) => {
-      room
-        .remove()
-        .then((delRoom) => console.log("Room Deleted"))
-        .catch((err) => console.log(err));
-    })
-    .catch((err) => console.log(err));
+  Room.find({ members: {$in : [req.user._id]} })
+  .populate("members", "_id name profile_pic")
+  .populate("messages.posted_By", "_id name profile_pic")
+  .then((rooms) => {
+  rooms.map((room) => {
+     room.members.map(member => {
+       if(member._id.toString() === req.body.fid.toString()){
+         room.remove()
+       }
+     })
+    });
+  }) 
+  .catch((err) => console.log(err));
+
 });
 
 router.get("/myrooms", requireLogin, (req, res) => {

@@ -1,10 +1,11 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import LeftProfile from "./LeftProfile";
+import NavBar from "./NavBar";
 import {
   Container,
   LeftCont,
   MainCont,
   RightCont,
-  InputBox,
   PostCard,
   CardTop,
   CardTitle,
@@ -12,58 +13,59 @@ import {
   CardLikes,
   CardActions,
   CommentContainer,
+  EditPostIconContainer,
 } from "./Style/Feed";
-
 import { userContext } from "../App";
+import LikesModel from "./Models/LikesModel";
+import CommentsModel from "./Models/CommentsModel";
 import AddPostModel from "./Models/AddPostModel";
+import Loader1 from "./Loader1";
+import { useHistory, Link, useLocation } from "react-router-dom";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpAltOutlinedIcon from "@mui/icons-material/ThumbUpAltOutlined";
 import CommentIcon from "@mui/icons-material/Comment";
-import { useAlert } from "react-alert";
-import CommentsModel from "./Models/CommentsModel";
-import NavBar from "./NavBar";
-import { Link, useHistory } from "react-router-dom";
-import LikesModel from "./Models/LikesModel";
-import Loader1 from "./Loader1";
+import { Button } from "@material-ui/core";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import RedoRoundedIcon from "@mui/icons-material/RedoRounded";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
-import LeftProfile from "./LeftProfile";
 import RightSugg from "./RightSugg";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@material-ui/icons/Edit";
 
-const Feed = () => {
-  const { state, dispatch } = useContext(userContext);
-  const [showCreateModel, setShowCreateModel] = useState(false);
-  const [showLike, setShowLike] = useState(true);
+const Myposts = () => {
+  const [myposts, setMyPosts] = useState([]);
   const [showComments, setShowComments] = useState(false);
-  const [showCommentInput, setShowCommentInput] = useState(false);
+  const [showEditPostModel, setShowEditPostModel] = useState(false);
+  const [sendPost, setSendPost] = useState(null);
   const [showLikes, setShowLikes] = useState(false);
-  const [allPost, setAllPost] = useState([]);
-  const alert = useAlert();
   const [postComments, setPostComments] = useState([]);
   const [postLikes, setPostLikes] = useState([]);
-  const [showFeedLoader, setShowFeedLoader] = useState(true);
+  const [showEditBox, setShowEditBox] = useState(false);
+  const [showMyPostLoader, setShowMyPostLoader] = useState(true);
+  const [showLike, setShowLike] = useState(true);
+  const [showCommentInput, setShowCommentInput] = useState(false);
+  const { state, dispatch } = useContext(userContext);
+  const location = useLocation();
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (state) {
-        fetch("/allsubpost", {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("jwt"),
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.err) {
-              alert.error(data.err);
-            } else {
-              setAllPost(data.result);
-              setShowFeedLoader(false);
-            }
-          });
-      }
+      fetch(`/mypost/${location.userid}`, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("jwt"),
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            alert.error(data.error);
+          } else {
+            setMyPosts(data.posts);
+            setShowMyPostLoader(false);
+          }
+        });
     }, 2000);
     return () => clearInterval(interval);
-  }, [state]);
+  }, [state, showEditPostModel]);
 
   const likePost = (postId) => {
     if (state) {
@@ -83,14 +85,14 @@ const Feed = () => {
           if (data.error) {
             alert.error(data.error);
           } else {
-            const newdata = allPost.map((item) => {
+            const newdata = myposts.map((item) => {
               if (item._id === data.result._id) {
                 return data.result;
               } else {
                 return item;
               }
             });
-            setAllPost(newdata);
+            setMyPosts(newdata);
             setShowLike(true);
           }
         });
@@ -114,14 +116,14 @@ const Feed = () => {
           if (data.error) {
             alert.error(data.error);
           } else {
-            const newdata = allPost.map((item) => {
+            const newdata = myposts.map((item) => {
               if (item._id === data.result._id) {
                 return data.result;
               } else {
                 return item;
               }
             });
-            setAllPost(newdata);
+            setMyPosts(newdata);
           }
         });
     }
@@ -145,14 +147,14 @@ const Feed = () => {
           if (data.error) {
             alert.error(data.error);
           } else {
-            const newdata = allPost.map((item) => {
+            const newdata = myposts.map((item) => {
               if (item._id === data.result._id) {
                 return data.result;
               } else {
                 return item;
               }
             });
-            setAllPost(newdata);
+            setMyPosts(newdata);
           }
         });
     }
@@ -172,32 +174,47 @@ const Feed = () => {
       .catch((err) => console.log(err));
   };
 
+  const deletePost = (postid) => {
+    fetch(`/deletepost/${postid}`, {
+      method: "delete",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("jwt"),
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const newdata = myposts.filter((item) => {
+          if (item._id.toString() !== data.post._id.toString()) {
+            return item;
+          }
+        });
+        setMyPosts(newdata);
+      })
+      .catch((err) => console.log(err));
+  };
+
   return (
     <>
-      {state && showCreateModel && (
-        <AddPostModel model={setShowCreateModel} post={null} />
-      )}
       {state && showComments && (
         <CommentsModel model={setShowComments} comments={postComments} />
       )}
       {state && showLikes && (
         <LikesModel model={setShowLikes} likes={postLikes} />
       )}
+      {showEditPostModel && (
+        <AddPostModel model={setShowEditPostModel} post={sendPost} />
+      )}
 
       <NavBar />
+
       <Container>
         <LeftCont>
           <LeftProfile />
         </LeftCont>
+
         <MainCont>
-          <InputBox>
-            <img src={state && state.profile_pic} alt="" />
-            <button onClick={() => setShowCreateModel(true)}>
-              Start a post
-            </button>
-          </InputBox>
-          {showFeedLoader && <Loader1 />}
-          {allPost.map((post) => (
+          {showMyPostLoader && <Loader1 />}
+          {myposts.map((post) => (
             <PostCard key={post._id}>
               <CardTop>
                 <img src={post.posted_By.profile_pic} alt="" />
@@ -207,7 +224,47 @@ const Feed = () => {
                       {post.posted_By.name}
                     </Link>
                   </h3>
-                  <h5 style={{ fontWeight: "400" }}>{post.posted_By.headline}</h5>
+                </div>
+                <div
+                  style={{
+                    marginLeft: "auto",
+                    display: "flex",
+                    flexWrap: "nowrap",
+                  }}
+                >
+                  {location.userid === state._id && showEditBox && (
+                    <EditPostIconContainer>
+                      <Button
+                        variant="outlined"
+                        startIcon={<EditIcon />}
+                        onClick={() => {
+                          setShowEditBox(false);
+                          setSendPost(post);
+                          setShowEditPostModel(true);
+                        }}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        startIcon={<DeleteIcon />}
+                        onClick={() => {
+                          setShowEditBox(false);
+                          deletePost(post._id);
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </EditPostIconContainer>
+                  )}
+                  {location.userid === state._id && (
+                    <MoreVertIcon
+                      style={{ marginLeft: "auto", width: "20px" }}
+                      onClick={() => {
+                        setShowEditBox(!showEditBox);
+                      }}
+                    />
+                  )}
                 </div>
               </CardTop>
               {post.title && (
@@ -309,4 +366,4 @@ const Feed = () => {
   );
 };
 
-export default Feed;
+export default Myposts;

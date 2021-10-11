@@ -11,6 +11,7 @@ export const reducer = (state, action) => {
       ...state,
       name: action.payload.name,
       email: action.payload.email,
+      headline: action.payload.headline,
       about: action.payload.about,
       address: action.payload.address,
     };

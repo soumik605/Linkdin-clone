@@ -11,6 +11,7 @@ import UserProfile from "./Components/UserProfile";
 import Feed from "./Components/Feed";
 import MyConnections from "./Components/MyConnections";
 import ChatPage from "./Components/ChatPage";
+import Myposts from "./Components/Myposts";
 
 export const userContext = createContext();
 
@@ -54,6 +55,9 @@ const Routing = () => {
       </Route>
       <Route exact path="/chat">
         <ChatPage />
+      </Route>
+      <Route exact path="/myposts">
+        <Myposts />
       </Route>
     </Switch>
   );

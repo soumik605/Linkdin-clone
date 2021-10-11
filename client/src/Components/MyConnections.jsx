@@ -115,7 +115,7 @@ const MyConnections = () => {
             }
           });
       }
-    }, 2000);
+    }, 500);
     return () => clearInterval(interval);
   }, [state]);
 
@@ -138,7 +138,7 @@ const MyConnections = () => {
             }
           });
       }
-    }, 2000);
+    }, 500);
     return () => clearInterval(interval);
   }, [state]);
 
@@ -174,11 +174,11 @@ const MyConnections = () => {
               <LeftUserBox key={user._id}>
                 <LeftProfile src={user.profile_pic} alt="" />
                 <div>
-                  <h3>
+                  <h4>
                     {" "}
                     <a href={`/profile/${user._id}`}>{user.name}</a>
-                  </h3>
-                  <h5>{user.about}</h5>
+                  </h4>
+                  <h5>{user.headline}</h5>
                 </div>
                 <Message onClick={() => history.push("/chat")}>Message</Message>
               </LeftUserBox>
@@ -198,7 +198,7 @@ const MyConnections = () => {
                     <h3>
                       <a href={`/profile/${user._id}`}>{user.name}</a>
                     </h3>
-                    <h5>{user.about}</h5>
+                    <h5 style={{ fontWeight: 450 }}>{user.headline}</h5>
                   </ReqUser>
                   <CheckBox>
                     <ChBtn onClick={() => rejectConnection(user)}>Ignore</ChBtn>
@@ -242,10 +242,10 @@ const MyConnections = () => {
                       <img src={user.profile_pic} alt="" />
                     </Profile>
                     <Details>
-                      <h2>
+                      <h3>
                         <a href={`/profile/${user._id}`}>{user.name}</a>
-                      </h2>
-                      <h4>{user.about}</h4>
+                      </h3>
+                      <h5 style={{ fontWeight: 450 }}>{user.headline}</h5>
                     </Details>
                     {user.conrequests.includes(state._id) ? (
                       <ConnectBtn style={{ cursor: "not-allowed" }}>

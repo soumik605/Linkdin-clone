@@ -5,23 +5,25 @@ import {
   PopupBox,
   InputBox,
   Save,
+  Delete,
 } from "../Style/EducationModel";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { userContext } from "../../App";
 import { useAlert } from "react-alert";
-
-
-
+import FullScreenLoader from "./FullScreenLoader";
 
 const EducationModel = (props) => {
   const { state, dispatch } = useContext(userContext);
   const [education, setEducation] = useState(props.education);
+  const [showSubmitLoader, setShowSubmitLoader] = useState(false);
+  const alert = useAlert();
 
   const handleChange = (e) => {
     setEducation({ ...education, [e.target.name]: e.target.value });
   };
 
   const AddEducation = (e) => {
+    setShowSubmitLoader(true);
     fetch("/addeducation", {
       method: "put",
       headers: {
@@ -36,6 +38,7 @@ const EducationModel = (props) => {
       .then((data) => {
         if (data.error) {
           alert.error(data.error);
+          setShowSubmitLoader(false);
         } else {
           dispatch({
             type: "UPDATE_EDU",
@@ -44,12 +47,14 @@ const EducationModel = (props) => {
             },
           });
           localStorage.setItem("user", JSON.stringify(data.user));
+          setShowSubmitLoader(false);
           props.model(false);
         }
       });
   };
 
   const DeleteEducation = (e) => {
+    setShowSubmitLoader(true);
     fetch(`/deleteeducation`, {
       method: "put",
       headers: {
@@ -64,6 +69,7 @@ const EducationModel = (props) => {
       .then((data) => {
         if (data.error) {
           alert.error(data.error);
+          setShowSubmitLoader(false);
         } else {
           dispatch({
             type: "UPDATE_EDU",
@@ -72,11 +78,13 @@ const EducationModel = (props) => {
             },
           });
           localStorage.setItem("user", JSON.stringify(data.user));
+          setShowSubmitLoader(false);
           props.model(false);
         }
       });
   };
   const UpdateEducation = (e) => {
+    setShowSubmitLoader(true);
     fetch(`/updateeducation`, {
       method: "put",
       headers: {
@@ -91,6 +99,7 @@ const EducationModel = (props) => {
       .then((data) => {
         if (data.error) {
           alert.error(data.error);
+          setShowSubmitLoader(false);
         } else {
           dispatch({
             type: "UPDATE_EDU",
@@ -99,6 +108,7 @@ const EducationModel = (props) => {
             },
           });
           localStorage.setItem("user", JSON.stringify(data.user));
+          setShowSubmitLoader(false);
           props.model(false);
         }
       });
@@ -106,6 +116,7 @@ const EducationModel = (props) => {
 
   return (
     <Container>
+      {showSubmitLoader && <FullScreenLoader />}
       <ClickAwayListener
         onClickAway={() => {
           props.model(false);
@@ -113,16 +124,32 @@ const EducationModel = (props) => {
         }}
       >
         <PopupBox>
-          <Close
-            onClick={() => {
-              props.model(false);
-              props.changeEdu([]);
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              borderBottom:"1px solid lightgrey",
+              paddingBottom:"10px"
             }}
           >
-            X
-          </Close>
+            {props.education.course ? (
+              <h2>Edit Education</h2>
+            ) : (
+              <h2>Add Education</h2>
+            )}
+
+            <Close
+              onClick={() => {
+                props.model(false);
+                props.changeEdu([]);
+              }}
+            >
+              x
+            </Close>
+          </div>
+
           <InputBox>
-            <h4>Course</h4>
+            <h4>Course*</h4>
             <input
               name="course"
               value={education.course}
@@ -131,7 +158,7 @@ const EducationModel = (props) => {
           </InputBox>
 
           <InputBox>
-            <h4>Institute</h4>
+            <h4>Institute*</h4>
             <input
               name="institute"
               value={education.institute}
@@ -140,7 +167,7 @@ const EducationModel = (props) => {
           </InputBox>
 
           <InputBox>
-            <h4>Pass year</h4>
+            <h4>Pass year*</h4>
             <input
               name="passyear"
               value={education.passyear}
@@ -149,7 +176,24 @@ const EducationModel = (props) => {
           </InputBox>
 
           {props.education.length === 0 ? (
-            <Save onClick={() => AddEducation()}>Save</Save>
+            education.course && education.institute && education.passyear ? (
+              <Save onClick={() => AddEducation()}>Save</Save>
+            ) : (
+              <Save onClick={() => alert.error("Add all fields")}>Save</Save>
+            )
+          ) : education.course && education.institute && education.passyear ? (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                flexWrap: "nowrap",
+                justifyContent: "space-between",
+                marginTop:"50px"
+              }}
+            >
+              <Delete onClick={() => DeleteEducation()}>Delete education</Delete>
+              <Save onClick={() => UpdateEducation()}>Update</Save>
+            </div>
           ) : (
             <div
               style={{
@@ -157,10 +201,11 @@ const EducationModel = (props) => {
                 flexDirection: "row",
                 flexWrap: "nowrap",
                 justifyContent: "space-between",
+                marginTop:"50px"
               }}
             >
-              <Save onClick={() => DeleteEducation()}>Delete Education</Save>
-              <Save onClick={() => UpdateEducation()}>Update</Save>
+              <Delete onClick={() => DeleteEducation()}>Delete Education</Delete>
+              <Save onClick={() => alert.error("Add all fields")}>Update</Save>
             </div>
           )}
         </PopupBox>

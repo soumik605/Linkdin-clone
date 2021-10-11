@@ -15,17 +15,49 @@ export const Container = styled.div`
 export const PopupBox = styled.div`
   position: relative;
   width: 90%;
-  max-width: 1000px;
+  max-width: 800px;
   margin: auto;
   height: 70vh;
   top: 15vh;
-  background: #fff;
+  background: #1d2226;
   overflow-y: auto;
   overflow-x: hidden;
   box-sizing: border-box;
   border-radius: 15px;
   display: flex;
   flex-direction: column;
+
+  
+  & button{
+      background-color: #1d2226;
+      border: none;
+    }
+
+  &>img{
+    width: 300px;
+    height: 300px;
+    margin: auto;
+    border-radius: 50%;
+  }
+
+  &>div{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    border-top: 1px solid grey;
+
+
+    &>button, &>div>button, &>h3{
+      color: white;
+      cursor: pointer;
+      padding: 10px 15px;
+
+      &:hover{
+        background-color:#2d343b;
+      }
+    }
+  }
 
   @media (max-width: 768px) {
     width: 100%;
@@ -45,42 +77,6 @@ export const Close = styled.div`
   text-align: center;
   font-size: 30px;
   display: inline-block;
-
-  &:hover {
-    background-color: lightgray;
-  }
-`;
-
-export const Save = styled.button`
-  background-color: blue;
   color: white;
-  padding: 10px 15px;
   box-sizing: border-box;
-  border-radius: 15px;
-  border: none;
-  width: fit-content;
-  margin-right: 50px;
-  margin-left: auto;
-`;
-
-export const InputBox = styled.div`
-  padding: 10px 25px;
-
-
-
-  & > input {
-    width: 100%;
-    height: 30px;
-    padding: 2px 20px;
-    box-sizing: border-box;
-    margin: 2px auto;
-  }
-
-  & > img {
-    margin: 20px auto;
-    width: 300px;
-    height: auto;
-    background-repeat: no-repeat;
-    background-size: cover;
-  }
 `;

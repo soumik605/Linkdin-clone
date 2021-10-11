@@ -40,8 +40,8 @@ router.get("/allsubpost", requireLogin, (req, res) => {
     });
 });
 
-router.get("/mypost", requireLogin, (req, res) => {
-  Post.find({ posted_By: req.user._id })
+router.get("/mypost/:userid", requireLogin, (req, res) => {
+  Post.find({ posted_By: req.params.userid })
     .populate("posted_By", "_id name about profile_pic")
     .sort("-createdAt")
     .then((posts) => {
@@ -219,7 +219,6 @@ router.put("/deletecomment/:postId/:commentId", requireLogin, (req, res) => {
 });
 
 router.get("/post/:postid", requireLogin, (req, res) => {
-  console.log(req.params.postid);
   Post.findById(req.params.postid)
     .populate("posted_By", "_id name about profile_pic")
     .populate("comments.commented_By", "_id name profile_pic")
