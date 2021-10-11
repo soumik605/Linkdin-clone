@@ -130,6 +130,7 @@ const SigninPage = () => {
               Signin
             </Signin>
           )}
+          <Signin>Join with Google</Signin>
         </Section>
       </Container>
       <Join>
