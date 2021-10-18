@@ -17,10 +17,10 @@ export const PopupBox = styled.div`
   position: relative;
   margin: auto;
   height: calc(100vh - 100px);
-  border-radius: 10px;
+  border-radius: 0 10px 10px 0;
   top: 100px;
 
-  @media (max-width: 768px) { 
+  @media (max-width: 768px) {
     top: 60px;
     height: calc(100vh - 60px - 60px);
   }
@@ -59,6 +59,7 @@ export const TopBox = styled.div`
     width: 40px;
     border-radius: 50%;
     margin-left: 20px;
+  object-fit: cover;
   }
 `;
 
@@ -67,9 +68,26 @@ export const ChatBox = styled.div`
   height: calc(100vh - 50px - 50px - 100px);
   background-color: lightgray;
   overflow-y: scroll;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+  transform: rotate(180deg);
+  direction: rtl;
+
+  & > div {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column-reverse;
+    flex-direction: column-reverse;
+    -webkit-box-pack: end;
+    -ms-flex-pack: end;
+    justify-content: flex-end;
+
+    & > h2 {
+      transform: rotate(180deg);
+      direction: rtl;
+    }
+  }
 
   @media (max-width: 768px) {
     height: calc(100vh - 50px - 50px - 60px - 60px);
@@ -102,12 +120,52 @@ export const FriendBox = styled.div`
   margin: 6px;
   font-size: 12px;
   padding: 10px 30px;
-  overflow: hidden;
   word-break: break-all;
   color: white;
   background: rgb(1, 93, 212);
   text-align: left;
+  margin-top: auto;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  position: relative;
+  word-break: break-all;
+  transform: rotate(180deg);
+  direction: ltr;
+`;
+export const MyBox = styled.div`
+  border-radius: 40px;
+  max-width: fit-content;
+  margin: 6px;
+  font-size: 12px;
+  padding: 10px 30px;
+  word-break: break-all;
+  margin-left: auto;
+  text-align: right;
+  color: rgb(2, 0, 0);
+  background: rgb(255, 255, 255);
+  margin-top: auto;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  position: relative;
+  word-break: break-all;
+  transform: rotate(180deg);
+  direction: ltr;
+`;
 
+/* export const FriendBox = styled.div`
+  border-radius: 40px;
+  max-width: fit-content;
+  min-width: 100px;
+  margin: 6px;
+  font-size: 12px;
+  padding: 10px 30px;
+  word-break: break-all;
+  color: white;
+  background: rgb(1, 93, 212);
+  text-align: left;
+  margin-top: auto;
 `;
 export const MyBox = styled.div`
   border-radius: 40px;
@@ -116,11 +174,10 @@ export const MyBox = styled.div`
   margin: 6px;
   font-size: 12px;
   padding: 10px 30px;
-  overflow: hidden;
   word-break: break-all;
   margin-left: auto;
   text-align: right;
   color: rgb(2, 0, 0);
   background: rgb(255, 255, 255);
-  
-`;
+  margin-top: auto;
+`; */

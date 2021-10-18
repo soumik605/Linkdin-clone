@@ -33,6 +33,7 @@ export const Logo = styled.div`
   width: auto;
   & > a > img {
     height: 34px;
+  object-fit: cover;
   }
 `;
 export const Heading = styled.div`
@@ -128,6 +129,7 @@ export const ProfileContainer = styled.img`
   position: relative;
   top: -75px;
   z-index: 2;
+  object-fit: cover;
 
   @media (max-width: 768px){
     width: 120px;
@@ -143,6 +145,7 @@ export const CoverContainer = styled.img`
   background-repeat: no-repeat;
   border: 1px solid black;
   box-sizing: border-box;
+  object-fit: cover;
 
   @media (max-width: 768px){
     height: 150px;

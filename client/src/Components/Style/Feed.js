@@ -61,8 +61,6 @@ export const RightCont = styled.div`
   }
 `;
 
-
-
 export const InputBox = styled.div`
   width: 100%;
   display: flex;
@@ -81,6 +79,7 @@ export const InputBox = styled.div`
     border-radius: 50%;
     background-repeat: no-repeat;
     background-size: cover;
+    object-fit: cover;
   }
 
   & > button {
@@ -121,6 +120,7 @@ export const CardTop = styled.div`
     width: 45px;
     border-radius: 50%;
     margin-right: 15px;
+    object-fit: cover;
   }
 
   & > div > h3,
@@ -138,30 +138,32 @@ export const CardTitle = styled.div`
 `;
 export const CardPhoto = styled.img`
   width: 100%;
+  object-fit: cover;
 `;
 export const CardLikes = styled.div`
   width: 100%;
   height: 30px;
   display: flex;
   flex-direction: row;
-  justify-content:flex-start;
+  justify-content: flex-start;
   align-items: center;
   padding: 0px 10px;
   border-top: 1px solid lightgray;
-  border-bottom: 1px solid lightgray;
 
-  & > h4 {
+  & > button {
     cursor: pointer;
     padding-right: 15px;
+    background-color: white;
+    border: none;
   }
 `;
 export const CardActions = styled.div`
   width: 100%;
-  height: 40px;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
+  border-top: 1px solid lightgray;
 
   & > button {
     display: flex;
@@ -172,9 +174,15 @@ export const CardActions = styled.div`
     align-items: center;
     padding: 5px;
     border-radius: 5px;
+    color: #383838;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
 
     &:hover {
       background-color: lightgray;
+      color: black;
     }
   }
 `;

@@ -38,6 +38,7 @@ export const PopupBox = styled.div`
     height: 300px;
     margin: auto;
     border-radius: 50%;
+    object-fit: cover;
   }
 
   &>div{

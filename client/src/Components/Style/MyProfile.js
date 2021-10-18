@@ -11,7 +11,7 @@ export const Container = styled.div`
   grid-gap: 2rem;
 
   @media (max-width: 768px) {
-  margin: 60px auto 50px;
+    margin: 60px auto 50px;
     grid-template-columns: 1fr;
     grid-template-rows: auto auto;
     grid-template-areas: "main " "adv";
@@ -55,6 +55,7 @@ export const Cover = styled.div`
     width: 100%;
     height: 200px;
     border-radius: 10px 10px 0 0;
+  object-fit: cover;
   }
   & > .cover {
     width: 100%;
@@ -67,6 +68,7 @@ export const Cover = styled.div`
 
     & > img {
       height: 120px;
+  object-fit: cover;
     }
     & > .cover {
       height: 120px;
@@ -90,6 +92,7 @@ export const Profile = styled.div`
     height: 152px;
     border-radius: 50%;
     margin: auto;
+  object-fit: cover;
   }
   & > .profile {
     background-size: cover;
@@ -109,6 +112,7 @@ export const Profile = styled.div`
     & > img {
       width: 122px;
       height: 122px;
+  object-fit: cover;
     }
     & > .profile {
       width: 122px;
@@ -128,6 +132,7 @@ export const Details = styled.div`
 
   @media (max-width: 768px) {
     margin-top: -60px;
+    padding-left: 15px;
   }
   & > * {
     text-align: left;
@@ -176,6 +181,10 @@ export const Education = styled.div`
   display: flex;
   flex-direction: column;
 
+  @media (max-width: 768px) {
+    padding-left: 15px;
+  }
+
   & > div {
     display: flex;
     flex-direction: row;
@@ -192,11 +201,14 @@ export const Skills = styled.div`
   display: flex;
   flex-direction: column;
 
+  @media (max-width: 768px) {
+    padding-left: 15px;
+  }
+
   & > div {
     display: flex;
     flex-wrap: nowrap;
     margin: 5px;
-
 
     & > div > button {
       padding: 5px 10px;
@@ -246,6 +258,7 @@ export const EduBox = styled.div`
     width: 70px;
     height: 70px;
     margin-right: 20px;
+  object-fit: cover;
   }
 `;
 export const PostBox = styled.div`
@@ -284,10 +297,15 @@ export const Activity = styled.div`
   border-radius: 10px;
   margin-top: 10px;
   padding-top: 10px;
+
   & > h3,
   & > h5 {
     text-align: left;
     margin-left: 30px;
+
+    @media (max-width: 768px) {
+      margin-left: 15px;
+    }
   }
 
   & > button {
@@ -310,12 +328,18 @@ export const Activity = styled.div`
     margin-top: 10px;
     padding: 10px 30px;
 
+    @media (max-width: 768px) {
+      padding: 10px 15px;
+    }
+
     & > div {
       width: 50%;
       display: flex;
       flex-direction: row;
       height: 80px;
       margin: 5px 0px;
+      padding-right: 10px;
+      overflow: hidden;
 
       @media (max-width: 768px) {
         width: 100%;
@@ -324,6 +348,7 @@ export const Activity = styled.div`
       & > img {
         height: 80px;
         margin-right: 10px;
+  object-fit: cover;
       }
 
       & > div {
@@ -338,18 +363,20 @@ export const Activity = styled.div`
 
 export const Headline = styled.div`
   width: 100%;
-  padding: 10px;
   background-color: white;
   border: 1px solid lightgray;
   border-radius: 10px;
   margin-top: 10px;
 
-  &>div{
+  & > div {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     flex-wrap: nowrap;
-    padding: 5px;
-    padding-left: 20px;
+    padding: 10px 30px;
+
+    @media (max-width: 768px) {
+      padding: 10px 15px;
+    }
   }
-`
+`;

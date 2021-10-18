@@ -207,7 +207,9 @@ const Feed = () => {
                       {post.posted_By.name}
                     </Link>
                   </h3>
-                  <h5 style={{ fontWeight: "400" }}>{post.posted_By.headline}</h5>
+                  <h5 style={{ fontWeight: "400" }}>
+                    {post.posted_By.headline}
+                  </h5>
                 </div>
               </CardTop>
               {post.title && (
@@ -216,19 +218,22 @@ const Feed = () => {
                 </CardTitle>
               )}
               {post.photo && <CardPhoto src={post.photo} alt="" />}
-              <CardLikes>
-                {post.likes.length !== 0 && (
-                  <h4
-                    onClick={() => {
-                      fetchPost(post._id);
-                      setShowLikes(true);
-                    }}
-                  >
-                    {post.likes.length} Likes
-                  </h4>
-                )}
-                {post.comments.length !== 0 && (
-                  <h4>
+              {(post.likes.length !== 0 || post.comments.length !== 0) && (
+                <CardLikes>
+                  {post.likes.length !== 0 && (
+                    <button
+                      style={{ backgroundColor: "white", border: "none" }}
+                      onClick={() => {
+                        fetchPost(post._id);
+                        setShowLikes(true);
+                      }}
+                    >
+                      {post.likes.length === 1
+                        ? "1 Like"
+                        : `${post.likes.length} Likes`}
+                    </button>
+                  )}
+                  {post.comments.length !== 0 && (
                     <button
                       style={{ backgroundColor: "white", border: "none" }}
                       onClick={() => {
@@ -236,13 +241,15 @@ const Feed = () => {
                         setShowComments(true);
                       }}
                     >
-                      {post.comments.length} Comments
+                      {post.comments.length === 1
+                        ? "1 Comment"
+                        : `${post.comments.length} Comments`}
                     </button>
-                  </h4>
-                )}
-              </CardLikes>
+                  )}
+                </CardLikes>
+              )}
               <CardActions>
-                <button>
+                <button style={{ backgroundColor: "white", border: "none" }}>
                   {state && showLike ? (
                     post.likes.includes(state._id) ? (
                       <ThumbUpIcon
@@ -262,7 +269,7 @@ const Feed = () => {
                 </button>
 
                 <button onClick={() => setShowCommentInput(!showCommentInput)}>
-                  <CommentIcon style={{ fontWeight: 450 }} />
+                  <CommentIcon style={{ fontWeight: 250 }} />
                   <h4>Comment</h4>
                 </button>
 

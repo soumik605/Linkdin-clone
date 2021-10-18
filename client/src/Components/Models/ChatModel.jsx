@@ -91,26 +91,28 @@ const ChatModel = (props) => {
               </h3>
             </TopBox>
             <ChatBox>
-              {showChatLoader && <Loader1 />}
-              {room && room.messages.length === 0 && (
-                <h2>No Messages. Start chat ?</h2>
-              )}
+              <div>
+                {showChatLoader && <Loader1 />}
+                {room && room.messages.length === 0 && (
+                  <h2>?No Messages. Start chat</h2>
+                )}
 
-              {room &&
-                room.messages.map((item) => {
-                  return item.posted_By._id === state._id ? (
-                    <MyBox key={item._id}>
-                      <h2>You</h2>
-                      <h3>{item.message}</h3>
-                    </MyBox>
-                  ) : (
-                    <FriendBox>
-                      <h2>{item.posted_By.name}</h2>
-                      <h3>{item.message}</h3>
-                    </FriendBox>
-                  );
-                })}
-              <div ref={bottomRef}></div>
+                {room &&
+                  room.messages.map((item) => {
+                    return item.posted_By._id === state._id ? (
+                      <MyBox key={item._id}>
+                        <h2>You</h2>
+                        <h3>{item.message}</h3>
+                      </MyBox>
+                    ) : (
+                      <FriendBox key={item._id}>
+                        <h2>{item.posted_By.name}</h2>
+                        <h3>{item.message}</h3>
+                      </FriendBox>
+                    );
+                  })}
+                <div ref={bottomRef}></div>
+              </div>
             </ChatBox>
             <InputBox>
               <input

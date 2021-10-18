@@ -31,11 +31,13 @@ export const Profile = styled.img`
   border-radius: 50%;
   margin: -50px auto 50px;
   box-sizing: border-box;
+  object-fit: cover;
 `;
 export const Cover = styled.img`
   height: 100px;
   width: 100%;
   box-sizing: border-box;
+  object-fit: cover;
 `;
 export const Desc = styled.div`
   display: flex;

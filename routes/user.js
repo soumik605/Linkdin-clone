@@ -152,6 +152,40 @@ router.put("/acceptconnect/:userid", requireLogin, (req, res) => {
     });
 });
 
+router.put("/withdrawreq/:userid", requireLogin, (req, res) => {
+  User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $pull: { myrequests: req.params.userid },
+    },
+    {
+      new: true,
+    },
+    (err, result1) => {
+      if (err) {
+        return res.status(422).json({ error: err });
+      } else {
+        User.findByIdAndUpdate(
+          req.params.userid,
+          {
+            $pull: { conrequests: req.user._id },
+          },
+          {
+            new: true,
+          },
+          (err, result2) => {
+            if (err) {
+              return res.status(422).json({ error: err });
+            } else {
+              res.json({ result1, result2 });
+            }
+          }
+        );
+      }
+    }
+  );
+});
+
 router.put("/rejectconnect/:userid", requireLogin, (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,

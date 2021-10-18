@@ -47,11 +47,11 @@ const AddPostModel = (props) => {
       .then((data) => {
         if (data.error) {
           alert.error(data.error);
-          setShowAddPostLoader(false)
+          setShowAddPostLoader(false);
         } else {
           props.model(false);
           setShowAddBtn(true);
-          setShowAddPostLoader(false)
+          setShowAddPostLoader(false);
         }
       });
   };
@@ -72,11 +72,11 @@ const AddPostModel = (props) => {
       .then((data) => {
         if (data.error) {
           alert.error(data.error);
-          setShowAddPostLoader(false)
+          setShowAddPostLoader(false);
         } else {
           props.model(false);
           setShowAddBtn(true);
-          setShowAddPostLoader(false)
+          setShowAddPostLoader(false);
         }
       });
   };
@@ -98,7 +98,7 @@ const AddPostModel = (props) => {
 
   const AddPost = async () => {
     setShowAddBtn(false);
-    setShowAddPostLoader(true)
+    setShowAddPostLoader(true);
     if (editPhotoChanged) {
       const data1 = new FormData();
       data1.append("file", addPhoto);
@@ -124,7 +124,7 @@ const AddPostModel = (props) => {
 
   return (
     <Container>
-     {showAddPostLoader &&  <FullScreenLoader />}
+      {showAddPostLoader && <FullScreenLoader />}
       <ClickAwayListener onClickAway={() => props.model(false)}>
         <PopupBox>
           <Close onClick={() => props.model(false)}>x</Close>
@@ -145,7 +145,11 @@ const AddPostModel = (props) => {
             <img src={photo} alt="" />
           </Photo>
           <Add>
-            <input type="file" onChange={(e) => handlePhotoChange(e)} />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => handlePhotoChange(e)}
+            />
             {showAddBtn && props.post ? (
               <button onClick={() => AddPost()}>Save</button>
             ) : (

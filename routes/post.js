@@ -48,7 +48,7 @@ router.get("/mypost/:userid", requireLogin, (req, res) => {
       res.json({ posts });
     })
     .catch((error) => {
-      console.log(err);
+      console.log(error);
     });
 });
 

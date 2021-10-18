@@ -36,6 +36,7 @@ export const PopupBox = styled.div`
       background-size: cover;
       background-repeat: no-repeat;
       margin: 10px auto;
+  object-fit: cover;
   }
 
   &>button{

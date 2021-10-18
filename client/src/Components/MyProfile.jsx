@@ -24,7 +24,6 @@ import AddIcon from "@mui/icons-material/Add";
 import EducationModel from "./Models/EducationModel";
 import RightSugg from "./RightSugg";
 import { useHistory } from "react-router";
-import Loader1 from "./Loader1";
 import Skeleton from "@mui/material/Skeleton";
 import AddSkillModel from "./Models/AddSkillModel";
 import EditSkillModel from "./Models/EditSkillModel";
@@ -117,7 +116,7 @@ const MyProfile = () => {
           </ImageContainer>
           <Details>
             <EditIcon
-              style={{ float: "right" }}
+              style={{ float: "right", marginRight: "30px" }}
               onClick={() => setEditModel(true)}
             />
             <h2>{state ? state.name : "loading.."}</h2>
@@ -164,7 +163,14 @@ const MyProfile = () => {
                     {post.photo && <img src={post.photo} alt="" />}
                     <div>
                       {post.title && (
-                        <h3 style={{ marginBottom: "5px" }}>{post.title}</h3>
+                        <h3
+                          style={{
+                            marginBottom: "5px",
+                            overflow: "hidden",
+                          }}
+                        >
+                          {post.title}
+                        </h3>
                       )}
                       {state && (
                         <h5 style={{ fontWeight: "450" }}>
@@ -190,7 +196,7 @@ const MyProfile = () => {
             </div>
             <button
               onClick={() => {
-                history.push({ pathname: "/myposts", userid: state._id });
+                history.push(`/posts/${state._id}`);
               }}
             >
               See all activity
@@ -232,8 +238,13 @@ const MyProfile = () => {
                 justifyContent: "space-between",
               }}
             >
-              <h2>Skills & endorsements</h2>
-              <div>
+              <h2>Skills </h2>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
                 <button
                   onClick={() => {
                     setShowAddSkill(true);

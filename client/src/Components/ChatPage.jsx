@@ -15,8 +15,8 @@ const ChatPage = () => {
   const [showLoader, setShowLoader] = useState(true);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (state) {
+    if (state) {
+      const interval = setInterval(() => {
         fetch(`/mydetails`, {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("jwt"),
@@ -31,10 +31,10 @@ const ChatPage = () => {
               setShowLoader(false);
             }
           });
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [ state]);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [state]);
 
   return (
     <>

@@ -9,12 +9,11 @@ const RightSugg = () => {
   const [allUser, setAllUser] = useState([]);
   const [showSuggestionLoader, setShowSuggestionLoader] = useState(true);
   const [showReqConnBtn, setShowReqConnBtn] = useState(true);
-  const history = useHistory();
   const { state, dispatch } = useContext(userContext);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (state) {
+    if (state) {
+      const interval = setInterval(() => {
         fetch(`/alluser`, {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("jwt"),
@@ -29,14 +28,34 @@ const RightSugg = () => {
               setShowSuggestionLoader(false);
             }
           });
-      }
-    }, 2000);
-    return () => clearInterval(interval);
+      }, 2000);
+      return () => clearInterval(interval);
+    }
   }, [state]);
 
-  const RequestConnection = async (userid) => {
-    setShowReqConnBtn(false);
-    await fetch(`/reqconnect/${userid}`, {
+  const WithdrawRequest = (user) => {
+    if (window.confirm("Withdraw Connection Request ? ")) {
+      fetch(`/withdrawreq/${user._id}`, {
+        method: "put",
+        headers: {
+          "content-type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("jwt"),
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            alert.error(data.error);
+          } else {
+            localStorage.setItem("user", JSON.stringify(data.result1));
+            dispatch({ type: "USER", payload: data.result1 });
+          }
+        });
+    }
+  };
+
+  const RequestConnection = (userid) => {
+    fetch(`/reqconnect/${userid}`, {
       method: "put",
       headers: {
         "content-type": "application/json",
@@ -57,7 +76,7 @@ const RightSugg = () => {
 
   return (
     <>
-      <h3>People you may know</h3>
+      <h3 style={{ marginLeft: "10px" }}>People you may know</h3>
       {showSuggestionLoader && (
         <User>
           <Skeleton
@@ -74,7 +93,7 @@ const RightSugg = () => {
               animation="wave"
               width={80}
               height={30}
-              style={{borderRadius:"15px", marginTop:"5px"}}
+              style={{ borderRadius: "15px", marginTop: "5px" }}
             />
           </RightDetails>
         </User>
@@ -86,10 +105,8 @@ const RightSugg = () => {
             if (
               s_user._id === state._id ||
               s_user.connections.includes(state._id) ||
-              s_user.conrequests.includes(state._id) ||
               s_user.myrequests.includes(state._id)
             ) {
-              return null;
             } else {
               return s_user;
             }
@@ -104,8 +121,17 @@ const RightSugg = () => {
                 </h3>
                 <h5>{user.about}</h5>
 
-                {showReqConnBtn ? (
-                  <ConnectBtn onClick={() => RequestConnection(user._id)}>
+                {user.conrequests.includes(state._id) ? (
+                  <ConnectBtn onClick={() => WithdrawRequest(user)}>
+                    Pending
+                  </ConnectBtn>
+                ) : showReqConnBtn ? (
+                  <ConnectBtn
+                    onClick={() => {
+                      setShowReqConnBtn(false);
+                      RequestConnection(user._id);
+                    }}
+                  >
                     Connect
                   </ConnectBtn>
                 ) : (
@@ -135,7 +161,6 @@ export const RightDetails = styled.div`
   & > h5,
   & > h3 {
     text-align: left;
-    
   }
 `;
 export const User = styled.div`

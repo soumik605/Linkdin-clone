@@ -92,5 +92,6 @@ export const InputBox = styled.div`
     height: auto;
     background-repeat: no-repeat;
     background-size: cover;
+  object-fit: cover;
   }
 `;

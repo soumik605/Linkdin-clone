@@ -27,12 +27,10 @@ export const PopupBox = styled.div`
   flex-direction: column;
   border-radius: 10px;
 
-
   @media (max-width: 768px) {
     height: 60vh;
     width: 100%;
     top: 20vh;
-   
   }
 `;
 
@@ -66,6 +64,7 @@ export const Profile = styled.div`
     height: 60px;
     border-radius: 50%;
     margin-right: 15px;
+    object-fit: cover;
   }
 `;
 export const Title = styled.div`
@@ -93,7 +92,7 @@ export const Photo = styled.div`
 
   & > img {
     width: 400px;
-   
+    object-fit: cover;
     overflow-y: auto;
     overflow-x: hidden;
     background-repeat: no-repeat;
@@ -119,5 +118,3 @@ export const Add = styled.div`
     font-size: 16px;
   }
 `;
-
-

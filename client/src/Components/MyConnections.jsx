@@ -79,22 +79,45 @@ const MyConnections = () => {
   };
 
   const rejectConnection = (user) => {
-    fetch(`/rejectconnect/${user._id}`, {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          localStorage.setItem("user", JSON.stringify(data.result1));
-          dispatch({ type: "USER", payload: data.result1 });
-        }
-      });
+    if (window.confirm("Reject Connection ? ")) {
+      fetch(`/rejectconnect/${user._id}`, {
+        method: "put",
+        headers: {
+          "content-type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("jwt"),
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            alert.error(data.error);
+          } else {
+            localStorage.setItem("user", JSON.stringify(data.result1));
+            dispatch({ type: "USER", payload: data.result1 });
+          }
+        });
+    }
+  };
+
+  const WithdrawRequest = (user) => {
+    if (window.confirm("Withdraw Connection Request ? ")) {
+      fetch(`/withdrawreq/${user._id}`, {
+        method: "put",
+        headers: {
+          "content-type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("jwt"),
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            alert.error(data.error);
+          } else {
+            localStorage.setItem("user", JSON.stringify(data.result1));
+            dispatch({ type: "USER", payload: data.result1 });
+          }
+        });
+    }
   };
 
   useEffect(() => {
@@ -247,9 +270,10 @@ const MyConnections = () => {
                       </h3>
                       <h5 style={{ fontWeight: 450 }}>{user.headline}</h5>
                     </Details>
+
                     {user.conrequests.includes(state._id) ? (
-                      <ConnectBtn style={{ cursor: "not-allowed" }}>
-                        Request sent..
+                      <ConnectBtn onClick={() => WithdrawRequest(user)}>
+                        pending
                       </ConnectBtn>
                     ) : showAddConnBtn ? (
                       <ConnectBtn

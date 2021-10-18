@@ -3,7 +3,7 @@ import {
   Container,
   Main,
   Adv,
-  ImageContainer, 
+  ImageContainer,
   Cover,
   Profile,
   Details,
@@ -33,41 +33,45 @@ const UserProfile = () => {
   const [userposts, setUserPosts] = useState([]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      fetch(`/mypost/${userid}`, {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("jwt"),
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            alert.error(data.error);
-          } else {
-            const newUserPost = data.posts.slice(0, 4);
-            setUserPosts(newUserPost);
-            setShowActivityLoader(false);
-          }
-        });
-    }, 1000);
-    return () => clearInterval(interval);
+    if (userid) {
+      const interval = setInterval(() => {
+        fetch(`/mypost/${userid}`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("jwt"),
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) {
+              alert.error(data.error);
+            } else {
+              const newUserPost = data.posts.slice(0, 4);
+              setUserPosts(newUserPost);
+              setShowActivityLoader(false);
+            }
+          });
+      }, 1000);
+      return () => clearInterval(interval);
+    }
   }, [state]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      fetch(`/user/${userid}`, {
-        headers: {
-          authorization: "Bearer " + localStorage.getItem("jwt"),
-        },
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          setData(res.user);
-          setShowSkillLoader(false);
-          setShowEduLoader(false);
-        });
-    }, 500);
-    return () => clearInterval(interval);
+    if (userid) {
+      const interval = setInterval(() => {
+        fetch(`/user/${userid}`, {
+          headers: {
+            authorization: "Bearer " + localStorage.getItem("jwt"),
+          },
+        })
+          .then((res) => res.json())
+          .then((res) => {
+            setData(res.user);
+            setShowSkillLoader(false);
+            setShowEduLoader(false);
+          });
+      }, 500);
+      return () => clearInterval(interval);
+    }
   }, [state]);
 
   const RequestConnection = async (userid) => {
@@ -88,6 +92,27 @@ const UserProfile = () => {
           setShowConnBtn(true);
         }
       });
+  };
+
+  const WithdrawRequest = () => {
+    if (window.confirm("Withdraw Connection Request ? ")) {
+      fetch(`/withdrawreq/${userid}`, {
+        method: "put",
+        headers: {
+          "content-type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("jwt"),
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            alert.error(data.error);
+          } else {
+            localStorage.setItem("user", JSON.stringify(data.result1));
+            dispatch({ type: "USER", payload: data.result1 });
+          }
+        });
+    }
   };
 
   const deleteRoom = () => {
@@ -111,23 +136,25 @@ const UserProfile = () => {
   };
 
   const RemoveConnection = async () => {
-    await fetch(`/removeconnect/${userid}`, {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          localStorage.setItem("user", JSON.stringify(data.result1));
-          dispatch({ type: "USER", payload: data.result1 });
-          deleteRoom();
-        }
-      });
+    if (window.confirm("Remove Connection ? ")) {
+      await fetch(`/removeconnect/${userid}`, {
+        method: "put",
+        headers: {
+          "content-type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("jwt"),
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            alert.error(data.error);
+          } else {
+            localStorage.setItem("user", JSON.stringify(data.result1));
+            dispatch({ type: "USER", payload: data.result1 });
+            deleteRoom();
+          }
+        });
+    }
   };
 
   const createRoom = () => {
@@ -173,22 +200,24 @@ const UserProfile = () => {
   };
 
   const rejectConnection = () => {
-    fetch(`/rejectconnect/${userid}`, {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          localStorage.setItem("user", JSON.stringify(data.result1));
-          dispatch({ type: "USER", payload: data.result1 });
-        }
-      });
+    if (window.confirm("Reject Connection Request ? ")) {
+      fetch(`/rejectconnect/${userid}`, {
+        method: "put",
+        headers: {
+          "content-type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("jwt"),
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            alert.error(data.error);
+          } else {
+            localStorage.setItem("user", JSON.stringify(data.result1));
+            dispatch({ type: "USER", payload: data.result1 });
+          }
+        });
+    }
   };
 
   return (
@@ -320,8 +349,15 @@ const UserProfile = () => {
                 ))}
 
               {data && data.conrequests.includes(state._id) && (
-                <button style={{ cursor: "not-allowed" }}>
-                  Request sent..
+                <button
+                  style={{
+                    backgroundColor: "white",
+                    color: "grey",
+                    border: "1px solid grey",
+                  }}
+                  onClick={() => WithdrawRequest()}
+                >
+                  Pending
                 </button>
               )}
 
@@ -391,7 +427,7 @@ const UserProfile = () => {
             </div>
             <button
               onClick={() => {
-                history.push({ pathname: "/myposts", userid: userid });
+                history.push(`/posts/${userid}`);
               }}
             >
               See all activity

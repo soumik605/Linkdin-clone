@@ -20,7 +20,7 @@ import LikesModel from "./Models/LikesModel";
 import CommentsModel from "./Models/CommentsModel";
 import AddPostModel from "./Models/AddPostModel";
 import Loader1 from "./Loader1";
-import { useHistory, Link, useLocation } from "react-router-dom";
+import { useHistory, Link, useParams } from "react-router-dom";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpAltOutlinedIcon from "@mui/icons-material/ThumbUpAltOutlined";
 import CommentIcon from "@mui/icons-material/Comment";
@@ -33,6 +33,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 
 const Myposts = () => {
+  const { userid } = useParams();
   const [myposts, setMyPosts] = useState([]);
   const [showComments, setShowComments] = useState(false);
   const [showEditPostModel, setShowEditPostModel] = useState(false);
@@ -45,26 +46,27 @@ const Myposts = () => {
   const [showLike, setShowLike] = useState(true);
   const [showCommentInput, setShowCommentInput] = useState(false);
   const { state, dispatch } = useContext(userContext);
-  const location = useLocation();
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      fetch(`/mypost/${location.userid}`, {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("jwt"),
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            alert.error(data.error);
-          } else {
-            setMyPosts(data.posts);
-            setShowMyPostLoader(false);
-          }
-        });
-    }, 2000);
-    return () => clearInterval(interval);
+    if (userid) {
+      const interval = setInterval(() => {
+        fetch(`/mypost/${userid}`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("jwt"),
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) {
+              alert.error(data.error);
+            } else {
+              setMyPosts(data.posts);
+              setShowMyPostLoader(false);
+            }
+          });
+      }, 2000);
+      return () => clearInterval(interval);
+    }
   }, [state, showEditPostModel]);
 
   const likePost = (postId) => {
@@ -232,7 +234,7 @@ const Myposts = () => {
                     flexWrap: "nowrap",
                   }}
                 >
-                  {location.userid === state._id && showEditBox && (
+                  {userid === state._id && showEditBox && (
                     <EditPostIconContainer>
                       <Button
                         variant="outlined"
@@ -257,7 +259,7 @@ const Myposts = () => {
                       </Button>
                     </EditPostIconContainer>
                   )}
-                  {location.userid === state._id && (
+                  {userid === state._id && (
                     <MoreVertIcon
                       style={{ marginLeft: "auto", width: "20px" }}
                       onClick={() => {
@@ -273,19 +275,22 @@ const Myposts = () => {
                 </CardTitle>
               )}
               {post.photo && <CardPhoto src={post.photo} alt="" />}
-              <CardLikes>
-                {post.likes.length !== 0 && (
-                  <h4
-                    onClick={() => {
-                      fetchPost(post._id);
-                      setShowLikes(true);
-                    }}
-                  >
-                    {post.likes.length} Likes
-                  </h4>
-                )}
-                {post.comments.length !== 0 && (
-                  <h4>
+              {(post.likes.length !== 0 || post.comments.length !== 0) && (
+                <CardLikes>
+                  {post.likes.length !== 0 && (
+                    <button
+                      style={{ backgroundColor: "white", border: "none" }}
+                      onClick={() => {
+                        fetchPost(post._id);
+                        setShowLikes(true);
+                      }}
+                    >
+                      {post.likes.length === 1
+                        ? "1 Like"
+                        : `${post.likes.length} Likes`}
+                    </button>
+                  )}
+                  {post.comments.length !== 0 && (
                     <button
                       style={{ backgroundColor: "white", border: "none" }}
                       onClick={() => {
@@ -293,11 +298,13 @@ const Myposts = () => {
                         setShowComments(true);
                       }}
                     >
-                      {post.comments.length} Comments
+                      {post.comments.length === 1
+                        ? "1 Comment"
+                        : `${post.comments.length} Comments`}
                     </button>
-                  </h4>
-                )}
-              </CardLikes>
+                  )}
+                </CardLikes>
+              )}
               <CardActions>
                 <button>
                   {state && showLike ? (

@@ -62,6 +62,7 @@ const UserCoverModel = (props) => {
   }, [coverUrl]);
 
   const addCoverPic = async () => {
+    setShowSubmitBtn(false);
     setShowSubmitLoader(true);
     const data2 = new FormData();
     data2.append("file", addCover);
@@ -81,6 +82,7 @@ const UserCoverModel = (props) => {
   const handleCoverChange = (e) => {
     setCover(URL.createObjectURL(e.target.files[0]));
     setAddCover(e.target.files[0]);
+    setShowSubmitBtn(true);
   };
 
   const removeCoverPic = () => {
@@ -136,7 +138,7 @@ const UserCoverModel = (props) => {
 
           <div>
             <button>
-              <label for="file-input">
+              <label htmlFor="file-input">
                 <CameraAltIcon />
                 <h3>Add Photo</h3>
               </label>
@@ -165,27 +167,6 @@ const UserCoverModel = (props) => {
             </div>
           </div>
         </PopupBox>
-        {/*
-          <InputBox>
-            <input type="file" onChange={(e) => handleCoverChange(e)} />
-            <img src={cover} />
-          </InputBox>
-
-          {cover ? (
-            <Save style={{ marginTop: "10px" }} onClick={() => addCoverPic()}>
-              Save
-            </Save>
-          ) : (
-            <Save
-              style={{ marginTop: "10px" }}
-              onClick={() => alert.error("Please select a cover picture first")}
-            >
-              Save
-            </Save>
-          )}
-          <Save style={{ marginTop: "10px" }} onClick={() => removeCoverPic()}>
-            Remove Cover Picture
-          </Save>*/}
       </ClickAwayListener>
     </Container>
   );

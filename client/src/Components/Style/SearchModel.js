@@ -83,6 +83,7 @@ export const UserBox = styled.button`
     background-repeat: no-repeat;
     background-size: cover;
     margin: 5px;
+  object-fit: cover;
   }
   & > div {
     display: flex;

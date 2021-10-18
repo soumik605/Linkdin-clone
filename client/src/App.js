@@ -56,7 +56,7 @@ const Routing = () => {
       <Route exact path="/chat">
         <ChatPage />
       </Route>
-      <Route exact path="/myposts">
+      <Route exact path="/posts/:userid">
         <Myposts />
       </Route>
     </Switch>

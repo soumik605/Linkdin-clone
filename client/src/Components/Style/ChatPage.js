@@ -76,6 +76,7 @@ export const UserBox = styled.button`
     height: 65px;
     border-radius: 50%;
     margin-left: 15px;
+  object-fit: cover;
   }
 
   & > h3 {

@@ -1,6 +1,5 @@
 import styled from "styled-components";
 
-
 export const Container = styled.div`
   width: 100%;
   max-width: 1128px;
@@ -30,7 +29,7 @@ export const LeftDiv = styled.div`
   flex-direction: column;
   background-color: white;
 
-  &>h3{
+  & > h3 {
     margin: 5px;
   }
 `;
@@ -42,16 +41,16 @@ export const RightDiv = styled.div`
   display: flex;
   flex-direction: column;
 
-  @media (max-width:768px){
+  @media (max-width: 768px) {
     margin-top: 20px;
   }
 `;
 
 export const ReqCont = styled.div`
   width: 100%;
-  padding-top: 20px ;
+  padding-top: 20px;
   box-sizing: border-box;
-  border: 1px solid lightgray;;
+  border: 1px solid lightgray;
   border-radius: 20px;
   margin-bottom: 20px;
   background-color: white;
@@ -81,6 +80,7 @@ export const ReqPic = styled.div`
     border-radius: 50%;
     background-repeat: no-repeat;
     background-size: cover;
+    object-fit: cover;
   }
 
   @media (max-width: 768px) {
@@ -123,7 +123,7 @@ export const CheckBox = styled.div`
 export const SuggestionBox = styled.div`
   width: 100%;
   box-sizing: border-box;
-  border: 1px solid lightgray;;
+  border: 1px solid lightgray;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -146,7 +146,7 @@ export const UserBox = styled.div`
 
   &:hover {
     box-shadow: 2px 2px 2px 1px gray;
-  border: 1px solid gray;
+    border: 1px solid gray;
   }
 
   @media (max-width: 768px) {
@@ -190,6 +190,7 @@ export const Cover = styled.div`
     background-repeat: no-repeat;
     background-size: cover;
     border-radius: 10px 10px 0 0;
+    object-fit: cover;
   }
 
   @media (max-width: 768px) {
@@ -201,6 +202,7 @@ export const Cover = styled.div`
       height: 60px;
       background-repeat: no-repeat;
       background-size: cover;
+      object-fit: cover;
     }
   }
 `;
@@ -211,7 +213,7 @@ export const Profile = styled.div`
   position: relative;
   top: -50px;
   margin: auto;
-  border: 1px solid lightgray;;
+  border: 1px solid lightgray;
   box-sizing: border-box;
 
   & > img {
@@ -220,6 +222,7 @@ export const Profile = styled.div`
     background-repeat: no-repeat;
     background-size: cover;
     border-radius: 50%;
+    object-fit: cover;
   }
 
   @media (max-width: 768px) {
@@ -229,7 +232,7 @@ export const Profile = styled.div`
     position: relative;
     top: -35px;
     margin: auto;
-    border: 1px solid lightgray;;
+    border: 1px solid lightgray;
     box-sizing: border-box;
 
     & > img {
@@ -238,6 +241,7 @@ export const Profile = styled.div`
       background-repeat: no-repeat;
       background-size: cover;
       border-radius: 50%;
+      object-fit: cover;
     }
   }
 `;
@@ -278,7 +282,7 @@ export const LeftUserBox = styled.div`
 
   & > div {
     text-align: left;
-  padding-left: 10px;
+    padding-left: 10px;
   }
 `;
 
@@ -288,6 +292,7 @@ export const LeftProfile = styled.img`
   background-repeat: no-repeat;
   background-size: cover;
   border-radius: 50%;
+  object-fit: cover;
 `;
 
 export const Message = styled.button`
