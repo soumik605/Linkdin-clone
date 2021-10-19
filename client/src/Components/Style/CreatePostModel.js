@@ -76,7 +76,6 @@ export const Title = styled.div`
     border: none;
     padding: 10px 20px;
     font-size: 16px;
-    white-space: wrap;
 
     &:focus {
       outline: none;
