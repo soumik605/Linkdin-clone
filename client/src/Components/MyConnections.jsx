@@ -252,6 +252,7 @@ const MyConnections = () => {
                     s_user.connections.includes(state._id) ||
                     s_user.myrequests.includes(state._id)
                   ) {
+                    return null;
                   } else {
                     return s_user;
                   }

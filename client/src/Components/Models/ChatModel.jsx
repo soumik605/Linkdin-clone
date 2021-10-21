@@ -17,9 +17,8 @@ import Loader1 from "../Loader1";
 
 const ChatModel = (props) => {
   const [room, setRoom] = useState(null);
-  const [allMessages, setAllMessages] = useState([]);
   const [message, setMessage] = useState("");
-  const { state, dispatch } = useContext(userContext);
+  const { state } = useContext(userContext);
   const bottomRef = useRef();
   const [showChatLoader, setShowChatLoader] = useState(true);
 
@@ -42,19 +41,12 @@ const ChatModel = (props) => {
           if (data.error) {
             alert.error(data.error);
           } else {
-            setAllMessages(data.room.messages);
             setShowChatLoader(false);
             setRoom(data.room);
           }
         });
     }
   }, [room, props]);
-
-  useEffect(() => {
-    if (room) {
-      scrollToBottom();
-    }
-  }, [allMessages.length]);
 
   const SendMessage = async () => {
     setMessage("");

@@ -12,7 +12,7 @@ import {
   EduBox,
   Activity,
   Headline,
-} from "./Style/MyProfile";
+} from "./Style/ProfileStyle";
 import EditIcon from "@material-ui/icons/Edit";
 import UserEditModel from "./Models/UserEditModel";
 import { userContext } from "../App";
@@ -36,7 +36,7 @@ const MyProfile = () => {
   const [showEduModel, setShowEduModel] = useState(false);
   const [showAboutModel, setShowAboutModel] = useState(false);
   const [sendEdu, setSendEdu] = useState([]);
-  const { state, dispatch } = useContext(userContext);
+  const { state } = useContext(userContext);
   const alert = useAlert();
   const [showAddSkill, setShowAddSkill] = useState(false);
   const [showEditSkill, setShowEditSkill] = useState(false);
@@ -44,23 +44,25 @@ const MyProfile = () => {
   const history = useHistory();
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      fetch(`/mypost/${state._id}`, {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("jwt"),
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            alert.error(data.error);
-          } else {
-            const newUserPost = data.posts.slice(0, 4);
-            setMyPosts(newUserPost);
-          }
-        });
-    }, 2000);
-    return () => clearInterval(interval);
+    if (state) {
+      const interval = setInterval(() => {
+        fetch(`/mypost/${state._id}`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("jwt"),
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) {
+              alert.error(data.error);
+            } else {
+              const newUserPost = data.posts.slice(0, 4);
+              setMyPosts(newUserPost);
+            }
+          });
+      }, 2000);
+      return () => clearInterval(interval);
+    }
   }, [state]);
 
   return (

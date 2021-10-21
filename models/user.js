@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema({
   },
   headline: {
     type: String,
+    default: "Hello everyone !!",
   },
   about: {
     type: String,

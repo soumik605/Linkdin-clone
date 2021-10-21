@@ -1,17 +1,12 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { Close, Container, PopupBox, UserBox } from "../Style/SearchModel";
-import { Link, useHistory } from "react-router-dom";
-import { userContext } from "../../App";
-import Loader1 from "../Loader1";
 
 const SearchModel = (props) => {
   const [alluser, setAlluser] = useState([]);
-  const history = useHistory();
-  const { state } = useContext(userContext);
 
-  useEffect(async () => {
-    await fetch("/alluser", {
+  useEffect(() => {
+    fetch("/alluser", {
       headers: {
         authorization: "Bearer " + localStorage.getItem("jwt"),
       },
@@ -49,6 +44,8 @@ const SearchModel = (props) => {
                   fuser.name.toLowerCase().includes(props.name.toLowerCase())
                 ) {
                   return fuser;
+                } else {
+                  return null;
                 }
               })
               .map((user) => {

@@ -14,7 +14,7 @@ import { useAlert } from "react-alert";
 import FullScreenLoader from "./FullScreenLoader";
 
 const AddPostModel = (props) => {
-  const { state, dispatch } = useContext(userContext);
+  const { state } = useContext(userContext);
   const [photo, setPhoto] = useState("");
   const [addPhoto, setAddPhoto] = useState("");
   const [photoUrl, setPhotoUrl] = useState("");
@@ -29,7 +29,7 @@ const AddPostModel = (props) => {
       setPhoto(props.post.photo);
       setTitle(props.post.title);
     }
-  }, []);
+  }, [props.post]);
 
   const CreatePost = () => {
     fetch("/createpost", {
@@ -88,7 +88,7 @@ const AddPostModel = (props) => {
     if (photoUrl && props.post) {
       EditPost(photoUrl);
     }
-  }, [photoUrl]);
+  }, [photoUrl, props.post]);
 
   const handlePhotoChange = (e) => {
     setPhoto(URL.createObjectURL(e.target.files[0]));

@@ -12,7 +12,7 @@ import {
   EduBox,
   Activity,
   Headline,
-} from "./Style/MyProfile";
+} from "./Style/ProfileStyle";
 import { useParams, useHistory } from "react-router-dom";
 import { userContext } from "../App";
 import NavBar from "./NavBar";
@@ -53,7 +53,7 @@ const UserProfile = () => {
       }, 1000);
       return () => clearInterval(interval);
     }
-  }, [state]);
+  }, [state, userid]);
 
   useEffect(() => {
     if (userid) {
@@ -72,7 +72,7 @@ const UserProfile = () => {
       }, 500);
       return () => clearInterval(interval);
     }
-  }, [state]);
+  }, [state, userid]);
 
   const RequestConnection = async (userid) => {
     await fetch(`/reqconnect/${userid}`, {

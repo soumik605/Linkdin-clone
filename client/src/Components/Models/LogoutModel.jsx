@@ -3,7 +3,6 @@ import { Container, PopupBox } from "../Style/LogoutModel";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { userContext } from "../../App";
 import { Link, useHistory } from "react-router-dom";
-import { border } from "@mui/system";
 
 const LogoutModel = (props) => {
   const { state, dispatch } = useContext(userContext);

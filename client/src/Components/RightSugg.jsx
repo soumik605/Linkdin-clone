@@ -1,8 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
-import { useHistory } from "react-router";
 import styled from "styled-components";
 import { userContext } from "../App";
-import Loader1 from "./Loader1";
 import Skeleton from "@mui/material/Skeleton";
 
 const RightSugg = () => {
@@ -107,6 +105,7 @@ const RightSugg = () => {
               s_user.connections.includes(state._id) ||
               s_user.myrequests.includes(state._id)
             ) {
+              return null;
             } else {
               return s_user;
             }
@@ -119,7 +118,7 @@ const RightSugg = () => {
                   {" "}
                   <a href={`/profile/${user._id}`}>{user.name}</a>
                 </h3>
-                <h5>{user.about}</h5>
+                <h5>{user.headline}</h5>
 
                 {user.conrequests.includes(state._id) ? (
                   <ConnectBtn onClick={() => WithdrawRequest(user)}>

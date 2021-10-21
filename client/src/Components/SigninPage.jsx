@@ -1,11 +1,9 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import TextField from "@material-ui/core/TextField";
 import styled from "styled-components";
 import { userContext } from "../App";
 import { useHistory, Link } from "react-router-dom";
 import { useAlert } from "react-alert";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-
 import IconButton from "@mui/material/IconButton";
 import FilledInput from "@mui/material/FilledInput";
 import InputLabel from "@mui/material/InputLabel";
@@ -118,7 +116,7 @@ const SigninPage = () => {
           {details.email !== "" && details.password !== "" && (
             <Signin onClick={() => addUserDetails()}>Signin</Signin>
           )}
-          {(details.email == "" || details.password == "") && (
+          {(details.email === "" || details.password === "") && (
             <Signin
               style={{
                 backgroundColor: "#fff",

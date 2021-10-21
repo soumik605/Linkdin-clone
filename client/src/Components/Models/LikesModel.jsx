@@ -12,7 +12,7 @@ import { userContext } from "../../App";
 import { Link } from "react-router-dom";
 
 const LikesModel = (props) => {
-  const { state, dispatch } = useContext(userContext);
+  const { state } = useContext(userContext);
   return (
     <Container>
       <ClickAwayListener onClickAway={() => props.model(false)}>

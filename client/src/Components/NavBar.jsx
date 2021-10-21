@@ -17,11 +17,13 @@ const NavBar = () => {
   const [showSearchModel, setShowSearchModel] = useState(false);
   const [showLogoutModel, setShowLogoutModel] = useState(false);
   const [name, setName] = useState("");
-  const { state, dispatch } = useContext(userContext);
+  const { state } = useContext(userContext);
 
   return (
     <>
-      {showCreateModel && <AddPostModel model={setShowCreateModel} post={null} />}
+      {showCreateModel && (
+        <AddPostModel model={setShowCreateModel} post={null} />
+      )}
       {showLogoutModel && <LogoutModel model={setShowLogoutModel} />}
       {showSearchModel && (
         <SearchModel
@@ -105,7 +107,7 @@ const NavBar = () => {
             style={{
               border: "none",
               backgroundColor: "white",
-             
+
               marginBottom: "auto",
             }}
           >

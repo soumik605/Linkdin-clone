@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Container,
   Form,
@@ -24,7 +24,6 @@ const SignupPage = () => {
   const handleChange = (e) => {
     setDetails1({ ...details1, [e.target.name]: e.target.value });
   };
-
 
   return (
     <Container>
@@ -79,7 +78,7 @@ const SignupPage = () => {
             </Join>
           )}
 
-          {(details1.email == "" || details1.password == "") && (
+          {(details1.email === "" || details1.password === "") && (
             <Join
               style={{
                 backgroundColor: "#b6ebf1",

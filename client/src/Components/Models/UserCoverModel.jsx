@@ -1,11 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import {
-  Container,
-  PopupBox,
-  Close,
-  Save,
-  InputBox,
-} from "../Style/AddPhotoModel";
+import { Container, PopupBox, Close } from "../Style/AddPhotoModel";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { userContext } from "../../App";
 import { useAlert } from "react-alert";

@@ -13,7 +13,7 @@ import { useAlert } from "react-alert";
 import FullScreenLoader from "./FullScreenLoader";
 
 const EducationModel = (props) => {
-  const { state, dispatch } = useContext(userContext);
+  const {dispatch } = useContext(userContext);
   const [education, setEducation] = useState(props.education);
   const [showSubmitLoader, setShowSubmitLoader] = useState(false);
   const alert = useAlert();

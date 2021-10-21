@@ -5,13 +5,13 @@ import { initialState, reducer } from "./reducers/userReducer";
 import HomePage from "./Components/HomePage";
 import SignupPage from "./Components/SignupPage";
 import SigninPage from "./Components/SigninPage";
-import MyProfile from "./Components/MyProfile";
 import UserDetails from "./Components/UserDetails";
-import UserProfile from "./Components/UserProfile";
-import Feed from "./Components/Feed";
 import MyConnections from "./Components/MyConnections";
 import ChatPage from "./Components/ChatPage";
 import Myposts from "./Components/Myposts";
+import MyFeed from "./Components/MyFeed";
+import MyProfile from './Components/MyProfile'
+import UserProfile from "./Components/UserProfile";
 
 export const userContext = createContext();
 
@@ -29,8 +29,8 @@ const Routing = () => {
   }, []);
   return (
     <Switch>
-       <Route exact path="/">
-        <Feed />
+      <Route exact path="/">
+        <MyFeed />
       </Route>
       <Route exact path="/home">
         <HomePage />

@@ -29,8 +29,8 @@ router.post("/createpost", requireLogin, (req, res) => {
 
 router.get("/allsubpost", requireLogin, (req, res) => {
   Post.find({ posted_By: { $in: req.user.connections } })
-    .populate("posted_By", "_id name about profile_pic")
-    .populate("comments.commented_By", "_id name profile_pic")
+    .populate("posted_By", "_id name headline profile_pic ")
+    .populate("comments.commented_By", "_id name headline profile_pic")
     .sort("-createdAt")
     .then((result) => {
       res.json({ result });
@@ -42,7 +42,7 @@ router.get("/allsubpost", requireLogin, (req, res) => {
 
 router.get("/mypost/:userid", requireLogin, (req, res) => {
   Post.find({ posted_By: req.params.userid })
-    .populate("posted_By", "_id name about profile_pic")
+    .populate("posted_By", "_id name headline profile_pic")
     .sort("-createdAt")
     .then((posts) => {
       res.json({ posts });
@@ -67,7 +67,7 @@ router.put("/like", requireLogin, (req, res) => {
             new: true,
           }
         )
-          .populate("posted_By", "_id name about profile_pic")
+          .populate("posted_By", "_id name headline profile_pic")
           .populate("comments.commented_By", "_id name profile_pic")
           .populate("likes", "_id name profile_pic")
           .exec((err, result) => {
@@ -92,7 +92,7 @@ router.put("/unlike", requireLogin, (req, res) => {
       new: true,
     }
   )
-    .populate("posted_By", "_id name about profile_pic")
+    .populate("posted_By", "_id name headline profile_pic")
     .populate("comments.commented_By", "_id name profile_pic")
     .populate("likes", "_id name profile_pic")
     .exec((err, result) => {
@@ -138,8 +138,8 @@ router.put("/comment", requireLogin, (req, res) => {
 router.delete("/deletepost/:postId", requireLogin, (req, res) => {
   Post.findOne({ _id: req.params.postId })
   .populate("comments.commented_By", "_id name profile_pic")
-  .populate("likes", "_id name profile_pic")
-  .populate("posted_By", "_id name profile_pic")
+  .populate("likes", "_id name headline profile_pic")
+  .populate("posted_By", "_id name headline profile_pic")
     .exec((err, post) => {
       if (err || !post) {
         return res.status(422).json({ error: err });
@@ -165,8 +165,8 @@ router.put("/editpost/:postId", requireLogin, (req, res) => {
     }
   )
     .populate("comments.commented_By", "_id name profile_pic")
-    .populate("likes", "_id name profile_pic")
-    .populate("posted_By", "_id name profile_pic")
+    .populate("likes", "_id name headline profile_pic")
+    .populate("posted_By", "_id name headline profile_pic")
     .exec((err, post) => {
       if (err) {
         return res.status(422).json({ error: err });
@@ -176,20 +176,21 @@ router.put("/editpost/:postId", requireLogin, (req, res) => {
     });
 });
 
-router.put("/deletecomment/:postId/:commentId", requireLogin, (req, res) => {
-  Post.findOne({ _id: req.params.postId })
+router.put("/deletecomment", requireLogin, (req, res) => {
+  Post.findOne({ _id: req.body.postId })
     .populate("comments.commented_By", "_id name profile_pic")
-    .populate("likes", "_id name profile_pic")
-    .populate("posted_By", "_id name about profile_pic")
+    .populate("likes", "_id name headline profile_pic")
+    .populate("posted_By", "_id name headline profile_pic")
     .exec((err, post) => {
       if (err || !post) {
         return res.status(422).json({ error: err });
       } else {
         post.comments.map((cmnt) => {
-          if (cmnt._id.toString() === req.params.commentId.toString()) {
-            if (cmnt.posted_By._id.toString() === req.user._id.toString()) {
+          console.log(cmnt);
+          if (cmnt._id.toString() === req.body.commentId.toString()) {
+            if (cmnt.commented_By._id.toString() === req.user._id.toString()) {
               Post.findByIdAndUpdate(
-                req.params.postId,
+                req.body.postId,
                 {
                   $pull: { comments: cmnt },
                 },
@@ -198,13 +199,13 @@ router.put("/deletecomment/:postId/:commentId", requireLogin, (req, res) => {
                 }
               )
                 .populate("comments.commented_By", "_id name profile_pic")
-                .populate("likes", "_id name profile_pic")
-                .populate("posted_By", "_id name about profile_pic")
+                .populate("likes", "_id name headline profile_pic")
+                .populate("posted_By", "_id name headline profile_pic")
                 .exec((err, result) => {
                   if (err) {
                     res.status(422).json({ error: err });
                   } else {
-                    res.send(result);
+                    res.json({ result });
                   }
                 });
             } else {
@@ -220,9 +221,9 @@ router.put("/deletecomment/:postId/:commentId", requireLogin, (req, res) => {
 
 router.get("/post/:postid", requireLogin, (req, res) => {
   Post.findById(req.params.postid)
-    .populate("posted_By", "_id name about profile_pic")
+    .populate("posted_By", "_id name headline profile_pic")
     .populate("comments.commented_By", "_id name profile_pic")
-    .populate("likes", "_id name profile_pic")
+    .populate("likes", "_id name headline profile_pic")
     .then((post) => res.json({ post }))
     .catch((err) => console.log(err));
 });

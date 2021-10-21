@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { userContext } from "../App";
 
 const LeftProfile = () => {
-  const { state, dispatch } = useContext(userContext);
+  const { state } = useContext(userContext);
   const history = useHistory()
   return (
     <>
@@ -26,18 +26,20 @@ const LeftProfile = () => {
 };
 
 export const Profile = styled.img`
-  height: 100px;
-  width: 100px;
+  height:70px;
+  width:70px;
   border-radius: 50%;
-  margin: -50px auto 50px;
+  margin: -40px auto 70px;
   box-sizing: border-box;
+  border: 2px solid white;
   object-fit: cover;
 `;
 export const Cover = styled.img`
-  height: 100px;
+  height: 70px;
   width: 100%;
   box-sizing: border-box;
   object-fit: cover;
+  border-radius: 10px 10px 0 0;
 `;
 export const Desc = styled.div`
   display: flex;

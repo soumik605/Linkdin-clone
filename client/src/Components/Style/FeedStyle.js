@@ -34,6 +34,7 @@ export const LeftCont = styled.div`
   height: fit-content;
   background-color: white;
   border: 1px solid lightgray;
+  border-radius: 10px;
 `;
 
 export const MainCont = styled.div`
@@ -116,8 +117,8 @@ export const CardTop = styled.div`
   padding: 10px;
 
   & > img {
-    height: 45px;
-    width: 45px;
+    height: 55px;
+    width: 55px;
     border-radius: 50%;
     margin-right: 15px;
     object-fit: cover;
@@ -131,6 +132,7 @@ export const CardTop = styled.div`
 export const CardTitle = styled.div`
   width: 100%;
   padding: 10px 20px;
+  top: -50px;
 
   & > h3 {
     text-align: left;
@@ -227,8 +229,7 @@ export const EditPostIconContainer = styled.div`
   border: 1px solid lightgray;
   position: relative;
   top: 5px;
-  margin-left: auto;
-  margin-right: 10px;
+  margin: 10px 45px -84px auto;
   display: flex;
   flex-direction: column;
   z-index: 2;
