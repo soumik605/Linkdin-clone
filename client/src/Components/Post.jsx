@@ -41,7 +41,6 @@ const Post = (props) => {
   const [showEditBox, setShowEditBox] = useState(false);
   const [sendPost, setSendPost] = useState(null);
   const [showLoader, setShowLoader] = useState(false);
-
   const [monthDiff, setMonthDiff] = useState(0);
   const [dayDiff, setDayDiff] = useState(0);
   const [hourDiff, setHourDiff] = useState(0);
@@ -173,7 +172,7 @@ const Post = (props) => {
 
   const deletePost = (postid) => {
     if (window.confirm("Delete Post ?")) {
-      setShowLoader(true)
+      setShowLoader(true);
       fetch(`/deletepost/${postid}`, {
         method: "delete",
         headers: {
@@ -183,7 +182,7 @@ const Post = (props) => {
         .then((res) => res.json())
         .then((data) => {
           alert.success("Post Deleted !");
-          setShowLoader(false)
+          setShowLoader(false);
         })
         .catch((err) => console.log(err));
     }
@@ -191,11 +190,13 @@ const Post = (props) => {
 
   return (
     <>
-    {
-      showLoader && <FullScreenLoader />
-    }
+      {showLoader && <FullScreenLoader />}
       {state && showComments && (
-        <CommentsModel model={setShowComments} comments={postComments} post={props.post} />
+        <CommentsModel
+          model={setShowComments}
+          comments={postComments}
+          post={props.post}
+        />
       )}
       {state && showLikes && (
         <LikesModel model={setShowLikes} likes={postLikes} />
@@ -205,7 +206,7 @@ const Post = (props) => {
       )}
 
       <PostCard key={props.post._id}>
-        {userid === state._id && showEditBox && (
+        {props.post.posted_By._id === state._id && showEditBox && (
           <EditPostIconContainer>
             <Button
               variant="outlined"
@@ -259,7 +260,7 @@ const Post = (props) => {
               flexWrap: "nowrap",
             }}
           >
-            {userid === state._id && (
+            {props.post.posted_By._id === state._id && (
               <MoreVertIcon
                 style={{ marginLeft: "auto", width: "20px" }}
                 onClick={() => {

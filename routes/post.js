@@ -28,7 +28,9 @@ router.post("/createpost", requireLogin, (req, res) => {
 });
 
 router.get("/allsubpost", requireLogin, (req, res) => {
-  Post.find({ posted_By: { $in: req.user.connections } })
+  const arr = req.user.connections;
+  arr.push(req.user._id);
+  Post.find({ posted_By: { $in: arr } })
     .populate("posted_By", "_id name headline profile_pic ")
     .populate("comments.commented_By", "_id name headline profile_pic")
     .sort("-createdAt")
@@ -137,9 +139,9 @@ router.put("/comment", requireLogin, (req, res) => {
 
 router.delete("/deletepost/:postId", requireLogin, (req, res) => {
   Post.findOne({ _id: req.params.postId })
-  .populate("comments.commented_By", "_id name profile_pic")
-  .populate("likes", "_id name headline profile_pic")
-  .populate("posted_By", "_id name headline profile_pic")
+    .populate("comments.commented_By", "_id name profile_pic")
+    .populate("likes", "_id name headline profile_pic")
+    .populate("posted_By", "_id name headline profile_pic")
     .exec((err, post) => {
       if (err || !post) {
         return res.status(422).json({ error: err });
