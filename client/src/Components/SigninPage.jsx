@@ -134,7 +134,7 @@ const SigninPage = () => {
             </Signin>
           )}
            <GoogleLogin
-            clientId="988766958233-i59rm3i38at06gqvr1e89slamjsrrj1m.apps.googleusercontent.com"
+            clientId="566971522053-mcmsdcrpaik6fksgm1f2m11ri5pgglk6.apps.googleusercontent.com"
             buttonText="Login with Google"
             onSuccess={responseGoogle}
             onFailure={responseGoogle}
