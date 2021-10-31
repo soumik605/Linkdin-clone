@@ -145,7 +145,7 @@ const SigninPage = () => {
       <Join>
         New to Linkedin?{" "}
         <Link to="/signup1" exact>
-          Join now
+          Join now 
         </Link>
       </Join>
     </MainContainer>
