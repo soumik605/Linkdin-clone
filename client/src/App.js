@@ -12,6 +12,7 @@ import Myposts from "./Components/Myposts";
 import MyFeed from "./Components/MyFeed";
 import MyProfile from './Components/MyProfile'
 import UserProfile from "./Components/UserProfile";
+import SignupGooglePage from "./Components/SignupGooglePage";
 
 export const userContext = createContext();
 
@@ -29,9 +30,13 @@ const Routing = () => {
   }, []);
   return (
     <Switch>
+
+
       <Route exact path="/">
         <MyFeed />
       </Route>
+
+      
       <Route exact path="/home">
         <HomePage />
       </Route>
@@ -40,6 +45,9 @@ const Routing = () => {
       </Route>
       <Route exact path="/signup1">
         <SignupPage />
+      </Route>
+      <Route exact path="/signupbygoogle">
+        <SignupGooglePage />
       </Route>
       <Route exact path="/signup2">
         <UserDetails />

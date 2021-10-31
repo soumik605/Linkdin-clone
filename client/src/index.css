@@ -21,6 +21,10 @@ h1,h2,h3,h4,h5{
   font-weight: 480;
 }
 
+button{
+  cursor: pointer;
+}
+
 body {
   margin: 0;
   background-color: #f3f2ef;

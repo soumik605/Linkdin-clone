@@ -18,21 +18,21 @@ const UserDetails = () => {
   const alert = useAlert();
   const location = useLocation();
   const history = useHistory();
-  const [showLoader, setShowLoader] = useState(false)
+  const [showLoader, setShowLoader] = useState(false);
   const [details2, setDetails2] = useState({
     email: location.state.email,
     password: location.state.password,
-    name: "",
+    name: location.state.name,
     address: "",
+    image: location.state.image,
   });
-
 
   const handleChange = (e) => {
     setDetails2({ ...details2, [e.target.name]: e.target.value });
   };
 
-  const addUser = () => {
-    setShowLoader(true)
+ const addUser = () => {
+    setShowLoader(true);
     fetch("/signup", {
       method: "post",
       headers: {
@@ -43,22 +43,22 @@ const UserDetails = () => {
         email: details2.email,
         password: details2.password,
         address: details2.address,
-        education: details2.education,
+        profile_pic: details2.image,
       }),
     })
       .then((res) => res.json())
       .then((data) => {
         if (data.error) {
           alert.error(data.error);
-          setShowLoader(false)
+          setShowLoader(false);
           history.push("/signup1");
         } else {
           alert.success(data.message);
-          setShowLoader(false)
+          setShowLoader(false);
           history.push("/signin");
         }
       });
-  };
+  };  
 
   return (
     <Container>

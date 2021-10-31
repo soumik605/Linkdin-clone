@@ -12,6 +12,7 @@ import FormControl from "@mui/material/FormControl";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import FullScreenLoader from "./Models/FullScreenLoader";
+import GoogleLogin from "react-google-login";
 
 const SigninPage = () => {
   const { dispatch } = useContext(userContext);
@@ -55,6 +56,10 @@ const SigninPage = () => {
 
   const handleChange = (e) => {
     setDetails({ ...details, [e.target.name]: e.target.value });
+  };
+
+  const responseGoogle = (response) => {
+    setDetails({ ...details, ["email"]: response.profileObj.email });
   };
 
   return (
@@ -128,7 +133,13 @@ const SigninPage = () => {
               Signin
             </Signin>
           )}
-          <Signin>Join with Google</Signin>
+           <GoogleLogin
+            clientId="988766958233-i59rm3i38at06gqvr1e89slamjsrrj1m.apps.googleusercontent.com"
+            buttonText="Login with Google"
+            onSuccess={responseGoogle}
+            onFailure={responseGoogle}
+            cookiePolicy={"single_host_origin"}
+          />
         </Section>
       </Container>
       <Join>

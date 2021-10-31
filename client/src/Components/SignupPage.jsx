@@ -9,20 +9,30 @@ import {
   Input,
   Agree,
   Join,
-  GoogleJoin,
   SigninLink,
 } from "./Style/Signup";
 import { useHistory, Link } from "react-router-dom";
+import GoogleLogin from "react-google-login";
 
 const SignupPage = () => {
   const history = useHistory();
   const [details1, setDetails1] = useState({
     email: "",
     password: "",
+    name: "",
+    image:
+      "https://www.personality-insights.com/wp-content/uploads/2017/12/default-profile-pic-e1513291410505.jpg",
   });
 
   const handleChange = (e) => {
     setDetails1({ ...details1, [e.target.name]: e.target.value });
+  };
+
+  const responseGoogle = (response) => {
+    history.push({
+      pathname: "/signupbygoogle",
+      res: response,
+    });
   };
 
   return (
@@ -77,7 +87,6 @@ const SignupPage = () => {
               Agree & Next
             </Join>
           )}
-
           {(details1.email === "" || details1.password === "") && (
             <Join
               style={{
@@ -89,8 +98,14 @@ const SignupPage = () => {
               Agree & Next
             </Join>
           )}
-
-          <GoogleJoin>Join with Google</GoogleJoin>
+          <GoogleLogin
+            clientId="988766958233-i59rm3i38at06gqvr1e89slamjsrrj1m.apps.googleusercontent.com"
+            buttonText="Join with Google"
+            onSuccess={responseGoogle}
+            onFailure={responseGoogle}
+            cookiePolicy={"single_host_origin"}
+          />
+          ,
           <SigninLink>
             Already on Linkedin?{" "}
             <Link to="/signin" exact>

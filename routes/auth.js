@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config/keys");
 
 router.post("/signup", (req, res) => {
-  const { name, email, password, address } = req.body;
+  const { name, email, password, address, profile_pic } = req.body;
 
   if (!email || !name || !password) {
     return res.status(422).json({ error: "Please add all fields" });
@@ -25,6 +25,7 @@ router.post("/signup", (req, res) => {
               email,
               address,
               password: hashedpassword,
+              profile_pic
             });
             user
               .save()
