@@ -14,9 +14,8 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpAltOutlinedIcon from "@mui/icons-material/ThumbUpAltOutlined";
 import { Button } from "@material-ui/core";
 import CommentIcon from "@mui/icons-material/Comment";
-import { useAlert } from "react-alert";
 import CommentsModel from "./Models/CommentsModel";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import LikesModel from "./Models/LikesModel";
 import RedoRoundedIcon from "@mui/icons-material/RedoRounded";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
@@ -25,21 +24,23 @@ import EditIcon from "@material-ui/icons/Edit";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddPostModel from "./Models/AddPostModel";
 import FullScreenLoader from "./Models/FullScreenLoader";
+import { connect } from "react-redux";
+import {
+  commentAPost,
+  deleteAPost,
+  fetchAPost,
+  likeAPost,
+  unlikeAPost,
+} from "../service/Actions/PostAction";
 
 const Post = (props) => {
-  const { userid } = useParams();
   const { state } = useContext(userContext);
   const [showLike, setShowLike] = useState(true);
   const [showComments, setShowComments] = useState(false);
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [showLikes, setShowLikes] = useState(false);
-  const [allPost, setAllPost] = useState([]);
-  const alert = useAlert();
-  const [postComments, setPostComments] = useState([]);
-  const [postLikes, setPostLikes] = useState([]);
   const [showEditPostModel, setShowEditPostModel] = useState(false);
   const [showEditBox, setShowEditBox] = useState(false);
-  const [sendPost, setSendPost] = useState(null);
   const [showLoader, setShowLoader] = useState(false);
   const [monthDiff, setMonthDiff] = useState(0);
   const [dayDiff, setDayDiff] = useState(0);
@@ -63,128 +64,35 @@ const Post = (props) => {
     }
   }, [props.post]);
 
-  const likePost = (postId) => {
+  const likePost = async (postId) => {
     if (state) {
       setShowLike(false);
-      fetch("/like", {
-        method: "put",
-        headers: {
-          "content-type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("jwt"),
-        },
-        body: JSON.stringify({
-          postId,
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            alert.error(data.error);
-          } else {
-            const newdata = allPost.map((item) => {
-              if (item._id === data.result._id) {
-                return data.result;
-              } else {
-                return item;
-              }
-            });
-            setAllPost(newdata);
-            setShowLike(true);
-          }
-        });
+      await props.likeAPost(postId);
+      setShowLike(true);
     }
   };
 
-  const unlikePost = (postId) => {
+  const unlikePost = async (postId) => {
     if (state) {
-      fetch("/unlike", {
-        method: "put",
-        headers: {
-          "content-type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("jwt"),
-        },
-        body: JSON.stringify({
-          postId,
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            alert.error(data.error);
-          } else {
-            const newdata = allPost.map((item) => {
-              if (item._id === data.result._id) {
-                return data.result;
-              } else {
-                return item;
-              }
-            });
-            setAllPost(newdata);
-          }
-        });
+      await props.unlikeAPost(postId);
     }
   };
 
-  const AddComment = (postId, text) => {
+  const AddComment = async (postId, text) => {
     if (state) {
-      fetch("/comment", {
-        method: "put",
-        headers: {
-          "content-type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("jwt"),
-        },
-        body: JSON.stringify({
-          postId,
-          text,
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            alert.error(data.error);
-          } else {
-            const newdata = allPost.map((item) => {
-              if (item._id === data.result._id) {
-                return data.result;
-              } else {
-                return item;
-              }
-            });
-            setAllPost(newdata);
-          }
-        });
+      await props.commentAPost(postId, text);
     }
   };
 
-  const fetchPost = (postid) => {
-    fetch(`/post/${postid}`, {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        setPostComments(res.post.comments);
-        setPostLikes(res.post.likes);
-      })
-      .catch((err) => console.log(err));
+  const fetchPost = async (postid) => {
+    await props.fetchAPost(postid);
   };
 
-  const deletePost = (postid) => {
+  const deletePost = async (postid) => {
     if (window.confirm("Delete Post ?")) {
       setShowLoader(true);
-      fetch(`/deletepost/${postid}`, {
-        method: "delete",
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("jwt"),
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          alert.success("Post Deleted !");
-          setShowLoader(false);
-        })
-        .catch((err) => console.log(err));
+      await props.deleteAPost(postid);
+      setShowLoader(false);
     }
   };
 
@@ -192,17 +100,11 @@ const Post = (props) => {
     <>
       {showLoader && <FullScreenLoader />}
       {state && showComments && (
-        <CommentsModel
-          model={setShowComments}
-          comments={postComments}
-          post={props.post}
-        />
+        <CommentsModel model={setShowComments} post={props.post} />
       )}
-      {state && showLikes && (
-        <LikesModel model={setShowLikes} likes={postLikes} />
-      )}
+      {state && showLikes && <LikesModel model={setShowLikes} />}
       {showEditPostModel && (
-        <AddPostModel model={setShowEditPostModel} post={sendPost} />
+        <AddPostModel model={setShowEditPostModel} post={props.post} />
       )}
 
       <PostCard key={props.post._id}>
@@ -213,7 +115,6 @@ const Post = (props) => {
               startIcon={<EditIcon />}
               onClick={() => {
                 setShowEditBox(false);
-                setSendPost(props.post);
                 setShowEditPostModel(true);
               }}
             >
@@ -369,4 +270,16 @@ const Post = (props) => {
   );
 };
 
-export default Post;
+const mapStateToProps = (state) => ({
+  Post: state.PostReducer,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  likeAPost: (postId) => dispatch(likeAPost(postId)),
+  unlikeAPost: (postId) => dispatch(unlikeAPost(postId)),
+  commentAPost: (postId, text) => dispatch(commentAPost(postId, text)),
+  deleteAPost: (postid) => dispatch(deleteAPost(postid)),
+  fetchAPost: (postid) => dispatch(fetchAPost(postid)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Post);

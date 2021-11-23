@@ -3,79 +3,48 @@ import styled from "styled-components";
 import { userContext } from "../App";
 import Skeleton from "@mui/material/Skeleton";
 
-const RightSugg = () => {
-  const [allUser, setAllUser] = useState([]);
+import { connect } from "react-redux";
+import {
+  allUser,
+  requestConnection,
+  withdrawConnection,
+} from "../service/Actions/UserActions";
+
+const RightSugg = (props) => {
   const [showSuggestionLoader, setShowSuggestionLoader] = useState(true);
   const [showReqConnBtn, setShowReqConnBtn] = useState(true);
-  const { state, dispatch } = useContext(userContext);
+  const { state } = useContext(userContext);
+
+  const fetchAllUser = async () => {
+    await props.allUser();
+    setShowSuggestionLoader(false);
+  };
 
   useEffect(() => {
     if (state) {
       const interval = setInterval(() => {
-        fetch(`/alluser`, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("jwt"),
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.error) {
-              alert.error(data.error);
-            } else {
-              setAllUser(data.users);
-              setShowSuggestionLoader(false);
-            }
-          });
-      }, 2000);
+        fetchAllUser();
+      }, 500);
       return () => clearInterval(interval);
     }
   }, [state]);
 
-  const WithdrawRequest = (user) => {
+  const WithdrawRequest = async (user) => {
     if (window.confirm("Withdraw Connection Request ? ")) {
-      fetch(`/withdrawreq/${user._id}`, {
-        method: "put",
-        headers: {
-          "content-type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("jwt"),
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            alert.error(data.error);
-          } else {
-            localStorage.setItem("user", JSON.stringify(data.result1));
-            dispatch({ type: "USER", payload: data.result1 });
-          }
-        });
+      await props.withdrawConnection(user._id);
     }
   };
 
-  const RequestConnection = (userid) => {
-    fetch(`/reqconnect/${userid}`, {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          localStorage.setItem("user", JSON.stringify(data.result2));
-          dispatch({ type: "USER", payload: data.result2 });
-          setShowReqConnBtn(true);
-        }
-      });
+  const RequestConnection = async (userid) => {
+    setShowReqConnBtn(false);
+    await props.requestConnection(userid);
+    setShowReqConnBtn(true);
   };
 
   return (
     <>
       <h3 style={{ marginLeft: "10px" }}>People you may know</h3>
-      {showSuggestionLoader && (
+      {props.user.allUser.length === 0 && showSuggestionLoader && (
         <User>
           <Skeleton
             variant="circular"
@@ -97,8 +66,8 @@ const RightSugg = () => {
         </User>
       )}
 
-      {allUser &&
-        allUser
+      {props.user.allUser.length !== 0 &&
+        props.user.allUser
           .filter((s_user) => {
             if (
               s_user._id === state._id ||
@@ -184,4 +153,14 @@ export const ConnectBtn = styled.button`
   }
 `;
 
-export default RightSugg;
+const mapStateToProps = (state) => ({
+  user: state.UserReducer,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  requestConnection: (userid) => dispatch(requestConnection(userid)),
+  withdrawConnection: (userid) => dispatch(withdrawConnection(userid)),
+  allUser: () => dispatch(allUser()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(RightSugg);

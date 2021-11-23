@@ -7,6 +7,8 @@ import FullScreenLoader from "./FullScreenLoader";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
+import { connect } from "react-redux";
+import { addCoverPic, editDetails } from "../../service/Actions/UserActions";
 
 const UserCoverModel = (props) => {
   const { state, dispatch } = useContext(userContext);
@@ -18,40 +20,35 @@ const UserCoverModel = (props) => {
   const [showSubmitBtn, setShowSubmitBtn] = useState(false);
 
   useEffect(() => {
-    if (coverUrl) {
-      fetch("/editdetails", {
-        method: "put",
-        headers: {
-          "content-type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("jwt"),
+    if (props.user.currentUser) {
+      dispatch({
+        type: "UPDATE_PHOTO",
+        payload: {
+          profile_pic: props.user.currentUser.profile_pic,
+          cover_pic: props.user.currentUser.cover_pic,
         },
-        body: JSON.stringify({
-          name: state.name,
-          email: state.email,
-          address: state.address,
-          about: state.about,
-          cover_pic: coverUrl,
-          profile_pic: state.profile_pic,
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            alert.error(data.error);
-            setShowSubmitLoader(false);
-          } else {
-            dispatch({
-              type: "UPDATE_PHOTO",
-              payload: {
-                profile_pic: data.user.profile_pic,
-                cover_pic: data.user.cover_pic,
-              },
-            });
-            localStorage.setItem("user", JSON.stringify(data.user));
-            setShowSubmitLoader(false);
-            props.model(false);
-          }
-        });
+      });
+      localStorage.setItem("user", JSON.stringify(props.user.currentUser));
+    }
+  }, [props.user.currentUser]);
+
+  const CallAddCover = async (userDetails) => {
+    await props.editDetails(userDetails);
+    props.model(false);
+    setShowSubmitLoader(false);
+  };
+
+  useEffect(() => {
+    if (coverUrl) {
+      const details = {
+        name: state.name,
+        email: state.email,
+        address: state.address,
+        about: state.about,
+        cover_pic: coverUrl,
+        profile_pic: state.profile_pic,
+      };
+      CallAddCover(details);
     }
   }, [coverUrl]);
 
@@ -80,39 +77,17 @@ const UserCoverModel = (props) => {
   };
 
   const removeCoverPic = () => {
-    setShowSubmitLoader(true);
-    fetch("/editdetails", {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-      body: JSON.stringify({
-        name: state.name,
-        email: state.email,
-        address: state.address,
-        about: state.about,
-        cover_pic:
-          "https://images.ctfassets.net/7thvzrs93dvf/wpImage18643/2f45c72db7876d2f40623a8b09a88b17/linkedin-default-background-cover-photo-1.png?w=790&h=196&q=90&fm=png",
-        profile_pic: state.profile_pic,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          dispatch({
-            type: "UPDATE_PHOTO",
-            payload: {
-              profile_pic: data.user.profile_pic,
-              cover_pic: data.user.cover_pic,
-            },
-          });
-          localStorage.setItem("user", JSON.stringify(data.user));
-          props.model(false);
-        }
-      });
+    setShowSubmitLoader(true)
+    const details = {
+      name: state.name,
+      email: state.email,
+      address: state.address,
+      about: state.about,
+      cover_pic:
+        "https://images.ctfassets.net/7thvzrs93dvf/wpImage18643/2f45c72db7876d2f40623a8b09a88b17/linkedin-default-background-cover-photo-1.png?w=790&h=196&q=90&fm=png",
+      profile_pic: state.profile_pic,
+    };
+    CallAddCover(details);
   };
 
   return (
@@ -166,4 +141,12 @@ const UserCoverModel = (props) => {
   );
 };
 
-export default UserCoverModel;
+const mapStateToProps = (state) => ({
+  user: state.UserReducer,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  editDetails: (userDetails) => dispatch(editDetails(userDetails)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserCoverModel);

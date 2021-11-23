@@ -14,9 +14,10 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SendIcon from "@mui/icons-material/Send";
 import { userContext } from "../../App";
 import Loader1 from "../Loader1";
+import { fetchRoom, sendMessage } from "../../service/Actions/RoomAction";
+import { connect } from "react-redux";
 
 const ChatModel = (props) => {
-  const [room, setRoom] = useState(null);
   const [message, setMessage] = useState("");
   const { state } = useContext(userContext);
   const bottomRef = useRef();
@@ -29,45 +30,24 @@ const ChatModel = (props) => {
     });
   };
 
+  const fetchMyRoom = async () => {
+    await props.fetchRoom(props.data._id);
+    setShowChatLoader(false);
+  };
+
   useEffect(() => {
     if (props.data) {
-      fetch(`/room/${props.data._id}`, {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("jwt"),
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            alert.error(data.error);
-          } else {
-            setShowChatLoader(false);
-            setRoom(data.room);
-          }
-        });
+      const interval = setInterval(() => {
+        fetchMyRoom();
+      }, 500);
+      return () => clearInterval(interval);
     }
-  }, [room, props]);
+  }, [props.data, props.room]);
 
   const SendMessage = async () => {
     setMessage("");
-    await fetch(`/addmessage/${room._id}`, {
-      method: "post",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-      body: JSON.stringify({
-        message,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          scrollToBottom();
-        }
-      });
+    await props.sendMessage(props.room._id, message);
+    scrollToBottom();
   };
 
   return (
@@ -85,12 +65,13 @@ const ChatModel = (props) => {
             <ChatBox>
               <div>
                 {showChatLoader && <Loader1 />}
-                {room && room.messages.length === 0 && (
+                {props.room && props.room.messages.length === 0 && (
                   <h2>?No Messages. Start chat</h2>
                 )}
 
-                {room &&
-                  room.messages.map((item) => {
+                {props.room &&
+                  props.room.messages.length !== 0 &&
+                  props.room.messages.map((item) => {
                     return item.posted_By._id === state._id ? (
                       <MyBox key={item._id}>
                         <h2>You</h2>
@@ -128,4 +109,13 @@ const ChatModel = (props) => {
   );
 };
 
-export default ChatModel;
+const mapStateToProps = (state) => ({
+  room: state.RoomReducer.room,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  fetchRoom: (userid) => dispatch(fetchRoom(userid)),
+  sendMessage: (roomid, message) => dispatch(sendMessage(roomid, message)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChatModel);

@@ -19,204 +19,79 @@ import NavBar from "./NavBar";
 import Loader1 from "./Loader1";
 import RightSugg from "./RightSugg";
 import Skeleton from "@mui/material/Skeleton";
+import { connect } from "react-redux";
+import {
+  fetchUserPosts,
+  fetchUserDetails,
+  requestConnection,
+  withdrawConnection,
+  rejectConnection,
+  acceptConnection,
+  removeConnection,
+} from "../service/Actions/UserActions";
+import { createRoom, deleteRoom } from "../service/Actions/RoomAction";
 
-const UserProfile = () => {
+const UserProfile = (props) => {
   const { userid } = useParams();
-  const [data, setData] = useState(null);
-  const { state, dispatch } = useContext(userContext);
+  const { state } = useContext(userContext);
   const history = useHistory();
   const [showConnBtn, setShowConnBtn] = useState(true);
   const [showAcceptConnBtn, setShowAcceptConnBtn] = useState(true);
   const [showEduLoader, setShowEduLoader] = useState(true);
   const [showSkillLoader, setShowSkillLoader] = useState(true);
   const [showActivityLoader, setShowActivityLoader] = useState(true);
-  const [userposts, setUserPosts] = useState([]);
+
+  const fetchUserPostAndDetails = async () => {
+    await props.fetchUserPosts(userid);
+    await props.fetchUserDetails(userid);
+  };
 
   useEffect(() => {
-    if (userid) {
+    if (userid && state) {
+      if (userid === state._id) {
+        history.push("/profile");
+      }
       const interval = setInterval(() => {
-        fetch(`/mypost/${userid}`, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("jwt"),
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.error) {
-              alert.error(data.error);
-            } else {
-              const newUserPost = data.posts.slice(0, 4);
-              setUserPosts(newUserPost);
-              setShowActivityLoader(false);
-            }
-          });
+        fetchUserPostAndDetails();
+        setShowActivityLoader(false);
+        setShowEduLoader(false);
+        setShowSkillLoader(false);
       }, 1000);
       return () => clearInterval(interval);
     }
   }, [state, userid]);
 
-  useEffect(() => {
-    if (userid) {
-      const interval = setInterval(() => {
-        fetch(`/user/${userid}`, {
-          headers: {
-            authorization: "Bearer " + localStorage.getItem("jwt"),
-          },
-        })
-          .then((res) => res.json())
-          .then((res) => {
-            setData(res.user);
-            setShowSkillLoader(false);
-            setShowEduLoader(false);
-          });
-      }, 500);
-      return () => clearInterval(interval);
-    }
-  }, [state, userid]);
-
   const RequestConnection = async (userid) => {
-    await fetch(`/reqconnect/${userid}`, {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          localStorage.setItem("user", JSON.stringify(data.result2));
-          dispatch({ type: "USER", payload: data.result2 });
-          setShowConnBtn(true);
-        }
-      });
+    setShowConnBtn(false);
+    await props.requestConnection(userid);
+    setShowConnBtn(true);
   };
 
-  const WithdrawRequest = () => {
+  const WithdrawRequest = async () => {
     if (window.confirm("Withdraw Connection Request ? ")) {
-      fetch(`/withdrawreq/${userid}`, {
-        method: "put",
-        headers: {
-          "content-type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("jwt"),
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            alert.error(data.error);
-          } else {
-            localStorage.setItem("user", JSON.stringify(data.result1));
-            dispatch({ type: "USER", payload: data.result1 });
-          }
-        });
+      await props.withdrawConnection(userid);
     }
-  };
-
-  const deleteRoom = () => {
-    fetch(`/deleteroom`, {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-      body: JSON.stringify({
-        fid: userid,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-        }
-      });
   };
 
   const RemoveConnection = async () => {
     if (window.confirm("Remove Connection ? ")) {
-      await fetch(`/removeconnect/${userid}`, {
-        method: "put",
-        headers: {
-          "content-type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("jwt"),
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            alert.error(data.error);
-          } else {
-            localStorage.setItem("user", JSON.stringify(data.result1));
-            dispatch({ type: "USER", payload: data.result1 });
-            deleteRoom();
-          }
-        });
+      await props.removeConnection(userid);
+      await props.deleteRoom(userid);
     }
   };
 
-  const createRoom = () => {
-    fetch(`/createroom`, {
-      method: "post",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-      body: JSON.stringify({
-        fid: userid,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          setShowAcceptConnBtn(true);
-        }
-      });
-  };
-
-  const acceptConnection = () => {
+  const acceptConnection = async () => {
     setShowAcceptConnBtn(false);
-    fetch(`/acceptconnect/${userid}`, {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          localStorage.setItem("user", JSON.stringify(data.result1));
-          dispatch({ type: "USER", payload: data.result1 });
-          createRoom();
-        }
-      });
+    await props.acceptConnection(userid);
+    await props.createRoom(userid);
+    setShowAcceptConnBtn(true);
   };
 
-  const rejectConnection = () => {
+  const rejectConnection = async () => {
     if (window.confirm("Reject Connection Request ? ")) {
-      fetch(`/rejectconnect/${userid}`, {
-        method: "put",
-        headers: {
-          "content-type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("jwt"),
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            alert.error(data.error);
-          } else {
-            localStorage.setItem("user", JSON.stringify(data.result1));
-            dispatch({ type: "USER", payload: data.result1 });
-          }
-        });
+      setShowAcceptConnBtn(false);
+      await props.rejectConnection(userid);
+      setShowAcceptConnBtn(true);
     }
   };
 
@@ -227,8 +102,13 @@ const UserProfile = () => {
         <Main>
           <ImageContainer>
             <Cover>
-              {data ? (
-                <img src={data && data.cover_pic} alt="" />
+              {props.user.userDetails ? (
+                <img
+                  src={
+                    props.user.userDetails && props.user.userDetails.cover_pic
+                  }
+                  alt=""
+                />
               ) : (
                 <Skeleton
                   className="cover"
@@ -238,8 +118,13 @@ const UserProfile = () => {
               )}
             </Cover>
             <Profile>
-              {data ? (
-                <img src={data && data.profile_pic} alt="" />
+              {props.user.userDetails ? (
+                <img
+                  src={
+                    props.user.userDetails && props.user.userDetails.profile_pic
+                  }
+                  alt=""
+                />
               ) : (
                 <Skeleton
                   className="profile"
@@ -250,8 +135,8 @@ const UserProfile = () => {
             </Profile>
           </ImageContainer>
           <Details>
-            {data ? (
-              <h2>{data.name}</h2>
+            {props.user.userDetails ? (
+              <h2>{props.user.userDetails.name}</h2>
             ) : (
               <Skeleton
                 variant="text"
@@ -261,8 +146,10 @@ const UserProfile = () => {
               />
             )}
 
-            {data ? (
-              <h4 style={{ fontWeight: "440" }}>{data.headline}</h4>
+            {props.user.userDetails ? (
+              <h4 style={{ fontWeight: "440" }}>
+                {props.user.userDetails.headline}
+              </h4>
             ) : (
               <Skeleton
                 variant="text"
@@ -272,8 +159,10 @@ const UserProfile = () => {
               />
             )}
 
-            {data ? (
-              <h4 style={{ fontWeight: "350" }}>{data.address}</h4>
+            {props.user.userDetails ? (
+              <h4 style={{ fontWeight: "350" }}>
+                {props.user.userDetails.address}
+              </h4>
             ) : (
               <Skeleton
                 variant="text"
@@ -283,9 +172,9 @@ const UserProfile = () => {
               />
             )}
 
-            {data ? (
+            {props.user.userDetails ? (
               <h4 style={{ margin: "10px 0px" }}>
-                {data.connections.length} connections
+                {props.user.userDetails.connections.length} connections
               </h4>
             ) : (
               <Skeleton
@@ -298,7 +187,7 @@ const UserProfile = () => {
             )}
 
             <div>
-              {!data && (
+              {!props.user.userDetails && (
                 <Skeleton
                   variant="button"
                   animation="wave"
@@ -307,23 +196,25 @@ const UserProfile = () => {
                   style={{ borderRadius: "13px" }}
                 />
               )}
-              {data && data.connections.includes(state._id) && (
-                <>
-                  <button
-                    onClick={() => {
-                      history.push("/chat");
-                    }}
-                  >
-                    Message
-                  </button>
-                  <button onClick={() => RemoveConnection()}>
-                    Remove Connection
-                  </button>
-                </>
-              )}
 
-              {data &&
-                data.myrequests.includes(state._id) &&
+              {props.user.userDetails &&
+                props.user.userDetails.connections.includes(state._id) && (
+                  <>
+                    <button
+                      onClick={() => {
+                        history.push("/chat");
+                      }}
+                    >
+                      Message
+                    </button>
+                    <button onClick={() => RemoveConnection()}>
+                      Remove Connection
+                    </button>
+                  </>
+                )}
+
+              {props.user.userDetails &&
+                props.user.userDetails.myrequests.includes(state._id) &&
                 (showAcceptConnBtn ? (
                   <>
                     <button
@@ -348,28 +239,28 @@ const UserProfile = () => {
                   </>
                 ))}
 
-              {data && data.conrequests.includes(state._id) && (
-                <button
-                  style={{
-                    backgroundColor: "white",
-                    color: "grey",
-                    border: "1px solid grey",
-                  }}
-                  onClick={() => WithdrawRequest()}
-                >
-                  Pending
-                </button>
-              )}
+              {props.user.userDetails &&
+                props.user.userDetails.conrequests.includes(state._id) && (
+                  <button
+                    style={{
+                      backgroundColor: "white",
+                      color: "grey",
+                      border: "1px solid grey",
+                    }}
+                    onClick={() => WithdrawRequest()}
+                  >
+                    Pending
+                  </button>
+                )}
 
-              {data &&
-                !data.connections.includes(state._id) &&
-                !data.myrequests.includes(state._id) &&
-                !data.conrequests.includes(state._id) &&
+              {props.user.userDetails &&
+                !props.user.userDetails.connections.includes(state._id) &&
+                !props.user.userDetails.myrequests.includes(state._id) &&
+                !props.user.userDetails.conrequests.includes(state._id) &&
                 showConnBtn && (
                   <button
                     onClick={() => {
-                      setShowConnBtn(false);
-                      RequestConnection(data._id);
+                      RequestConnection(props.user.userDetails._id);
                     }}
                   >
                     Connect
@@ -382,12 +273,20 @@ const UserProfile = () => {
             <div style={{ justifyContent: "flexStart" }}>
               <h3>About</h3>
             </div>
-            <div>{data && data.about && <h5>{data.about}</h5>}</div>
+            <div>
+              {props.user.userDetails && props.user.userDetails.about && (
+                <h5>{props.user.userDetails.about}</h5>
+              )}
+            </div>
           </Headline>
 
           <Activity>
             <h3>Activity</h3>
-            <h5>{data && data.connections.length} connections</h5>
+            <h5>
+              {props.user.userDetails &&
+                props.user.userDetails.connections.length}{" "}
+              connections
+            </h5>
             {showActivityLoader && (
               <div>
                 <div style={{ margin: "0px auto", justifyContent: "center" }}>
@@ -397,8 +296,8 @@ const UserProfile = () => {
             )}
 
             <div>
-              {userposts &&
-                userposts.map((post) => (
+              {props.user.userPosts &&
+                props.user.userPosts.slice(0, 4).map((post) => (
                   <div key={post._id}>
                     {post.photo && <img src={post.photo} alt="" />}
                     <div>
@@ -439,8 +338,8 @@ const UserProfile = () => {
               <h2>Education</h2>
             </div>
             {showEduLoader && <Loader1 />}
-            {data &&
-              data.education.map((edu) => (
+            {props.user.userDetails &&
+              props.user.userDetails.education.map((edu) => (
                 <EduBox key={edu._id}>
                   <div>
                     <img src="/Images/Education.png" alt="" />
@@ -464,8 +363,8 @@ const UserProfile = () => {
               }}
             >
               {showSkillLoader && <Loader1 />}
-              {data &&
-                data.skills.map((skill) => (
+              {props.user.userDetails &&
+                props.user.userDetails.skills.map((skill) => (
                   <div
                     style={{
                       display: "flex",
@@ -491,4 +390,21 @@ const UserProfile = () => {
   );
 };
 
-export default UserProfile;
+const mapStateToProps = (state) => ({
+  user: state.UserReducer,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  fetchUserPosts: (userid) => dispatch(fetchUserPosts(userid)),
+  fetchUserDetails: (userid) => dispatch(fetchUserDetails(userid)),
+  requestConnection: (userid) => dispatch(requestConnection(userid)),
+  withdrawConnection: (userid) => dispatch(withdrawConnection(userid)),
+  rejectConnection: (userid) => dispatch(rejectConnection(userid)),
+  acceptConnection: (userid) => dispatch(acceptConnection(userid)),
+  removeConnection: (userid) => dispatch(removeConnection(userid)),
+
+  createRoom: (userid) => dispatch(createRoom(userid)),
+  deleteRoom: (userid) => dispatch(deleteRoom(userid)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserProfile);

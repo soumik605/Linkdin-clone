@@ -100,13 +100,12 @@ const SignupPage = () => {
           )}
           <GoogleLogin
             clientId="566971522053-mcmsdcrpaik6fksgm1f2m11ri5pgglk6.apps.googleusercontent.com"
-            
             buttonText="Join with Google"
-            onSuccess={responseGoogle}
-            onFailure={responseGoogle}
+            //onSuccess={responseGoogle}
+            //onFailure={responseGoogle}
+            onClick={responseGoogle}
             cookiePolicy={"single_host_origin"}
           />
-          ,
           <SigninLink>
             Already on Linkedin?{" "}
             <Link to="/signin" exact>

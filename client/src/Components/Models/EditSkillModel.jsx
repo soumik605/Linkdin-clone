@@ -1,14 +1,23 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { userContext } from "../../App";
 import styled from "styled-components";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FullScreenLoader from "./FullScreenLoader";
+import { deleteSkill } from "../../service/Actions/UserActions";
+import { connect } from "react-redux";
 
 const EditSkillModel = (props) => {
   const { state, dispatch } = useContext(userContext);
   const [showLoader, setShowLoader] = useState(false);
   const [newSkills, setnewSkills] = useState(state.skills);
+
+  useEffect(() => {
+    if (props.user.currentUser) {
+      localStorage.setItem("user", JSON.stringify(props.user.currentUser));
+      dispatch({ type: "USER", payload: props.user.currentUser });
+    }
+  }, [props.user.currentUser]);
 
   const EditSkill = (skill) => {
     const UserSkills = newSkills.filter((item) => {
@@ -18,35 +27,14 @@ const EditSkillModel = (props) => {
         return null;
       }
     });
-
     setnewSkills(UserSkills);
   };
 
-  const SaveSkill = async (skill) => {
+  const SaveSkill = async () => {
     setShowLoader(true);
-    await fetch(`/deleteskill`, {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-      body: JSON.stringify({
-        newSkills,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-          setShowLoader(false);
-          props.model(false);
-        } else {
-          localStorage.setItem("user", JSON.stringify(data.user));
-          dispatch({ type: "USER", payload: data.user });
-          setShowLoader(false);
-          props.model(false);
-        }
-      });
+    await props.deleteSkill(newSkills);
+    setShowLoader(false);
+    props.model(false);
   };
 
   return (
@@ -163,4 +151,12 @@ const Close = styled.div`
   }
 `;
 
-export default EditSkillModel;
+const mapStateToProps = (state) => ({
+  user: state.UserReducer,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  deleteSkill: (newSkills) => dispatch(deleteSkill(newSkills)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(EditSkillModel);

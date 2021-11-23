@@ -4,34 +4,27 @@ import NavBar from "./NavBar";
 import { ChatBox, ChatList, Container, UserBox } from "./Style/ChatPage";
 import { userContext } from "../App";
 import Loader1 from "./Loader1";
+import { connect } from "react-redux";
+import { myDetails } from "../service/Actions/UserActions";
 
-const ChatPage = () => {
+const ChatPage = (props) => {
   const [showChat, setShowChat] = useState(false);
   const [friend, setFriend] = useState("");
   const { state } = useContext(userContext);
-  const [mydetails, setMydetails] = useState(null);
   const [showLoader, setShowLoader] = useState(true);
 
+  const callMyDetails = async () => {
+    await props.myDetails();
+    setShowLoader(false);
+  };
+
   useEffect(() => {
-    if (state) {
-      const interval = setInterval(() => {
-        fetch(`/mydetails`, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("jwt"),
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.error) {
-              alert.error(data.error);
-            } else {
-              setMydetails(data.user);
-              setShowLoader(false);
-            }
-          });
-      }, 1000);
-      return () => clearInterval(interval);
-    }
+    const interval = setInterval(() => {
+      if (state) {
+        callMyDetails();
+      }
+    }, 500);
+    return () => clearInterval(interval);
   }, [state]);
 
   return (
@@ -41,9 +34,9 @@ const ChatPage = () => {
       <Container>
         <ChatList>
           <h2>Messaging</h2>
-          {showLoader && <Loader1 />}
-          {mydetails &&
-            mydetails.connections.map((user) => (
+          {!props.user.myDetails && showLoader && <Loader1 />}
+          {props.user.myDetails &&
+            props.user.myDetails.connections.map((user) => (
               <UserBox
                 key={user._id}
                 onClick={() => {
@@ -62,4 +55,12 @@ const ChatPage = () => {
   );
 };
 
-export default ChatPage;
+const mapStateToProps = (state) => ({
+  user: state.UserReducer,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  myDetails: () => dispatch(myDetails()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChatPage);

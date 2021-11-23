@@ -10,7 +10,7 @@ router.post("/createpost", requireLogin, (req, res) => {
   const { title, photo } = req.body;
 
   if (title == "" && photo == "") {
-    return res.status(422).json({ error: "Please Add Something !!" });
+    return res.json({ error: "Please Add Something !!" });
   } else {
     req.user.password = undefined;
     const post = new Post({
@@ -58,7 +58,7 @@ router.put("/like", requireLogin, (req, res) => {
   Post.findOne({ _id: req.body.postId })
     .then((post) => {
       if (post.likes.includes(req.user._id)) {
-        return res.status(422).json({ error: "Something went wromg" });
+        return res.json({ error: "Something went wromg" });
       } else {
         Post.findByIdAndUpdate(
           req.body.postId,
@@ -74,7 +74,7 @@ router.put("/like", requireLogin, (req, res) => {
           .populate("likes", "_id name profile_pic")
           .exec((err, result) => {
             if (err) {
-              res.status(422).json({ error: err });
+              res.json({ error: err });
             } else {
               res.json({ result });
             }
@@ -99,7 +99,7 @@ router.put("/unlike", requireLogin, (req, res) => {
     .populate("likes", "_id name profile_pic")
     .exec((err, result) => {
       if (err) {
-        res.status(422).json({ error: err });
+        res.json({ error: err });
       } else {
         res.json({ result });
       }
@@ -113,7 +113,7 @@ router.put("/comment", requireLogin, (req, res) => {
   };
 
   if (req.body.text == "" || null) {
-    return res.status(422).json({ error: "Add a comment !!" });
+    return res.json({ error: "Add a comment !!" });
   } else {
     Post.findByIdAndUpdate(
       req.body.postId,
@@ -129,7 +129,7 @@ router.put("/comment", requireLogin, (req, res) => {
       .populate("posted_By", "_id name profile_pic")
       .exec((err, result) => {
         if (err) {
-          return res.status(422).json({ error: err });
+          return res.json({ error: err });
         } else {
           res.json({ result });
         }
@@ -144,7 +144,7 @@ router.delete("/deletepost/:postId", requireLogin, (req, res) => {
     .populate("posted_By", "_id name headline profile_pic")
     .exec((err, post) => {
       if (err || !post) {
-        return res.status(422).json({ error: err });
+        return res.json({ error: err });
       }
       if (req.user._id.toString() === post.posted_By._id.toString()) {
         post
@@ -171,7 +171,7 @@ router.put("/editpost/:postId", requireLogin, (req, res) => {
     .populate("posted_By", "_id name headline profile_pic")
     .exec((err, post) => {
       if (err) {
-        return res.status(422).json({ error: err });
+        return res.json({ error: err });
       } else {
         res.json({ post });
       }
@@ -185,10 +185,9 @@ router.put("/deletecomment", requireLogin, (req, res) => {
     .populate("posted_By", "_id name headline profile_pic")
     .exec((err, post) => {
       if (err || !post) {
-        return res.status(422).json({ error: err });
+        return res.json({ error: err });
       } else {
         post.comments.map((cmnt) => {
-          console.log(cmnt);
           if (cmnt._id.toString() === req.body.commentId.toString()) {
             if (cmnt.commented_By._id.toString() === req.user._id.toString()) {
               Post.findByIdAndUpdate(
@@ -205,15 +204,13 @@ router.put("/deletecomment", requireLogin, (req, res) => {
                 .populate("posted_By", "_id name headline profile_pic")
                 .exec((err, result) => {
                   if (err) {
-                    res.status(422).json({ error: err });
+                    res.json({ error: err });
                   } else {
                     res.json({ result });
                   }
                 });
             } else {
-              return res
-                .status(422)
-                .json({ error: "You can't delete others comment." });
+              return res.json({ error: "You can't delete others comment." });
             }
           }
         });

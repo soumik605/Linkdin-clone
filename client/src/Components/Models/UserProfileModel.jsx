@@ -7,6 +7,8 @@ import FullScreenLoader from "./FullScreenLoader";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
+import { editDetails } from "../../service/Actions/UserActions";
+import { connect } from "react-redux";
 
 const UserProfileModel = (props) => {
   const { state, dispatch } = useContext(userContext);
@@ -18,40 +20,35 @@ const UserProfileModel = (props) => {
   const [showSubmitBtn, setShowSubmitBtn] = useState(false);
 
   useEffect(() => {
-    if (profileUrl) {
-      fetch("/editdetails", {
-        method: "put",
-        headers: {
-          "content-type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("jwt"),
+    if (props.user.currentUser) {
+      dispatch({
+        type: "UPDATE_PHOTO",
+        payload: {
+          profile_pic: props.user.currentUser.profile_pic,
+          cover_pic: props.user.currentUser.cover_pic,
         },
-        body: JSON.stringify({
-          name: state.name,
-          email: state.email,
-          address: state.address,
-          about: state.about,
-          cover_pic: state.cover_pic,
-          profile_pic: profileUrl,
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            alert.error(data.error);
-            setShowSubmitLoader(false);
-          } else {
-            dispatch({
-              type: "UPDATE_PHOTO",
-              payload: {
-                profile_pic: data.user.profile_pic,
-                cover_pic: data.user.cover_pic,
-              },
-            });
-            localStorage.setItem("user", JSON.stringify(data.user));
-            setShowSubmitLoader(false);
-            props.model(false);
-          }
-        });
+      });
+      localStorage.setItem("user", JSON.stringify(props.user.currentUser));
+    }
+  }, [props.user.currentUser]);
+
+  const CallAddProfile = async (userDetails) => {
+    await props.editDetails(userDetails);
+    props.model(false);
+    setShowSubmitLoader(false);
+  };
+
+  useEffect(() => {
+    if (profileUrl) {
+      const details = {
+        name: state.name,
+        email: state.email,
+        address: state.address,
+        about: state.about,
+        cover_pic: state.cover_pic,
+        profile_pic: profileUrl,
+      };
+      CallAddProfile(details);
     }
   }, [profileUrl]);
 
@@ -80,38 +77,16 @@ const UserProfileModel = (props) => {
 
   const removeProfilePic = () => {
     setShowSubmitLoader(true);
-    fetch("/editdetails", {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-      body: JSON.stringify({
-        name: state.name,
-        email: state.email,
-        address: state.address,
-        about: state.about,
-        cover_pic: state.cover_pic,
-        profile_pic:
-          "https://www.personality-insights.com/wp-content/uploads/2017/12/default-profile-pic-e1513291410505.jpg",
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          dispatch({
-            type: "UPDATE_PHOTO",
-            payload: {
-              profile_pic: data.user.profile_pic,
-              cover_pic: data.user.cover_pic,
-            },
-          });
-          localStorage.setItem("user", JSON.stringify(data.user));
-          props.model(false);
-        }
-      });
+    const details = {
+      name: state.name,
+      email: state.email,
+      address: state.address,
+      about: state.about,
+      cover_pic: state.cover_pic,
+      profile_pic:
+        "https://www.personality-insights.com/wp-content/uploads/2017/12/default-profile-pic-e1513291410505.jpg",
+    };
+    CallAddProfile(details);
   };
 
   return (
@@ -161,4 +136,12 @@ const UserProfileModel = (props) => {
   );
 };
 
-export default UserProfileModel;
+const mapStateToProps = (state) => ({
+  user: state.UserReducer,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  editDetails: (userDetails) => dispatch(editDetails(userDetails)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserProfileModel);

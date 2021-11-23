@@ -10,14 +10,12 @@ router.post("/signup", (req, res) => {
   const { name, email, password, address, profile_pic } = req.body;
 
   if (!email || !name || !password) {
-    return res.status(422).json({ error: "Please add all fields" });
+    return res.json({ error: "Please add all fields" });
   } else {
     User.findOne({ email: email })
       .then((savedUser) => {
         if (savedUser) {
-          return res
-            .status(422)
-            .json({ error: "User already exits in this email" });
+          return res.json({ error: "User already exits in this email" });
         } else {
           bcrypt.hash(password, 12).then((hashedpassword) => {
             const user = new User({
@@ -25,7 +23,7 @@ router.post("/signup", (req, res) => {
               email,
               address,
               password: hashedpassword,
-              profile_pic
+              profile_pic,
             });
             user
               .save()
@@ -48,7 +46,7 @@ router.post("/signin", (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(422).json({ error: "Please add all fields" });
+    return res.json({ error: "Please add all fields" });
   } else {
     User.findOne({ email: email })
       .populate("connections", "_id name about profile_pic")
@@ -56,7 +54,7 @@ router.post("/signin", (req, res) => {
       .populate("myrequests", "_id name about profile_pic")
       .then((savedUser) => {
         if (!savedUser) {
-          return res.status(422).json({ error: "Invalid Input" });
+          return res.json({ error: "Invalid Input" });
         } else {
           bcrypt
             .compare(password, savedUser.password)
@@ -65,12 +63,12 @@ router.post("/signin", (req, res) => {
               if (doMatch) {
                 const token = jwt.sign({ _id: savedUser._id }, JWT_SECRET);
 
-                res.json({
+                return res.json({
                   token,
                   user: savedUser,
                 });
               } else {
-                return res.status(422).json({ error: "Invalid Input" });
+                return res.json({ error: "Invalid Input" });
               }
             })
             .catch((err) => {

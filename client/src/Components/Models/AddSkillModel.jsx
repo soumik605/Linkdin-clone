@@ -1,45 +1,43 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { userContext } from "../../App";
 import styled from "styled-components";
+import { addSkill } from "../../service/Actions/UserActions";
+import { connect } from "react-redux";
 
 const AddSkillModel = (props) => {
   const [newSkill, setNewSkill] = useState("");
   const { state, dispatch } = useContext(userContext);
   const [showAddInput, setShowAddInput] = useState(false);
 
+  useEffect(() => {
+    if (props.user.currentUser) {
+      localStorage.setItem("user", JSON.stringify(props.user.currentUser));
+      dispatch({ type: "USER", payload: props.user.currentUser });
+    }
+  }, [props.user.currentUser]);
+
   const AddSkill = async () => {
-    props.model(false);
+    await props.addSkill(newSkill)
+     props.model(false);
     setNewSkill("");
-    await fetch(`/addskill`, {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-      body: JSON.stringify({
-        skill: newSkill,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          localStorage.setItem("user", JSON.stringify(data.user));
-          dispatch({ type: "USER", payload: data.user });
-        }
-      });
   };
+
   return (
     <Container>
       <ClickAwayListener onClickAway={() => props.model(false)}>
         <PopupBox>
-          <div style={{borderBottom:"1px solid lightgray"}}>
+          <div style={{ borderBottom: "1px solid lightgray" }}>
             <h3>Add skill</h3>
             <Close onClick={() => props.model(false)}>x</Close>
           </div>
-          <div style={{ justifyContent: "flex-start", marginBottom:"30px", maxHeight:"60px" }}>
+          <div
+            style={{
+              justifyContent: "flex-start",
+              marginBottom: "30px",
+              maxHeight: "60px",
+            }}
+          >
             {state.skills &&
               state.skills.map((skill) => (
                 <h4
@@ -47,7 +45,7 @@ const AddSkillModel = (props) => {
                     margin: "10px",
                     border: "1px solid grey",
                     padding: "2px 10px",
-                    borderRadius:"15px",
+                    borderRadius: "15px",
                   }}
                   key={skill}
                 >
@@ -57,14 +55,18 @@ const AddSkillModel = (props) => {
           </div>
           <div>
             {showAddInput ? (
-              <input autoFocus={true} value={newSkill} onChange={(e)=> setNewSkill(e.target.value)} />
+              <input
+                autoFocus={true}
+                value={newSkill}
+                onChange={(e) => setNewSkill(e.target.value)}
+              />
             ) : (
-              <button onClick={()=>setShowAddInput(true)}>
+              <button onClick={() => setShowAddInput(true)}>
                 <h3>+ add new skill</h3>
               </button>
             )}
           </div>
-          <button onClick={()=>AddSkill()}>Save</button>
+          <button onClick={() => AddSkill()}>Save</button>
         </PopupBox>
       </ClickAwayListener>
     </Container>
@@ -115,10 +117,10 @@ const PopupBox = styled.div`
       padding-left: 10px;
       margin: auto;
     }
-    &>h4{
-        &:hover{
-            background-color: lightgray;
-        }
+    & > h4 {
+      &:hover {
+        background-color: lightgray;
+      }
     }
   }
 
@@ -158,4 +160,12 @@ const Close = styled.div`
   }
 `;
 
-export default AddSkillModel;
+const mapStateToProps = (state) => ({
+  user: state.UserReducer,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  addSkill: (newSkill) => dispatch(addSkill(newSkill)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddSkillModel);

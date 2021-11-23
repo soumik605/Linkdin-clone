@@ -5,6 +5,11 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { transitions, positions, Provider as AlertProvider } from "react-alert";
 import AlertTemplate from "react-alert-template-basic";
+import { Provider } from "react-redux";
+import reducer from "./service/Reducers/index";
+import { configureStore } from "@reduxjs/toolkit";
+import thunk from "redux-thunk";
+
 
 const options = {
   position: positions.BOTTOM_CENTER,
@@ -13,16 +18,16 @@ const options = {
   transition: transitions.SCALE,
 };
 
+const store = configureStore({ reducer: reducer, middleware: [thunk] });
+
 ReactDOM.render(
-  <React.StrictMode>
+  <Provider store={store}>
     <AlertProvider template={AlertTemplate} {...options}>
       <App />
     </AlertProvider>
-  </React.StrictMode>,
+  </Provider>,
+
   document.getElementById("root")
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

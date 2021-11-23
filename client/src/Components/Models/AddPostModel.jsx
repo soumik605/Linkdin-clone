@@ -10,8 +10,9 @@ import {
   Add,
 } from "../Style/CreatePostModel";
 import { userContext } from "../../App";
-import { useAlert } from "react-alert";
 import FullScreenLoader from "./FullScreenLoader";
+import { createAPost, editAPost } from "../../service/Actions/PostAction";
+import { connect } from "react-redux";
 
 const AddPostModel = (props) => {
   const { state } = useContext(userContext);
@@ -20,65 +21,30 @@ const AddPostModel = (props) => {
   const [photoUrl, setPhotoUrl] = useState("");
   const [editPhotoChanged, setEditPhotoChanged] = useState(false);
   const [title, setTitle] = useState("");
-  const alert = useAlert();
   const [showAddBtn, setShowAddBtn] = useState(true);
   const [showAddPostLoader, setShowAddPostLoader] = useState(false);
 
   useEffect(() => {
     if (props.post) {
-      setPhoto(props.post.photo);
-      setTitle(props.post.title);
+      if (photo === "" && title === "") {
+        setPhoto(props.post.photo);
+        setTitle(props.post.title);
+      }
     }
   }, [props.post]);
 
-  const CreatePost = () => {
-    fetch("/createpost", {
-      method: "post",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-      body: JSON.stringify({
-        title,
-        photo: photoUrl,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-          setShowAddPostLoader(false);
-        } else {
-          props.model(false);
-          setShowAddBtn(true);
-          setShowAddPostLoader(false);
-        }
-      });
+  const CreatePost = async () => {
+    await props.createAPost(title, photoUrl);
+    setShowAddBtn(true);
+    setShowAddPostLoader(false);
+    props.model(false);
   };
 
-  const EditPost = (url) => {
-    fetch(`/editpost/${props.post._id}`, {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-      body: JSON.stringify({
-        title,
-        photo: url,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-          setShowAddPostLoader(false);
-        } else {
-          props.model(false);
-          setShowAddBtn(true);
-          setShowAddPostLoader(false);
-        }
-      });
+  const EditPost = async (photoUrl) => {
+    await props.editAPost(title, photoUrl, props.post._id);
+    setShowAddBtn(true);
+    setShowAddPostLoader(false);
+    props.model(false);
   };
 
   useEffect(() => {
@@ -162,4 +128,12 @@ const AddPostModel = (props) => {
   );
 };
 
-export default AddPostModel;
+const mapStateToProps = (state) => ({});
+
+const mapDispatchToProps = (dispatch) => ({
+  createAPost: (title, photoUrl) => dispatch(createAPost(title, photoUrl)),
+  editAPost: (title, photoUrl, postId) =>
+    dispatch(editAPost(title, photoUrl, postId)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddPostModel);

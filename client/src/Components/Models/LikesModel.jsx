@@ -10,6 +10,7 @@ import {
 } from "../Style/CommentsModel";
 import { userContext } from "../../App";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
 
 const LikesModel = (props) => {
   const { state } = useContext(userContext);
@@ -20,8 +21,8 @@ const LikesModel = (props) => {
           <Close onClick={() => props.model(false)}>x</Close>
           <h2>All Likes</h2>
           <CommentContainer>
-            {props.likes.length !== 0 &&
-              props.likes.map((like) => (
+            {props.PostLikes.length !== 0 &&
+              props.PostLikes.map((like) => (
                 <CommentBox key={like._id}>
                   <Profile src={like.profile_pic} alt="" />
                   <div>
@@ -46,4 +47,10 @@ const LikesModel = (props) => {
   );
 };
 
-export default LikesModel;
+const mapStateToProps = (state) => ({
+  PostLikes: state.PostReducer.postLikes,
+});
+
+const mapDispatchToProps = (dispatch) => ({});
+
+export default connect(mapStateToProps, mapDispatchToProps)(LikesModel);

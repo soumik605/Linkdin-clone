@@ -7,7 +7,7 @@ const HomePage = () => {
   return (
     <Container>
       <Navbar>
-        <a href="/home" exact>
+        <a href="/home" >
           <img src="/Images/login-icon.png" alt="" />
         </a>
         <div>

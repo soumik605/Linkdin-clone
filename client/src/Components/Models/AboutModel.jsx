@@ -1,55 +1,52 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState,useEffect } from "react";
 import styled from "styled-components";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import TextField from "@mui/material/TextField";
 import { userContext } from "../../App";
 import FullScreenLoader from "./FullScreenLoader";
+import { connect } from "react-redux";
+import { editDetails } from "../../service/Actions/UserActions";
 
 const AboutModel = (props) => {
   const { state, dispatch } = useContext(userContext);
   const [about, setAbout] = useState(state.about);
   const [showLoader, setShowLoader] = useState(false);
 
-  const SaveAbout = () => {
-    setShowLoader(true);
-    fetch("/editdetails", {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-      body: JSON.stringify({
-        name: state.name,
-        email: state.email,
-        address: state.address,
-        about,
-        headline: state.headline,
-        profile_pic: state.profile_pic,
-        cover_pic: state.cover_pic,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-          setShowLoader(false);
-        } else {
-          dispatch({
-            type: "UPDATE",
-            payload: {
-              name: data.user.name,
-              email: data.user.email,
-              address: data.user.address,
-              headline: data.user.headline,
-              about: data.user.about,
-            },
-          });
-          localStorage.setItem("user", JSON.stringify(data.user));
-          setShowLoader(false);
-          props.model(false);
-        }
+  
+  useEffect(() => {
+    if (props.user.currentUser) {
+      dispatch({
+        type: "UPDATE",
+        payload: {
+          name: props.user.currentUser.name,
+          email: props.user.currentUser.email,
+          address: props.user.currentUser.address,
+          headline: props.user.currentUser.headline,
+          about: props.user.currentUser.about,
+        },
       });
+      localStorage.setItem("user", JSON.stringify(props.user.currentUser));
+    }
+  }, [props.user.currentUser]);
+
+  const SaveAbout =async () => {
+    setShowLoader(true);
+    const userDetails = {
+      name: state.name,
+      email: state.email,
+      address: state.address,
+      about,
+      headline: state.headline,
+      profile_pic: state.profile_pic,
+      cover_pic: state.cover_pic,
+    };
+    await props.editDetails(userDetails);
+    setShowLoader(false);
+    props.model(false);
+    setShowLoader(true);
   };
+
+
   return (
     <Container>
       {showLoader && <FullScreenLoader />}
@@ -149,4 +146,12 @@ export const Close = styled.div`
   }
 `;
 
-export default AboutModel;
+const mapStateToProps = (state) => ({
+  user: state.UserReducer,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  editDetails: (userDetails) => dispatch(editDetails(userDetails)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AboutModel);

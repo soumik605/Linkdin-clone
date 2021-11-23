@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   Container,
   PopupBox,
@@ -10,10 +10,11 @@ import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { userContext } from "../../App";
 import { useAlert } from "react-alert";
 import Loader2 from "./FullScreenLoader";
+import { editDetails } from "../../service/Actions/UserActions";
+import { connect } from "react-redux";
 
 const UserEditModel = (props) => {
   const { state, dispatch } = useContext(userContext);
-  const alert = useAlert();
   const [showLoader, setShowLoader] = useState(false);
   const [details, setDetails] = useState({
     name: state.name,
@@ -23,49 +24,40 @@ const UserEditModel = (props) => {
     about: state.about,
   });
 
+  useEffect(() => {
+    if (props.user.currentUser) {
+      dispatch({
+        type: "UPDATE",
+        payload: {
+          name: props.user.currentUser.name,
+          email: props.user.currentUser.email,
+          address: props.user.currentUser.address,
+          headline: props.user.currentUser.headline,
+          about: props.user.currentUser.about,
+        },
+      });
+      localStorage.setItem("user", JSON.stringify(props.user.currentUser));
+    }
+  }, [props.user.currentUser]);
+
   const handleChange = (e) => {
     setDetails({ ...details, [e.target.name]: e.target.value });
   };
 
-  const SaveUserDetails = (e) => {
+  const SaveUserDetails = async (e) => {
     setShowLoader(true);
-    fetch("/editdetails", {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-      body: JSON.stringify({
-        name: details.name,
-        email: details.email,
-        address: details.address,
-        about: details.about,
-        headline: details.headline,
-        profile_pic: state.profile_pic,
-        cover_pic: state.cover_pic,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-          setShowLoader(false);
-        } else {
-          dispatch({
-            type: "UPDATE",
-            payload: {
-              name: data.user.name,
-              email: data.user.email,
-              address: data.user.address,
-              headline: data.user.headline,
-              about: data.user.about,
-            },
-          });
-          localStorage.setItem("user", JSON.stringify(data.user));
-          setShowLoader(false);
-          props.model(false);
-        }
-      });
+    const userDetails = {
+      name: details.name,
+      email: details.email,
+      address: details.address,
+      about: details.about,
+      headline: details.headline,
+      profile_pic: state.profile_pic,
+      cover_pic: state.cover_pic,
+    };
+    await props.editDetails(userDetails);
+    setShowLoader(false);
+    props.model(false);
   };
 
   return (
@@ -129,4 +121,12 @@ const UserEditModel = (props) => {
   );
 };
 
-export default UserEditModel;
+const mapStateToProps = (state) => ({
+  user: state.UserReducer,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  editDetails: (userDetails) => dispatch(editDetails(userDetails)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserEditModel);

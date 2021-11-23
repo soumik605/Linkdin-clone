@@ -8,39 +8,30 @@ import {
 } from "./Style/FeedStyle";
 import { userContext } from "../App";
 import AddPostModel from "./Models/AddPostModel";
-import { useAlert } from "react-alert";
 import NavBar from "./NavBar";
 import Loader1 from "./Loader1";
 import LeftProfile from "./LeftProfile";
 import RightSugg from "./RightSugg";
 import Post from "./Post";
+import { connect } from "react-redux";
+import { fetchSubPosts } from "../service/Actions/PostAction";
 
-const MyFeed = () => {
+const MyFeed = (props) => {
   const { state } = useContext(userContext);
   const [showCreateModel, setShowCreateModel] = useState(false);
-  const [allPost, setAllPost] = useState([]);
-  const alert = useAlert();
   const [showFeedLoader, setShowFeedLoader] = useState(true);
+
+  const FetchSubPosts = async () => {
+    await props.fetchSubPosts();
+    setShowFeedLoader(false);
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
       if (state) {
-        fetch("/allsubpost", {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("jwt"),
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.err) {
-              alert.error(data.err);
-            } else {
-              setAllPost(data.result);
-              setShowFeedLoader(false);
-            }
-          });
+        FetchSubPosts();
       }
-    }, 2000);
+    }, 500);
     return () => clearInterval(interval);
   }, [state]);
 
@@ -62,10 +53,9 @@ const MyFeed = () => {
               Start a post
             </button>
           </InputBox>
-          {showFeedLoader && <Loader1 />}
-          {allPost.map((post) => (
-            <Post post={post} key={post._id} />
-          ))}
+          {props.subPosts.length === 0 && showFeedLoader && <Loader1 />}
+          {props.subPosts.length !== 0 &&
+            props.subPosts.map((post) => <Post post={post} key={post._id} />)}
         </MainCont>
         <RightCont>
           <RightSugg />
@@ -75,4 +65,12 @@ const MyFeed = () => {
   );
 };
 
-export default MyFeed;
+const mapStateToProps = (state) => ({
+  subPosts: state.PostReducer.subPosts,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  fetchSubPosts: () => dispatch(fetchSubPosts()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(MyFeed);

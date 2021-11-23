@@ -21,20 +21,19 @@ router.post("/createroom", requireLogin, (req, res) => {
 });
 
 router.put("/deleteroom", requireLogin, (req, res) => {
-  Room.find({ members: {$in : [req.user._id]} })
-  .populate("members", "_id name profile_pic")
-  .populate("messages.posted_By", "_id name profile_pic")
-  .then((rooms) => {
-  rooms.map((room) => {
-     room.members.map(member => {
-       if(member._id.toString() === req.body.fid.toString()){
-         room.remove()
-       }
-     })
-    });
-  }) 
-  .catch((err) => console.log(err));
-
+  Room.find({ members: { $in: [req.user._id] } })
+    .populate("members", "_id name profile_pic")
+    .populate("messages.posted_By", "_id name profile_pic")
+    .then((rooms) => {
+      rooms.map((room) => {
+        room.members.map((member) => {
+          if (member._id.toString() === req.body.fid.toString()) {
+            room.remove();
+          }
+        });
+      });
+    })
+    .catch((err) => console.log(err));
 });
 
 router.get("/myrooms", requireLogin, (req, res) => {
@@ -45,21 +44,19 @@ router.get("/myrooms", requireLogin, (req, res) => {
 });
 
 router.get("/room/:friendId", requireLogin, (req, res) => {
-  Room.find({ members: {$in : [req.user._id]} })
+  Room.find({ members: { $in: [req.user._id] } })
     .populate("members", "_id name profile_pic")
     .populate("messages.posted_By", "_id name profile_pic")
     .then((rooms) => {
-    rooms.map((room) => {
-       room.members.map(member => {
-         if(member._id.toString() === req.params.friendId.toString()){
-           res.json({room})
-         }
-       })
+      rooms.map((room) => {
+        room.members.map((member) => {
+          if (member._id.toString() === req.params.friendId.toString()) {
+            res.json({ room });
+          }
+        });
       });
-    }) 
+    })
     .catch((err) => console.log(err));
-
-
 });
 
 router.post("/addmessage/:roomid", requireLogin, (req, res) => {

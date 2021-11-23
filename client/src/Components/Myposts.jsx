@@ -7,34 +7,27 @@ import Loader1 from "./Loader1";
 import { useParams } from "react-router-dom";
 import RightSugg from "./RightSugg";
 import Post from "./Post";
+import { connect } from "react-redux";
+import { fetchUserPosts } from "../service/Actions/UserActions";
 
-const Myposts = () => {
+const Myposts = (props) => {
   const { userid } = useParams();
-  const [myposts, setMyPosts] = useState([]);
   const [showMyPostLoader, setShowMyPostLoader] = useState(true);
   const { state } = useContext(userContext);
 
+  const FetchUserPosts = async () => {
+    await props.fetchUserPosts(userid);
+    setShowMyPostLoader(false);
+  };
+
   useEffect(() => {
-    if (userid) {
+    if (userid && state) {
       const interval = setInterval(() => {
-        fetch(`/mypost/${userid}`, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("jwt"),
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.error) {
-              alert.error(data.error);
-            } else {
-              setMyPosts(data.posts);
-              setShowMyPostLoader(false);
-            }
-          });
-      }, 2000);
+        FetchUserPosts();
+      }, 500);
       return () => clearInterval(interval);
     }
-  }, [state,userid]);
+  }, [state, userid]);
 
   return (
     <>
@@ -46,8 +39,8 @@ const Myposts = () => {
         </LeftCont>
 
         <MainCont>
-          {showMyPostLoader && <Loader1 />}
-          {myposts.map((post) => (
+          {!props.user.userPosts && showMyPostLoader && <Loader1 />}
+          {props.user.userPosts.map((post) => (
             <Post post={post} key={post._id} />
           ))}
         </MainCont>
@@ -59,4 +52,12 @@ const Myposts = () => {
   );
 };
 
-export default Myposts;
+const mapStateToProps = (state) => ({
+  user: state.UserReducer,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  fetchUserPosts: (userid) => dispatch(fetchUserPosts(userid)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Myposts);

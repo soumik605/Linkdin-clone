@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
 import styled from "styled-components";
 import { userContext } from "../App";
@@ -13,8 +13,10 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import FullScreenLoader from "./Models/FullScreenLoader";
 import GoogleLogin from "react-google-login";
+import { connect } from "react-redux";
+import { clearData, loginUser } from "../service/Actions/AuthAction";
 
-const SigninPage = () => {
+const SigninPage = (props) => {
   const { dispatch } = useContext(userContext);
   const [showPwd, setShowPwd] = useState(false);
   const alert = useAlert();
@@ -25,33 +27,30 @@ const SigninPage = () => {
   });
   const history = useHistory();
 
-  const addUserDetails = () => {
-    setShowLoader(true);
-    fetch("/signin", {
-      method: "post",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        email: details.email,
-        password: details.password,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-          setShowLoader(false);
-        } else {
-          localStorage.setItem("jwt", data.token);
-          localStorage.setItem("user", JSON.stringify(data.user));
-          dispatch({ type: "USER", payload: data.user });
-          setShowLoader(false);
+  useEffect(() => {
+    if (props.authUser) {
+      if (props.authUser.loginUserData && props.authUser.token) {
+        localStorage.setItem("jwt", props.authUser.token);
+        localStorage.setItem(
+          "user",
+          JSON.stringify(props.authUser.loginUserData)
+        );
+        dispatch({ type: "USER", payload: props.authUser.loginUserData });
+        setShowLoader(false);
+        alert.success("Login Successful");
+        history.push("/");
+      } else if (props.authUser.loginError) {
+        props.clearData();
+        setShowLoader(false);
+        alert.error(props.authUser.loginError);
+        history.push("/home");
+      }
+    }
+  }, [props.authUser]);
 
-          alert.success("Login Successful");
-          history.push("/");
-        }
-      });
+  const addUserDetails = async () => {
+    setShowLoader(true);
+    await props.loginUser(details);
   };
 
   const handleChange = (e) => {
@@ -67,7 +66,7 @@ const SigninPage = () => {
       {showLoader && <FullScreenLoader />}
       <Navbar>
         <Logo>
-          <Link to="/home" exact>
+          <Link to="/home">
             <img src="/Images/login-icon.png" alt="" />
           </Link>
         </Logo>
@@ -133,20 +132,18 @@ const SigninPage = () => {
               Signin
             </Signin>
           )}
-           <GoogleLogin
+          <GoogleLogin
             clientId="566971522053-mcmsdcrpaik6fksgm1f2m11ri5pgglk6.apps.googleusercontent.com"
             buttonText="Login with Google"
-            onSuccess={responseGoogle}
-            onFailure={responseGoogle}
+            //onSuccess={responseGoogle}
+            //onFailure={responseGoogle}
+            onClick={responseGoogle}
             cookiePolicy={"single_host_origin"}
           />
         </Section>
       </Container>
       <Join>
-        New to Linkedin?{" "}
-        <Link to="/signup1" exact>
-          Join now 
-        </Link>
+        New to Linkedin? <Link to="/signup1">Join now</Link>
       </Join>
     </MainContainer>
   );
@@ -257,4 +254,14 @@ const Join = styled.div`
     font-weight: 500;
   }
 `;
-export default SigninPage;
+
+const mapStateToProps = (state) => ({
+  authUser: state.AuthReducer,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  loginUser: (details) => dispatch(loginUser(details)),
+  clearData: () => dispatch(clearData()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(SigninPage);

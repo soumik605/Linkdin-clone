@@ -10,7 +10,7 @@ router.put("/editdetails", requireLogin, (req, res) => {
     req.body;
 
   if (!email || !name) {
-    return res.status(422).json({ error: "Email and Name are Required" });
+    return res.json({ error: "Email and Name are Required" });
   }
 
   if (email === req.user.email) {
@@ -42,15 +42,13 @@ router.put("/editdetails", requireLogin, (req, res) => {
         res.status(200).json({ user });
       })
       .catch((err) => {
-        return res.status(422).json({ error: err });
+        return res.json({ error: err });
       });
   } else {
     User.findOne({ email })
       .then((savedUser) => {
         if (savedUser) {
-          return res
-            .status(422)
-            .json({ error: "User already exits in this email" });
+          return res.json({ error: "User already exits in this email" });
         } else {
           User.findByIdAndUpdate(
             req.user._id,
@@ -74,12 +72,12 @@ router.put("/editdetails", requireLogin, (req, res) => {
               res.status(200).json({ user });
             })
             .catch((err) => {
-              return res.status(422).json({ error: err });
+              return res.json({ error: err });
             });
         }
       })
       .catch((err) => {
-        return res.status(422).json({ error: err });
+        return res.json({ error: err });
       });
   }
 });
@@ -109,11 +107,11 @@ router.put("/reqconnect/:userid", requireLogin, (req, res) => {
         .populate("myrequests", "_id name headline profile_pic cover_pic")
         .then((result2) => res.json({ result1, result2 }))
         .catch((err) => {
-          return res.status(422).json({ error: err });
+          return res.json({ error: err });
         });
     })
     .catch((err) => {
-      return res.status(422).json({ error: err });
+      return res.json({ error: err });
     });
 });
 
@@ -144,11 +142,11 @@ router.put("/acceptconnect/:userid", requireLogin, (req, res) => {
       )
         .then((result2) => res.json({ result1, result2 }))
         .catch((err) => {
-          return res.status(422).json({ error: err });
+          return res.json({ error: err });
         })
     )
     .catch((err) => {
-      return res.status(422).json({ error: err });
+      return res.json({ error: err });
     });
 });
 
@@ -163,7 +161,7 @@ router.put("/withdrawreq/:userid", requireLogin, (req, res) => {
     },
     (err, result1) => {
       if (err) {
-        return res.status(422).json({ error: err });
+        return res.json({ error: err });
       } else {
         User.findByIdAndUpdate(
           req.params.userid,
@@ -175,7 +173,7 @@ router.put("/withdrawreq/:userid", requireLogin, (req, res) => {
           },
           (err, result2) => {
             if (err) {
-              return res.status(422).json({ error: err });
+              return res.json({ error: err });
             } else {
               res.json({ result1, result2 });
             }
@@ -197,7 +195,7 @@ router.put("/rejectconnect/:userid", requireLogin, (req, res) => {
     },
     (err, result1) => {
       if (err) {
-        return res.status(422).json({ error: err });
+        return res.json({ error: err });
       } else {
         User.findByIdAndUpdate(
           req.params.userid,
@@ -209,7 +207,7 @@ router.put("/rejectconnect/:userid", requireLogin, (req, res) => {
           },
           (err, result2) => {
             if (err) {
-              return res.status(422).json({ error: err });
+              return res.json({ error: err });
             } else {
               res.json({ result1, result2 });
             }
@@ -231,7 +229,7 @@ router.put("/removeconnect/:userid", requireLogin, (req, res) => {
     },
     (err, result1) => {
       if (err) {
-        return res.status(422).json({ error: err });
+        return res.json({ error: err });
       } else {
         User.findByIdAndUpdate(
           req.params.userid,
@@ -243,7 +241,7 @@ router.put("/removeconnect/:userid", requireLogin, (req, res) => {
           },
           (err, result2) => {
             if (err) {
-              return res.status(422).json({ error: err });
+              return res.json({ error: err });
             } else {
               res.json({ result1, result2 });
             }
@@ -304,7 +302,7 @@ router.put("/addeducation", requireLogin, (req, res) => {
       res.status(200).json({ user });
     })
     .catch((err) => {
-      return res.status(422).json({ error: err });
+      return res.json({ error: err });
     });
 });
 
@@ -322,7 +320,7 @@ router.put("/deleteeducation", requireLogin, (req, res) => {
       res.status(200).json({ user });
     })
     .catch((err) => {
-      return res.status(422).json({ error: err });
+      return res.json({ error: err });
     });
 });
 
@@ -348,13 +346,13 @@ router.put("/updateeducation", requireLogin, (req, res) => {
       res.status(200).json({ user });
     })
     .catch((err) => {
-      return res.status(422).json({ error: err });
+      return res.json({ error: err });
     });
 });
 
 router.put("/addskill", requireLogin, (req, res) => {
   if (req.body.skill === null || "") {
-    return res.status(422).json({ error: "Not found" });
+    return res.json({ error: "Not found" });
   } else {
     User.findByIdAndUpdate(
       req.user._id,
@@ -369,14 +367,14 @@ router.put("/addskill", requireLogin, (req, res) => {
         res.status(200).json({ user });
       })
       .catch((err) => {
-        return res.status(422).json({ error: err });
+        return res.json({ error: err });
       });
   }
 });
 
 router.put("/deleteskill", requireLogin, (req, res) => {
   if (req.body.skill === null || "") {
-    return res.status(422).json({ error: "Not found" });
+    return res.json({ error: "Not found" });
   } else {
     User.findByIdAndUpdate(
       req.user._id,
@@ -391,7 +389,7 @@ router.put("/deleteskill", requireLogin, (req, res) => {
         res.status(200).json({ user });
       })
       .catch((err) => {
-        return res.status(422).json({ error: err });
+        return res.json({ error: err });
       });
   }
 });

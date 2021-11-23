@@ -6,36 +6,19 @@ import { userContext } from "../App";
 import DeleteIcon from "@mui/icons-material/Delete";
 import styled from "styled-components";
 import FullScreenLoader from "./Models/FullScreenLoader";
-import { getTableSortLabelUtilityClass } from "@mui/material";
 import { ClickAwayListener } from "@material-ui/core";
+import { deleteAComment } from "../service/Actions/PostAction";
+import { connect } from "react-redux";
 
 const Comment = (props) => {
   const { state } = useContext(userContext);
   const [showMoreBox, setShowMoreBox] = useState(false);
   const [showLoader, setShowLoader] = useState(false);
 
-  const DeleteComment = () => {
+  const DeleteComment = async () => {
     setShowLoader(true);
-    fetch("/deletecomment", {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-      body: JSON.stringify({
-        postId: props.post._id,
-        commentId: props.comment._id,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          props.model(false);
-          setShowLoader(false);
-        }
-      });
+    await props.deleteAComment(props.post._id, props.comment._id);
+    setShowLoader(false);
   };
 
   return (
@@ -43,7 +26,7 @@ const Comment = (props) => {
       {showLoader && <FullScreenLoader />}
       {showMoreBox && (
         <PopupBox>
-          <ClickAwayListener onClickAway={()=>setShowMoreBox(false)}>
+          <ClickAwayListener onClickAway={() => setShowMoreBox(false)}>
             <button onClick={() => DeleteComment()}>
               <DeleteIcon style={{ fontSize: "16px" }} />
               <h4>Delete</h4>
@@ -98,4 +81,11 @@ const PopupBox = styled.div`
   }
 `;
 
-export default Comment;
+const mapStateToProps = (state) => ({});
+
+const mapDispatchToProps = (dispatch) => ({
+  deleteAComment: (postId, commentId) =>
+    dispatch(deleteAComment(postId, commentId)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Comment);

@@ -19,7 +19,6 @@ import { userContext } from "../App";
 import UserProfileModel from "./Models/UserProfileModel";
 import UserCoverModel from "./Models/UserCoverModel";
 import NavBar from "./NavBar";
-import { useAlert } from "react-alert";
 import AddIcon from "@mui/icons-material/Add";
 import EducationModel from "./Models/EducationModel";
 import RightSugg from "./RightSugg";
@@ -29,7 +28,10 @@ import AddSkillModel from "./Models/AddSkillModel";
 import EditSkillModel from "./Models/EditSkillModel";
 import AboutModel from "./Models/AboutModel";
 
-const MyProfile = () => {
+import { connect } from "react-redux";
+import { fetchUserPosts } from "../service/Actions/UserActions";
+
+const MyProfile = (props) => {
   const [editModel, setEditModel] = useState(false);
   const [profileModel, setProfileModel] = useState(false);
   const [coverModel, setCoverModel] = useState(false);
@@ -37,31 +39,13 @@ const MyProfile = () => {
   const [showAboutModel, setShowAboutModel] = useState(false);
   const [sendEdu, setSendEdu] = useState([]);
   const { state } = useContext(userContext);
-  const alert = useAlert();
   const [showAddSkill, setShowAddSkill] = useState(false);
   const [showEditSkill, setShowEditSkill] = useState(false);
-  const [myposts, setMyPosts] = useState([]);
   const history = useHistory();
 
   useEffect(() => {
     if (state) {
-      const interval = setInterval(() => {
-        fetch(`/mypost/${state._id}`, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("jwt"),
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.error) {
-              alert.error(data.error);
-            } else {
-              const newUserPost = data.posts.slice(0, 4);
-              setMyPosts(newUserPost);
-            }
-          });
-      }, 2000);
-      return () => clearInterval(interval);
+      props.fetchUserPosts(state._id);
     }
   }, [state]);
 
@@ -159,8 +143,8 @@ const MyProfile = () => {
             </h5>
 
             <div>
-              {myposts &&
-                myposts.map((post) => (
+              {props.user.userPosts &&
+                props.user.userPosts.slice(0, 4).map((post) => (
                   <div key={post._id}>
                     {post.photo && <img src={post.photo} alt="" />}
                     <div>
@@ -290,4 +274,12 @@ const MyProfile = () => {
   );
 };
 
-export default MyProfile;
+const mapStateToProps = (state) => ({
+  user: state.UserReducer,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  fetchUserPosts: (userId) => dispatch(fetchUserPosts(userId)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(MyProfile);

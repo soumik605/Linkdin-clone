@@ -21,168 +21,73 @@ import {
 } from "./Style/MyConn";
 import { userContext } from "../App";
 import { useHistory } from "react-router-dom";
-import { useAlert } from "react-alert";
 import NavBar from "./NavBar";
 import Loader1 from "./Loader1";
+import { connect } from "react-redux";
+import {
+  fetchUserPosts,
+  fetchUserDetails,
+  requestConnection,
+  withdrawConnection,
+  rejectConnection,
+  acceptConnection,
+  removeConnection,
+  myDetails,
+  allUser,
+} from "../service/Actions/UserActions";
+import { createRoom, deleteRoom } from "../service/Actions/RoomAction";
 
-const MyConnections = () => {
-  const { state, dispatch } = useContext(userContext);
-  const [allUser, setAllUser] = useState([]);
-  const [mydetails, setMydetails] = useState(null);
+const MyConnections = (props) => {
+  const { state } = useContext(userContext);
   const [showAcceptConnBtn, setShowAcceptConnBtn] = useState(true);
   const [showAddConnBtn, setShowAddConnBtn] = useState(true);
   const history = useHistory();
-  const alert = useAlert();
   const [showMyConnLoader, setShowMyConnLoader] = useState(true);
   const [showConnReqLoader, setShowConnReqLoader] = useState(true);
   const [showSuggestionLoader, setShowSuggestionLoader] = useState(true);
 
-  const createRoom = (userId) => {
-    fetch(`/createroom`, {
-      method: "post",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-      body: JSON.stringify({
-        fid: userId,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          setShowAcceptConnBtn(true);
-        }
-      });
+  const acceptConnection = async (userid) => {
+    setShowAcceptConnBtn(false);
+    await props.acceptConnection(userid);
+    await props.createRoom(userid);
+    setShowAcceptConnBtn(true);
   };
 
-  const acceptConnection = (user) => {
-    fetch(`/acceptconnect/${user._id}`, {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          localStorage.setItem("user", JSON.stringify(data.result1));
-          dispatch({ type: "USER", payload: data.result1 });
-          createRoom(user._id);
-        }
-      });
-  };
-
-  const rejectConnection = (user) => {
-    if (window.confirm("Reject Connection ? ")) {
-      fetch(`/rejectconnect/${user._id}`, {
-        method: "put",
-        headers: {
-          "content-type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("jwt"),
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            alert.error(data.error);
-          } else {
-            localStorage.setItem("user", JSON.stringify(data.result1));
-            dispatch({ type: "USER", payload: data.result1 });
-          }
-        });
+  const rejectConnection = async (userid) => {
+    if (window.confirm("Reject Connection Request ? ")) {
+      setShowAcceptConnBtn(false);
+      await props.rejectConnection(userid);
+      setShowAcceptConnBtn(true);
     }
   };
 
-  const WithdrawRequest = (user) => {
+  const WithdrawRequest = async (userid) => {
     if (window.confirm("Withdraw Connection Request ? ")) {
-      fetch(`/withdrawreq/${user._id}`, {
-        method: "put",
-        headers: {
-          "content-type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("jwt"),
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            alert.error(data.error);
-          } else {
-            localStorage.setItem("user", JSON.stringify(data.result1));
-            dispatch({ type: "USER", payload: data.result1 });
-          }
-        });
+      await props.withdrawConnection(userid);
     }
+  };
+
+  const callAllUserAndMyDetails = async () => {
+    await props.allUser();
+    setShowSuggestionLoader(false);
+    await props.myDetails();
+    setShowMyConnLoader(false);
+    setShowConnReqLoader(false);
   };
 
   useEffect(() => {
     const interval = setInterval(() => {
       if (state) {
-        fetch(`/alluser`, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("jwt"),
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.error) {
-              alert.error(data.error);
-            } else {
-              setAllUser(data.users);
-              setShowSuggestionLoader(false);
-            }
-          });
-      }
-    }, 500);
-    return () => clearInterval(interval);
-  }, [state]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (state) {
-        fetch(`/mydetails`, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("jwt"),
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.error) {
-              alert.error(data.error);
-            } else {
-              setMydetails(data.user);
-              setShowMyConnLoader(false);
-              setShowConnReqLoader(false);
-            }
-          });
+        callAllUserAndMyDetails();
       }
     }, 500);
     return () => clearInterval(interval);
   }, [state]);
 
   const RequestConnection = async (userid) => {
-    await fetch(`/reqconnect/${userid}`, {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-        } else {
-          localStorage.setItem("user", JSON.stringify(data.result2));
-          dispatch({ type: "USER", payload: data.result2 });
-          setShowAddConnBtn(true);
-        }
-      });
+    setShowAddConnBtn(false);
+    await props.requestConnection(userid);
+    setShowAddConnBtn(true);
   };
 
   return (
@@ -191,9 +96,9 @@ const MyConnections = () => {
       <Container>
         <LeftDiv>
           <h3>My Connections</h3>
-          {showMyConnLoader && <Loader1 />}
-          {mydetails &&
-            mydetails.connections.map((user) => (
+          {!props.user.myDetails && showMyConnLoader && <Loader1 />}
+          {props.user.myDetails &&
+            props.user.myDetails.connections.map((user) => (
               <LeftUserBox key={user._id}>
                 <LeftProfile src={user.profile_pic} alt="" />
                 <div>
@@ -210,12 +115,12 @@ const MyConnections = () => {
         <RightDiv>
           <ReqCont>
             <h3>Invitations</h3>
-            {showConnReqLoader && <Loader1 />}
-            {mydetails &&
-              mydetails.conrequests.map((user) => (
+            {!props.user.myDetails && showConnReqLoader && <Loader1 />}
+            {props.user.myDetails &&
+              props.user.myDetails.conrequests.map((user) => (
                 <RequestBox key={user._id}>
                   <ReqPic>
-                    <img src={user.profile_pic} />
+                    <img src={user.profile_pic} alt="" />
                   </ReqPic>
                   <ReqUser>
                     <h3>
@@ -224,12 +129,14 @@ const MyConnections = () => {
                     <h5 style={{ fontWeight: 450 }}>{user.headline}</h5>
                   </ReqUser>
                   <CheckBox>
-                    <ChBtn onClick={() => rejectConnection(user)}>Ignore</ChBtn>
+                    <ChBtn onClick={() => rejectConnection(user._id)}>
+                      Ignore
+                    </ChBtn>
                     {showAcceptConnBtn ? (
                       <ChBtn
                         onClick={() => {
                           setShowAcceptConnBtn(false);
-                          acceptConnection(user);
+                          acceptConnection(user._id);
                         }}
                       >
                         Accept
@@ -243,9 +150,11 @@ const MyConnections = () => {
           </ReqCont>
           <SuggestionBox>
             <h3>Suggested For You</h3>
-            {showSuggestionLoader && <Loader1 />}
-            {allUser &&
-              allUser
+            {props.user.allUser.length === 0 && showSuggestionLoader && (
+              <Loader1 />
+            )}
+            {props.user.allUser.length !== 0 &&
+              props.user.allUser
                 .filter((s_user) => {
                   if (
                     s_user._id === state._id ||
@@ -273,13 +182,12 @@ const MyConnections = () => {
                     </Details>
 
                     {user.conrequests.includes(state._id) ? (
-                      <ConnectBtn onClick={() => WithdrawRequest(user)}>
+                      <ConnectBtn onClick={() => WithdrawRequest(user._id)}>
                         pending
                       </ConnectBtn>
                     ) : showAddConnBtn ? (
                       <ConnectBtn
                         onClick={() => {
-                          setShowAddConnBtn(false);
                           RequestConnection(user._id);
                         }}
                       >
@@ -299,4 +207,24 @@ const MyConnections = () => {
   );
 };
 
-export default MyConnections;
+const mapStateToProps = (state) => ({
+  user: state.UserReducer,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  fetchUserPosts: (userid) => dispatch(fetchUserPosts(userid)),
+  fetchUserDetails: (userid) => dispatch(fetchUserDetails(userid)),
+  requestConnection: (userid) => dispatch(requestConnection(userid)),
+  withdrawConnection: (userid) => dispatch(withdrawConnection(userid)),
+  rejectConnection: (userid) => dispatch(rejectConnection(userid)),
+  acceptConnection: (userid) => dispatch(acceptConnection(userid)),
+  removeConnection: (userid) => dispatch(removeConnection(userid)),
+
+  createRoom: (userid) => dispatch(createRoom(userid)),
+  deleteRoom: (userid) => dispatch(deleteRoom(userid)),
+
+  myDetails: () => dispatch(myDetails()),
+  allUser: () => dispatch(allUser()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(MyConnections);

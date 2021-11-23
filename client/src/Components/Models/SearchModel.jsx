@@ -1,20 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { Close, Container, PopupBox, UserBox } from "../Style/SearchModel";
+import { connect } from "react-redux";
+import { allUser } from "../../service/Actions/UserActions";
 
 const SearchModel = (props) => {
-  const [alluser, setAlluser] = useState([]);
-
   useEffect(() => {
-    fetch("/alluser", {
-      headers: {
-        authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        setAlluser(res.users);
-      });
+    props.allUser();
   }, []);
 
   return (
@@ -36,7 +28,7 @@ const SearchModel = (props) => {
           </Close>
           <h3>Showing results of "{props.name}"</h3> <hr />
           <div style={{ overflowY: "scroll", overflowX: "hidden" }}>
-            {alluser
+            {props.user.allUser
               .filter((fuser) => {
                 if (props.name === "") {
                   return null;
@@ -68,4 +60,12 @@ const SearchModel = (props) => {
   );
 };
 
-export default SearchModel;
+const mapStateToProps = (state) => ({
+  user: state.UserReducer,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  allUser: () => dispatch(allUser()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(SearchModel);

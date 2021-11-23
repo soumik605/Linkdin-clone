@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Container,
   Form,
@@ -65,7 +65,7 @@ const SignupGooglePage = (props) => {
               value={details1.password}
               name="password"
               onChange={(e) => {
-                setDetails1({ ...details1, ["password"]: e.target.value });
+                setDetails1({ ...details1, password: e.target.value });
               }}
             />
           </Input>

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   Close,
   Container,
@@ -11,107 +11,54 @@ import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { userContext } from "../../App";
 import { useAlert } from "react-alert";
 import FullScreenLoader from "./FullScreenLoader";
+import { connect } from "react-redux";
+import {
+  addEducation,
+  deleteEducation,
+  updateEducation,
+} from "../../service/Actions/UserActions";
 
 const EducationModel = (props) => {
-  const {dispatch } = useContext(userContext);
+  const { dispatch } = useContext(userContext);
   const [education, setEducation] = useState(props.education);
   const [showSubmitLoader, setShowSubmitLoader] = useState(false);
   const alert = useAlert();
+
+  useEffect(() => {
+    if (props.user.currentUser) {
+      dispatch({
+        type: "UPDATE_EDU",
+        payload: {
+          education: props.user.currentUser.education,
+        },
+      });
+      localStorage.setItem("user", JSON.stringify(props.user.currentUser));
+    }
+  }, [props.user.currentUser]);
 
   const handleChange = (e) => {
     setEducation({ ...education, [e.target.name]: e.target.value });
   };
 
-  const AddEducation = (e) => {
+  const AddEducation = async (e) => {
     setShowSubmitLoader(true);
-    fetch("/addeducation", {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-      body: JSON.stringify({
-        education,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-          setShowSubmitLoader(false);
-        } else {
-          dispatch({
-            type: "UPDATE_EDU",
-            payload: {
-              education: data.user.education,
-            },
-          });
-          localStorage.setItem("user", JSON.stringify(data.user));
-          setShowSubmitLoader(false);
-          props.model(false);
-        }
-      });
+    await props.addEducation(education);
+    setShowSubmitLoader(false);
+    props.model(false);
   };
 
-  const DeleteEducation = (e) => {
+  const DeleteEducation = async (e) => {
     setShowSubmitLoader(true);
-    fetch(`/deleteeducation`, {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-      body: JSON.stringify({
-        education: props.education,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-          setShowSubmitLoader(false);
-        } else {
-          dispatch({
-            type: "UPDATE_EDU",
-            payload: {
-              education: data.user.education,
-            },
-          });
-          localStorage.setItem("user", JSON.stringify(data.user));
-          setShowSubmitLoader(false);
-          props.model(false);
-        }
-      });
+    await props.deleteEducation(education);
+    setShowSubmitLoader(false);
+    props.model(false);
   };
-  const UpdateEducation = (e) => {
+
+  const UpdateEducation = async (e) => {
     setShowSubmitLoader(true);
-    fetch(`/updateeducation`, {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
-      },
-      body: JSON.stringify({
-        education,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert.error(data.error);
-          setShowSubmitLoader(false);
-        } else {
-          dispatch({
-            type: "UPDATE_EDU",
-            payload: {
-              education: data.user.education,
-            },
-          });
-          localStorage.setItem("user", JSON.stringify(data.user));
-          setShowSubmitLoader(false);
-          props.model(false);
-        }
-      });
+    await props.updateEducation(education);
+    setShowSubmitLoader(false);
+    props.model(false);
   };
 
   return (
@@ -128,8 +75,8 @@ const EducationModel = (props) => {
             style={{
               display: "flex",
               justifyContent: "space-between",
-              borderBottom:"1px solid lightgrey",
-              paddingBottom:"10px"
+              borderBottom: "1px solid lightgrey",
+              paddingBottom: "10px",
             }}
           >
             {props.education.course ? (
@@ -188,10 +135,12 @@ const EducationModel = (props) => {
                 flexDirection: "row",
                 flexWrap: "nowrap",
                 justifyContent: "space-between",
-                marginTop:"50px"
+                marginTop: "50px",
               }}
             >
-              <Delete onClick={() => DeleteEducation()}>Delete education</Delete>
+              <Delete onClick={() => DeleteEducation()}>
+                Delete education
+              </Delete>
               <Save onClick={() => UpdateEducation()}>Update</Save>
             </div>
           ) : (
@@ -201,10 +150,12 @@ const EducationModel = (props) => {
                 flexDirection: "row",
                 flexWrap: "nowrap",
                 justifyContent: "space-between",
-                marginTop:"50px"
+                marginTop: "50px",
               }}
             >
-              <Delete onClick={() => DeleteEducation()}>Delete Education</Delete>
+              <Delete onClick={() => DeleteEducation()}>
+                Delete Education
+              </Delete>
               <Save onClick={() => alert.error("Add all fields")}>Update</Save>
             </div>
           )}
@@ -214,4 +165,14 @@ const EducationModel = (props) => {
   );
 };
 
-export default EducationModel;
+const mapStateToProps = (state) => ({
+  user: state.UserReducer,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  addEducation: (education) => dispatch(addEducation(education)),
+  updateEducation: (education) => dispatch(updateEducation(education)),
+  deleteEducation: (education) => dispatch(deleteEducation(education)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(EducationModel);
